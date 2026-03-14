@@ -9,7 +9,7 @@ const imageSources = {
     field_bg: 'field_bg.png', room_bg: 'room_bg.png', evolutions: 'evolutions.png', fishing_bg: 'fishing_bg.png',
 
     // ★修正：初期ロードは「基本の11種族（待機状態）」のみ！アクションや進化系は起動時に読み込まない！
-    robot: 'robot.png', spirit: 'spilit.png', magician: 'magician.png',
+    robot: 'robot.png', spirit: 'spirit.png', magician: 'magician.png',
     beetle: 'beetle.png', seed: 'seed.png', dragon: 'dragon.png',
     bird: 'bird.png', machine: 'machine.png', stone: 'stone.png',
     balloon: 'balloon.png', ghost: 'ghost.png'
@@ -829,11 +829,11 @@ const defaultAiConfigs = {
       "fish": "spirit_action",
       "cook": "spirit_action",
       "smith": "spirit_action",
-      "farm_plow": "spilit_action_farm",
-      "farm_seed": "spilit_action_farm",
-      "farm_water": "spilit_action_farm",
-      "farm_pest": "spilit_action_farm",
-      "farm_harvest": "spilit_action_farm"
+      "farm_plow": "spirit_action_farm",
+      "farm_seed": "spirit_action_farm",
+      "farm_water": "spirit_action_farm",
+      "farm_pest": "spirit_action_farm",
+      "farm_harvest": "spirit_action_farm"
     },
     "actions": {
       "idle": [

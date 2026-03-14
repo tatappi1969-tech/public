@@ -208,3 +208,70 @@ canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
         .enemy-flash {
             filter: brightness(2) contrast(1.5) sepia(1) hue-rotate(-50deg) saturate(5);
         }
+
+/* =========================================
+   📱 レスポンシブUI ＆ モダン操作パネル
+   ========================================= */
+
+/* オンラインインジケーター（左上用） */
+.online-indicator {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: #4CAF50; font-size: 11px; font-weight: bold;
+    background: rgba(0,0,0,0.6); padding: 4px 10px;
+    border-radius: 12px; border: 1px solid #4CAF50;
+    margin-left: 10px;
+}
+.online-indicator::before {
+    content: ''; display: inline-block; width: 8px; height: 8px;
+    background-color: #4CAF50; border-radius: 50%;
+    box-shadow: 0 0 5px #4CAF50; animation: blink 2s infinite;
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* コントロールパネルの大枠（2段構え化） */
+#gameControls {
+    display: flex !important; flex-direction: column; gap: 8px;
+    width: 800px; height: auto !important; margin-top: 5px;
+}
+
+/* 上段：アクションボタン群（PC用） */
+#action-buttons-row {
+    display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;
+}
+
+/* 下段：チャット入力群 */
+#chat-input-row {
+    display: flex; gap: 8px; width: 100%; height: 45px; /* 少し高さを出して打ちやすく */
+}
+#chat-input-row #chatInput {
+    flex: 1; font-size: 15px; padding: 0 15px;
+}
+
+/* スマホ用メニューボタン（PCでは隠す） */
+#mobile-menu-toggle { display: none; background: #FF9800; border-color: #F57C00; }
+.mobile-only-btn { display: none; }
+
+/* 📱 スマホ向けレイアウト（画面幅が850px以下の場合に自動発動） */
+@media (max-width: 850px) {
+    #main-container { flex-direction: column; align-items: center; }
+    #canvas-wrapper, #aiStatus, #gameControls, #info-column {
+        width: 100% !important; max-width: 100vw; box-sizing: border-box;
+    }
+    
+    /* 上段ボタンをポップアップメニューに変化させる */
+    #action-buttons-row {
+        display: none; /* デフォルトは隠す */
+        position: absolute; bottom: 70px; left: 10px; right: 10px;
+        background: rgba(20, 20, 25, 0.95); border: 2px solid #555;
+        border-radius: 8px; padding: 15px; z-index: 10000;
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.8);
+    }
+    #action-buttons-row.menu-open {
+        display: flex; animation: slideUp 0.2s ease-out;
+    }
+    @keyframes slideUp { from { transform:translateY(10px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+
+    /* スマホ用ボタンの表示 */
+    #mobile-menu-toggle { display: flex; }
+    .mobile-only-btn { display: flex; font-size: 18px; padding: 0 10px; }
+}

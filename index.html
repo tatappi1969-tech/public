@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>AI育成ゲーム - 転生編</title>
     <link rel="stylesheet" href="style.css">
     <style>
@@ -36,6 +37,8 @@
         
         <div id="game-column"> 
              <div id="aiStatus">
+                <div class="online-indicator" id="top-online-status" style="display:none;" onclick="document.getElementById('loginOverlay').classList.add('active')" title="クリックでアカウント管理">Online</div>
+                
                 <div class="stat-box"><span class="stat-label" id="label-time">TIME</span><span id="stat-time" class="stat-val" style="font-size:14px; font-weight:bold;">--:--</span></div>
                 <div class="stat-box"><span class="stat-label" id="label-weather">WEATHER</span><span id="stat-weather" class="stat-val" style="font-size:16px;">☀ 快晴</span></div>
                 
@@ -62,23 +65,31 @@
                 </div>
             </div>
 
-            <div id="gameControls" style="display: flex; flex-wrap: wrap; gap: 5px; align-items: center;">
-                <button id="btnEvolve" class="quiz-btn" style="background: linear-gradient(45deg, #FFC107, #FF9800); color:black; display:none;" onclick="openEvolutionMenu()">✨ 進化可能！</button>
-                <button id="btnStatus" class="quiz-btn" style="background:#8BC34A;" onclick="openStatusMenu()">📊 ステータス</button>
-                <button id="btnDailyQuest" class="quiz-btn" style="background:#4CAF50;" onclick="openDailyQuest()">📋 デイリー</button>
-                <button id="btnLogin" class="quiz-btn" style="background:#2196F3;" onclick="document.getElementById('loginOverlay').classList.add('active')">🔐 ログイン</button>
-                <button id="btnSchedule" class="quiz-btn" style="background:#00bcd4;" onclick="switchRightPanel('schedule')">📅 予定</button>
-                <button id="btnInventory" class="quiz-btn" style="background:#E91E63;" onclick="switchRightPanel('inventory')">🎒 持ち物</button>
-                <button id="btnPokedex" class="quiz-btn" style="background:#3F51B5;" onclick="openPokedex()">📖 図鑑</button> 
-                <button id="btnBuildRecipe" class="quiz-btn" style="background:#795548;" onclick="window.openBuildRecipe()">🔨 設計図</button>
-                <button id="btnTcgDeck" class="quiz-btn" style="background:#9C27B0;" onclick="window.openDeckBuilder()">🃏 TCGメニュー</button>
-                <button id="btn-menu-rescue" class="quiz-btn hidden-feature" style="background:#FF5722; color:white;" onclick="switchRightPanel('rescue')">🆘 救済</button>
-                <button id="btn-menu-tavern" class="quiz-btn hidden-feature" style="background:#9C27B0; color:white;" onclick="switchRightPanel('tavern')">🍻 酒場</button>
-                <button id="btn-menu-ranking" class="quiz-btn hidden-feature" style="background:#F44336; color:white;" onclick="window.switchRankingCategory('status')">👑 順位</button>
-                <button id="btn-menu-friend" class="quiz-btn" style="background:#E040FB; color:white;" onclick="window.openFriendListUI()">🤝 フレンド</button>
-                <input type="text" id="chatInput" placeholder="チャット..." style="flex: 1; min-width: 150px;">
-                <button id="btnVoice" class="quiz-btn" style="background:#2196F3; padding: 0 10px;" onclick="startVoiceRecognition()" title="音声で指示">🎙️</button>
-                <button id="btnSend" class="quiz-btn" style="background:#4CAF50;" onclick="sendChat()">送信</button>
+            <div id="gameControls">
+                <div id="action-buttons-row">
+                    <button id="btnEvolve" class="quiz-btn" style="background: linear-gradient(45deg, #FFC107, #FF9800); color:black; display:none;" onclick="openEvolutionMenu()">✨ 進化可能！</button>
+                    <button id="btnStatus" class="quiz-btn" style="background:#8BC34A;" onclick="openStatusMenu()">📊 ステータス</button>
+                    <button id="btnDailyQuest" class="quiz-btn" style="background:#4CAF50;" onclick="openDailyQuest()">📋 デイリー</button>
+                    <button id="btnSchedule" class="quiz-btn" style="background:#00bcd4;" onclick="switchRightPanel('schedule')">📅 予定</button>
+                    <button id="btnInventory" class="quiz-btn" style="background:#E91E63;" onclick="switchRightPanel('inventory')">🎒 持ち物</button>
+                    <button id="btnPokedex" class="quiz-btn" style="background:#3F51B5;" onclick="openPokedex()">📖 図鑑</button> 
+                    <button id="btnBuildRecipe" class="quiz-btn" style="background:#795548;" onclick="window.openBuildRecipe()">🔨 設計図</button>
+                    <button id="btnTcgDeck" class="quiz-btn" style="background:#9C27B0;" onclick="window.openDeckBuilder()">🃏 TCG</button>
+                    <button id="btn-menu-friend" class="quiz-btn" style="background:#E040FB; color:white;" onclick="window.openFriendListUI()">🤝 フレンド</button>
+                    <button id="btn-menu-rescue" class="quiz-btn hidden-feature" style="background:#FF5722; color:white;" onclick="switchRightPanel('rescue')">🆘 救済</button>
+                    </div>
+
+                <div id="chat-input-row">
+                    <button class="quiz-btn" id="mobile-menu-toggle" onclick="document.getElementById('action-buttons-row').classList.toggle('menu-open')">⚙️</button>
+                    
+                    <button class="quiz-btn mobile-only-btn" style="background:#E91E63;" onclick="switchRightPanel('inventory')" title="持ち物">🎒</button>
+                    <button class="quiz-btn mobile-only-btn" style="background:#8BC34A;" onclick="openStatusMenu()" title="ステータス">📊</button>
+
+                    <input type="text" id="chatInput" placeholder="AIにチャットで指示を出す...">
+                    
+                    <button id="btnVoice" class="quiz-btn" style="background:#2196F3; padding: 0 10px;" onclick="startVoiceRecognition()" title="音声で指示">🎙️</button>
+                    <button id="btnSend" class="quiz-btn" style="background:#4CAF50;" onclick="sendChat()">送信</button>
+                </div>
             </div>
         </div>
         

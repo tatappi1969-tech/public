@@ -217,12 +217,16 @@ window.openStatusMenu = function() {
             if (app.activeQuest) {
                 let progressStr = "";
                 if (typeof app.qVal === 'number') {
-                    let currentVal = 0; let targetVal = Math.floor(app.qVal);
-                    if (app.activeQuest.desc.includes("活力")) currentVal = Math.floor(aiPet.stats.power);
-                    else currentVal = app.qVal;
-                    
-                    if (app.activeQuest.desc.includes("活力")) progressStr = `<span style="color:#FF9800;">(現在: ${currentVal} / 目標: ${targetVal})</span>`;
-                    else if (targetVal > 0) progressStr = `<span style="color:#FF9800;">(進捗: ${targetVal}回)</span>`;
+                    const desc = app.activeQuest.desc;
+                    // ★大改修：能力値クエストか回数クエストかを判定して表示をHUDと統一
+                    if (desc.includes("賢さ") || desc.includes("知性") || desc.includes("活力") || desc.includes("パワー")) {
+                        let currentVal = desc.includes("賢さ") || desc.includes("知性") ? Math.floor(aiPet.stats.intel) : Math.floor(aiPet.stats.power);
+                        let targetVal = Math.floor(app.qVal);
+                        progressStr = `<span style="color:#FF9800;">現在の能力: ${currentVal} / 目標: ${targetVal}</span>`;
+                    } else {
+                        // 回数系クエストの場合（進捗: X回）
+                        progressStr = `<span style="color:#FF9800;">(進捗: ${Math.floor(app.qVal)}回)</span>`;
+                    }
                 }
                 html += `<div style="font-size: 12px; color: #ccc; background: #222; padding: 8px; border-radius: 4px; border-left: 3px solid #FFC107;">
                             <div style="font-weight:bold; color:#fff; margin-bottom: 3px;">📜 ${app.activeQuest.name}</div>
@@ -232,7 +236,7 @@ window.openStatusMenu = function() {
                 html += `<div style="font-size: 12px; color: #888; background: #222; padding: 8px; border-radius: 4px;">現在受けている課題はありません。<br>チャットで「${mName}のところへ」と入力して課題をもらいましょう。</div>`;
             }
         } else if (app.isExcommunicated) {
-            html += `<div style="font-size: 13px; color: #ff5252; font-weight: bold; background: rgba(244,67,54,0.1); padding: 10px; border-radius: 4px;">現在、破門されています...<br><span style="font-size:11px; color:#aaa; font-weight:normal;">基礎トレーニング（休憩・勉強など）を繰り返して自分を見つめ直しましょう。</span></div>`;
+            html += `<div style="font-size: 13px; color: #ff5252; font-weight: bold; background: rgba(244,67,54,0.1); padding: 10px; border-radius: 4px;">現在、破門されています...<br><span style="font-size:11px; color:#aaa; font-weight:normal;">基礎トレーニングを繰り返して自分を見つめ直しましょう。</span></div>`;
         } else if (app.isGraduated) {
             html += `<div style="font-size: 13px; color: #FFD700; font-weight: bold; text-align: center; padding: 10px;">✨ 免許皆伝 ✨<br><span style="font-size:11px; color:#ccc; font-weight:normal;">すべての修行を終え、立派な達人になりました！</span></div>`;
         } else {
@@ -342,33 +346,25 @@ function openInventoryPanel() {
     const list = document.getElementById('inventoryList'); if (!list) return; list.innerHTML = "";
     let totalItems = 0;
     
-    // ==========================================
-    // ★ 追加：弟子入り専用インベントリ（支給品）の表示
-    // ==========================================
     if (typeof aiPet !== 'undefined' && aiPet.apprentice && aiPet.apprentice.inventory && aiPet.apprentice.inventory.length > 0) {
         const counts = {}; aiPet.apprentice.inventory.forEach(k => counts[k] = (counts[k]||0)+1);
         for(let k in counts) {
-            const item = (typeof itemCatalog !== 'undefined' && itemCatalog[k]) ? itemCatalog[k] : { name: k, desc: '' };
-            const d = document.createElement('div'); d.className = 'panel-list-item';
-            d.style.borderLeft = "4px solid #FFD700";
-            d.style.backgroundColor = "rgba(255, 215, 0, 0.1)"; // 支給品専用のハイライト
-            d.innerHTML = `<div style="display:flex; justify-content:space-between; font-weight:bold; font-size:13px; color:#FFD700;"><span>[支給品] ${item.name}</span> <span>x${counts[k]}</span></div><div style="font-size:10px; color:#aaa; margin-top:2px;">修業用の支給品（私的利用・売却は不可）</div>`;
-            list.appendChild(d);
-            totalItems++;
+            // ★修正：アイテム名の翻訳処理を通す
+            let itemName = typeof window.getDisplayShopItemName === 'function' ? window.getDisplayShopItemName(k) : k;
+            const d = document.createElement('div'); d.className = 'panel-list-item'; d.style.borderLeft = "4px solid #FFD700"; d.style.backgroundColor = "rgba(255, 215, 0, 0.1)";
+            d.innerHTML = `<div style="display:flex; justify-content:space-between; font-weight:bold; font-size:13px; color:#FFD700;"><span>[支給品] ${itemName}</span> <span>x${counts[k]}</span></div>`;
+            list.appendChild(d); totalItems++;
         }
     }
-
-    // ==========================================
-    // 通常のインベントリの表示
-    // ==========================================
+    
     if (aiPet.inventory && aiPet.inventory.length > 0) {
         const counts = {}; aiPet.inventory.forEach(k => counts[k] = (counts[k]||0)+1);
         for(let k in counts) {
-            const item = (typeof itemCatalog !== 'undefined' && itemCatalog[k]) ? itemCatalog[k] : { name: k, desc: '' };
+            // ★修正：アイテム名の翻訳処理を通す
+            let itemName = typeof window.getDisplayShopItemName === 'function' ? window.getDisplayShopItemName(k) : k;
             const d = document.createElement('div'); d.className = 'panel-list-item';
-            d.innerHTML = `<div style="display:flex; justify-content:space-between; font-weight:bold; font-size:13px;"><span>${item.name}</span> <span style="color:#FFD700">x${counts[k]}</span></div><div style="font-size:10px; color:#ccc; margin-top:2px;">${item.desc}</div>`;
-            list.appendChild(d);
-            totalItems++;
+            d.innerHTML = `<div style="display:flex; justify-content:space-between; font-weight:bold; font-size:13px;"><span>${itemName}</span> <span style="color:#FFD700">x${counts[k]}</span></div>`;
+            list.appendChild(d); totalItems++;
         }
     }
     
@@ -817,12 +813,15 @@ window.sendChat = function() {
     const myMasterName = aiPet.apprentice.currentMaster ? masterNames[aiPet.apprentice.currentMaster] : null;
 
     // ==========================================
-    // ★大改修：ユニーク施設のスマート判定＆重複建築ブロック！
+    // ★大改修：ユニーク施設のスマート判定
     // ==========================================
     const uniqueFacilities = {
         "城": { type: 'castle', bId: 'castle', name: 'お城', onEnter: () => { if(typeof window.openArenaReception === 'function') window.openArenaReception(); } },
         "カジノ": { type: 'casino', bId: 'casino', name: 'カジノ', onEnter: () => { if(typeof window.openCasino === 'function') window.openCasino(); } },
-        "ショップ": { type: 'shop', bId: 'shop', name: 'ショップ', onEnter: () => { if(typeof switchRightPanel === 'function') switchRightPanel('shop'); } },
+        
+        // ★修正：チャットで指示されたら「行ってくる！」と喋って歩き出すだけにします
+        "ショップ": { type: 'shop', bId: 'shop', name: 'ショップ', onEnter: null },
+        
         "レストラン": { type: 'restaurant', bId: 'restaurant', name: 'レストラン', onEnter: null },
         "鍛冶屋": { type: 'smith', bId: 'smith', name: '鍛冶屋', onEnter: null }
     };
@@ -833,13 +832,11 @@ window.sendChat = function() {
         
         let existingTarget = null;
         for (let k in assets) {
-            // isMobile（移動式）は無視して、自分が建てたものを探す
             if ((assets[k].type === facInfo.type || assets[k].type === facInfo.bId) && !assets[k].isMobile) {
                 existingTarget = assets[k]; break;
             }
         }
 
-        // ★重複建築ブロック：スケジュールに入っているか、建築予定地があるかチェック
         let isBuilding = false;
         if (aiPet.schedule.some(t => t.type === 'build' && t.targetBuilding === facInfo.bId)) isBuilding = true;
         for (let k in assets) {
@@ -863,19 +860,15 @@ window.sendChat = function() {
             aiPet.message = `${facInfo.name}は今作っている最中だよ！`; aiPet.messageTimer = 120;
         } else {
             if (knows("建築")) {
-                let currentRank = (aiPet.apprentice && aiPet.apprentice.rank && aiPet.apprentice.rank['building']) ? aiPet.apprentice.rank['building'] : 0;
+                // ★修正：ランク10（皆伝）の判定を追加！
                 let isMaster = aiPet.apprentice && (
-                    (aiPet.apprentice.retired && aiPet.apprentice.retired['building']) ||
-                    (aiPet.apprentice.currentMaster === 'building' && aiPet.apprentice.isGraduated) || currentRank >= 10
+                    (aiPet.apprentice.retired && aiPet.apprentice.retired['building']) || 
+                    (aiPet.apprentice.currentMaster === 'building' && aiPet.apprentice.isGraduated) ||
+                    (aiPet.apprentice.rank && aiPet.apprentice.rank['building'] >= 10)
                 );
-                let effectiveRank = isMaster ? 10 : currentRank;
-                let reqLevel = (typeof buildingCatalog !== 'undefined' && buildingCatalog[facInfo.bId]) ? buildingCatalog[facInfo.bId].reqBuildLevel : 1;
-                let isBuilder = aiPet.apprentice && (aiPet.apprentice.currentMaster === 'building' || isMaster);
                 
-                if (!isBuilder) {
-                    aiPet.message = `まだ素人だから、${facInfo.name}は作れないよ...\n(まずは建築士に弟子入りしよう)`; aiPet.messageTimer = 150;
-                } else if (effectiveRank < reqLevel) {
-                    aiPet.message = `${facInfo.name}を作るには難しすぎるよ...\nもっと建築士のランクを上げないと！（必要ランク: ${reqLevel}）`; aiPet.messageTimer = 180;
+                if (!isMaster) {
+                    aiPet.message = `まだ修行中の身だから、${facInfo.name}は作れないよ...\n(まずは建築士の免許皆伝を目指そう！)`; aiPet.messageTimer = 180;
                 } else {
                     aiPet.schedule.push({type: 'build', targetBuilding: facInfo.bId, duration: 60});
                     aiPet.message = `${facInfo.name}の建築を予定に追加したよ！`; aiPet.messageTimer = 150;
@@ -889,19 +882,15 @@ window.sendChat = function() {
     else if (["橋", "小屋"].includes(interpretedWord) && knows("建築")) {
         actionTriggered = true;
         let bId = interpretedWord === "橋" ? "bridge" : "hut";
-        let currentRank = (aiPet.apprentice && aiPet.apprentice.rank && aiPet.apprentice.rank['building']) ? aiPet.apprentice.rank['building'] : 0;
+        // ★修正：ランク10（皆伝）の判定を追加！
         let isMaster = aiPet.apprentice && (
-            (aiPet.apprentice.retired && aiPet.apprentice.retired['building']) ||
-            (aiPet.apprentice.currentMaster === 'building' && aiPet.apprentice.isGraduated) || currentRank >= 10
+            (aiPet.apprentice.retired && aiPet.apprentice.retired['building']) || 
+            (aiPet.apprentice.currentMaster === 'building' && aiPet.apprentice.isGraduated) ||
+            (aiPet.apprentice.rank && aiPet.apprentice.rank['building'] >= 10)
         );
-        let effectiveRank = isMaster ? 10 : currentRank;
-        let reqLevel = buildingCatalog[bId].reqBuildLevel || 1;
-        let isBuilder = aiPet.apprentice && (aiPet.apprentice.currentMaster === 'building' || isMaster);
         
-        if (!isBuilder) {
-            aiPet.message = `まだ素人だから、${interpretedWord}は作れないよ...\n(まずは建築士に弟子入りしよう)`; aiPet.messageTimer = 150;
-        } else if (effectiveRank < reqLevel) {
-            aiPet.message = `${interpretedWord}を作るには難しすぎるよ...\nもっと建築士のランクを上げないと！（必要ランク: ${reqLevel}）`; aiPet.messageTimer = 180;
+        if (!isMaster) {
+            aiPet.message = `まだ修行中の身だから、${interpretedWord}は作れないよ...\n(まずは建築士の免許皆伝を目指そう！)`; aiPet.messageTimer = 180;
         } else {
             aiPet.schedule.push({type: 'build', targetBuilding: bId, duration: 60});
             aiPet.message = `${interpretedWord}の建築を予定に追加したよ！`; aiPet.messageTimer = 150;
@@ -910,14 +899,19 @@ window.sendChat = function() {
     // 既存の「建築」コマンドは畑（farm）をデフォルトにする
     else if (interpretedWord === "建築" && knows("建築")) { 
         actionTriggered = true;
+        // ★修正：ランク10（皆伝）の判定を追加！
         let isMaster = aiPet.apprentice && (
-            (aiPet.apprentice.retired && aiPet.apprentice.retired['building']) ||
-            (aiPet.apprentice.currentMaster === 'building' && aiPet.apprentice.isGraduated)
+            (aiPet.apprentice.retired && aiPet.apprentice.retired['building']) || 
+            (aiPet.apprentice.currentMaster === 'building' && aiPet.apprentice.isGraduated) ||
+            (aiPet.apprentice.rank && aiPet.apprentice.rank['building'] >= 10)
         );
         let isBuilder = aiPet.apprentice && (aiPet.apprentice.currentMaster === 'building' || isMaster);
         
         if (!isBuilder) {
             aiPet.message = `まだ素人だから作れないよ...\n(まずは建築士に弟子入りしよう)`; aiPet.messageTimer = 150;
+        } else if (!isMaster) {
+            aiPet.schedule.push({type: 'build', targetBuilding: 'farm', duration: 60});
+            aiPet.message = "畑を建てる場所へ向かうよ！"; aiPet.messageTimer = 150;
         } else {
             aiPet.schedule.push({type: 'build', targetBuilding: 'farm', duration: 60});
             aiPet.message = "畑の建築を予定に追加したよ！\n(他のものは「〇〇を作って」と指示してね)"; aiPet.messageTimer = 150;
@@ -974,8 +968,109 @@ window.sendChat = function() {
         if (canExplore) { aiPet.schedule.push({type:'explore', duration:60}); } 
         else { aiPet.message = "一人で探検するのは危ないかも...\nまずは冒険家を探して、やり方を教わりたいな！"; aiPet.messageTimer = 180; }
     }
-    else if (interpretedWord === "料理" && knows("料理")) { aiPet.schedule.push({type:'cook', duration:30}); actionTriggered = true; }
-    else if (interpretedWord === "鍛冶" && knows("鍛冶")) { aiPet.schedule.push({type:'smith', duration:60}); actionTriggered = true; }
+    else if (interpretedWord === "料理" && knows("料理")) {
+        actionTriggered = true;
+        
+        let isMaster = aiPet.apprentice && (
+            (aiPet.apprentice.retired && aiPet.apprentice.retired['cooking']) || 
+            (aiPet.apprentice.currentMaster === 'cooking' && aiPet.apprentice.isGraduated) ||
+            (aiPet.apprentice.rank && aiPet.apprentice.rank['cooking'] >= 10)
+        );
+        let isApprentice = aiPet.apprentice && aiPet.apprentice.currentMaster === 'cooking';
+
+        if (isMaster) {
+            let myRestaurant = null;
+            for (let k in assets) {
+                if (assets[k].type === 'restaurant' && !assets[k].isMobile) {
+                    myRestaurant = assets[k]; break;
+                }
+            }
+            if (myRestaurant) {
+                // ★修正：上書きではなく push で追加
+                aiPet.schedule.push({type: 'cook', duration: 30});
+                // 最初の1件目なら移動を開始する
+                if (aiPet.schedule.length === 1) {
+                    aiPet.startBuildingInteraction(myRestaurant);
+                    aiPet.message = "レストランで料理を作ってくるね！";
+                } else {
+                    aiPet.message = "他にも料理の予約をしたよ！";
+                }
+            } else {
+                aiPet.message = "料理は得意だけど、自分のレストランがないと腕を振るえないや。";
+            }
+        } else if (isApprentice) {
+            let masterRest = null;
+            for (let k in assets) {
+                if (assets[k].type === 'restaurant' && assets[k].isMobile) {
+                    masterRest = assets[k]; break;
+                }
+            }
+            if (masterRest) {
+                // ★修正：上書きではなく push で追加
+                aiPet.schedule.push({type: 'cook', duration: 30, isTrial: true});
+                // 最初の1件目なら移動を開始する
+                if (aiPet.schedule.length === 1) {
+                    aiPet.startBuildingInteraction(masterRest);
+                    aiPet.message = "師匠のキッチンを借りて、お試し料理に挑戦だ！";
+                } else {
+                    aiPet.message = "修行の予約を詰め込んだよ！頑張るね！";
+                }
+            } else {
+                aiPet.message = "料理の練習をしたいけど、師匠の姿が見当たらないな...";
+            }
+        } else {
+            aiPet.message = "料理かぁ...。やり方はなんとなく分かるけど、ちゃんとした場所で教わりたいな。\n(料理人に弟子入りしよう！)";
+        }
+        aiPet.messageTimer = 180;
+        if (typeof window.updateScheduleList === 'function') window.updateScheduleList();
+    }
+    else if (interpretedWord === "鍛冶" && knows("鍛冶")) {
+        actionTriggered = true;
+        
+        // 判定：免許皆伝（rank10以上 または 引退済み）
+        let isMaster = aiPet.apprentice && (
+            (aiPet.apprentice.retired && aiPet.apprentice.retired['smithing']) || 
+            (aiPet.apprentice.currentMaster === 'smithing' && aiPet.apprentice.isGraduated) ||
+            (aiPet.apprentice.rank && aiPet.apprentice.rank['smithing'] >= 10)
+        );
+        let isApprentice = aiPet.apprentice && aiPet.apprentice.currentMaster === 'smithing';
+
+        if (isMaster) {
+            // 【皆伝】自分の鍛冶屋（施設）を探す
+            let mySmith = null;
+            for (let k in assets) {
+                if (assets[k].type === 'smith' && !assets[k].isMobile) {
+                    mySmith = assets[k]; break;
+                }
+            }
+            if (mySmith) {
+                aiPet.schedule = [{type: 'smith', duration: 60}];
+                aiPet.startBuildingInteraction(mySmith);
+                aiPet.message = "自分の工房で腕を振るってくるよ！";
+            } else {
+                aiPet.message = "鍛冶の腕はあるけど、自分の「鍛冶屋」がないと何も打てないや。";
+            }
+        } else if (isApprentice) {
+            // 【修行中】師匠のキャンプ（鍛冶場）を探す
+            let masterCamp = null;
+            for (let k in assets) {
+                if (assets[k].type === 'blacksmith') { // 師匠のテントはblacksmithタイプ
+                    masterCamp = assets[k]; break;
+                }
+            }
+            if (masterCamp) {
+                aiPet.schedule = [{type: 'smith', duration: 60, isTrial: true}]; // 修行フラグ
+                aiPet.startBuildingInteraction(masterCamp);
+                aiPet.message = "師匠の金槌を借りて、お試し鍛冶に挑戦だ！";
+            } else {
+                aiPet.message = "鍛冶の練習をしたいけど、師匠がどこにもいないよ...";
+            }
+        } else {
+            // 【未経験】
+            aiPet.message = "鍛冶かぁ。火の扱いは危ないから、ちゃんと師匠に教わらないとね。\n(鍛冶師に弟子入りしよう！)";
+        }
+        aiPet.messageTimer = 180;
+    }
     else if (interpretedWord === "釣り" && knows("釣り")) {
         actionTriggered = true;
         let hasRod = aiPet.inventory && aiPet.inventory.some(k => k.startsWith('rod_'));
@@ -1008,10 +1103,22 @@ window.sendChat = function() {
         }
     }
     else if (["ニンジン", "ピーマン", "トマト"].includes(interpretedWord) && knows(interpretedWord)) {
-        actionTriggered = true; let seedId = null;
-        if (interpretedWord === 'ニンジン') seedId = 'seed_carrot'; 
-        else if (interpretedWord === 'ピーマン') seedId = 'seed_pepper'; 
-        else if (interpretedWord === 'トマト') seedId = 'seed_tomato';
+        actionTriggered = true;
+        
+        // ★仕様変更：農家を極めている（免許皆伝）かどうかの判定
+        let isMasterFarmer = aiPet.apprentice && (
+            (aiPet.apprentice.retired && aiPet.apprentice.retired['farming']) || 
+            (aiPet.apprentice.currentMaster === 'farming' && aiPet.apprentice.isGraduated) ||
+            (aiPet.apprentice.rank && aiPet.apprentice.rank['farming'] >= 10)
+        );
+
+        if (!isMasterFarmer) {
+            aiPet.message = `言葉は知っているけど、まだ上手に植えられないよ...\n(農家に弟子入りして「免許皆伝」を目指そう！)`;
+            aiPet.messageTimer = 180;
+            return;
+        }
+
+        let seedId = interpretedWord === 'ニンジン' ? 'seed_carrot' : interpretedWord === 'ピーマン' ? 'seed_pepper' : 'seed_tomato';
         
         if (aiPet.inventory && aiPet.inventory.includes(seedId)) {
             let targetFarm = null; let minDist = Infinity; let anyFarm = false;
@@ -1048,20 +1155,72 @@ window.sendChat = function() {
             aiPet.startBuildingInteraction(targetFarm); aiPet.message = "害虫退治にいくよ！"; aiPet.messageTimer = 120;
         } else { aiPet.message = "虫はいないみたい！"; aiPet.messageTimer = 120; }
     }
+    // 1. 弟子入り志願としての「農家」
+    else if (interpretedWord === "農家") {
+        actionTriggered = true;
+        // 近くに農家の師匠がいるか、または弟子入り試験の処理へ
+        if (typeof aiPet.applyApprenticeship === 'function') {
+            aiPet.applyApprenticeship('farming');
+        }
+        return; // 「農家」の場合はここで終了（実作業はさせない）
+    }
     else if (interpretedWord === "農業" && knows("農業")) {
-        actionTriggered = true; let targetFarm = null; let minDist = Infinity;
+        actionTriggered = true;
+        
+        // ステータス判定
+        let isMaster = aiPet.apprentice && (
+            (aiPet.apprentice.retired && aiPet.apprentice.retired['farming']) || 
+            (aiPet.apprentice.currentMaster === 'farming' && aiPet.apprentice.isGraduated) ||
+            (aiPet.apprentice.rank && aiPet.apprentice.rank['farming'] >= 10)
+        );
+        let isApprentice = aiPet.apprentice && aiPet.apprentice.currentMaster === 'farming';
+
+        if (!isMaster && !isApprentice) {
+            aiPet.message = "農家さんに教わらないと、勝手に畑をいじっちゃダメだよ。";
+            aiPet.messageTimer = 150;
+            return;
+        }
+
+        let targetFarm = null; 
+        let minDist = Infinity;
         let intendedSeed = null;
 
+        // 1. まず、まくべき種を決定
+        if (isMaster) {
+            if (aiPet.inventory && aiPet.inventory.includes('seed_carrot')) intendedSeed = 'seed_carrot';
+            else if (aiPet.inventory && aiPet.inventory.includes('seed_tomato')) intendedSeed = 'seed_tomato';
+            else if (aiPet.inventory && aiPet.inventory.includes('seed_pepper')) intendedSeed = 'seed_pepper';
+        } else {
+            intendedSeed = 'seed_carrot_given';
+        }
+
+        // 2. 目的地の優先順位を厳格化
+        
+        // 【優先度1】トラブル対応（枯れた・食べられた・収穫時期）
         for (let k in assets) {
             let a = assets[k];
-            if (a.type === 'farm') {
-                if (a.isDead || a.isEaten || a.growth >= 100) {
+            if (a.type === 'farm' && (a.isDead || a.isEaten || a.growth >= 100)) {
+                let cx = a.dx + (a.sw * (a.scale||0.5)) / 2; let cy = a.dy + (a.sh * (a.scale||0.5)) / 2;
+                let dist = Math.pow(aiPet.x - cx, 2) + Math.pow(aiPet.y - cy, 2);
+                if (dist < minDist) { minDist = dist; targetFarm = a; }
+            }
+        }
+
+        // 【優先度2】種まき（★重要：何も植えられていない畑のみを対象にする）
+        if (!targetFarm && intendedSeed) {
+            minDist = Infinity;
+            for (let k in assets) {
+                let a = assets[k];
+                // a.plantedCrop が null または undefined の場合のみターゲットにする
+                if (a.type === 'farm' && !a.plantedCrop) {
                     let cx = a.dx + (a.sw * (a.scale||0.5)) / 2; let cy = a.dy + (a.sh * (a.scale||0.5)) / 2;
                     let dist = Math.pow(aiPet.x - cx, 2) + Math.pow(aiPet.y - cy, 2);
                     if (dist < minDist) { minDist = dist; targetFarm = a; }
                 }
             }
         }
+
+        // 【優先度3】水やり（植えられているが、まだ成長途中のもの）
         if (!targetFarm) {
             minDist = Infinity;
             for (let k in assets) {
@@ -1073,43 +1232,23 @@ window.sendChat = function() {
                 }
             }
         }
-        if (!targetFarm) {
-            let availableSeed = null;
-            if (aiPet.inventory && aiPet.inventory.includes('seed_carrot')) availableSeed = 'seed_carrot';
-            else if (aiPet.inventory && aiPet.inventory.includes('seed_tomato')) availableSeed = 'seed_tomato';
-            else if (aiPet.inventory && aiPet.inventory.includes('seed_pepper')) availableSeed = 'seed_pepper';
 
-            if (!availableSeed && aiPet.apprentice && (aiPet.apprentice.currentMaster === 'farming' || aiPet.apprentice.isGraduated)) {
-                aiPet.inventory.push('seed_carrot');
-                availableSeed = 'seed_carrot';
-            }
-
-            if (availableSeed) {
-                minDist = Infinity;
-                for (let k in assets) {
-                    let a = assets[k];
-                    if (a.type === 'farm' && !a.plantedCrop) {
-                        let cx = a.dx + (a.sw * (a.scale||0.5)) / 2; let cy = a.dy + (a.sh * (a.scale||0.5)) / 2;
-                        let dist = Math.pow(aiPet.x - cx, 2) + Math.pow(aiPet.y - cy, 2);
-                        if (dist < minDist) { minDist = dist; targetFarm = a; intendedSeed = availableSeed; }
-                    }
-                }
-            }
-        }
-
+        // 3. アクション実行
         if (targetFarm) {
             aiPet.schedule = []; 
-            aiPet.intendedSeed = intendedSeed;
+            // すでに何かが植えられている畑（水やりや収穫目的）なら、intendedSeed は null にする
+            aiPet.intendedSeed = (!targetFarm.plantedCrop || targetFarm.isDead || targetFarm.isEaten) ? intendedSeed : null;
             aiPet.startBuildingInteraction(targetFarm);
-            if (intendedSeed) {
-                let seedName = intendedSeed === 'seed_carrot' ? 'ニンジン' : intendedSeed === 'seed_tomato' ? 'トマト' : 'ピーマン';
-                aiPet.message = `空いてる畑に${seedName}の種をまくよ！`; 
+            
+            if (aiPet.intendedSeed) {
+                let sName = (aiPet.intendedSeed === 'seed_carrot_given') ? "支給されたニンジンの種" : "手持ちの種";
+                aiPet.message = `畑に${sName}をまくよ！`; 
             } else {
-                aiPet.message = "畑の様子を見てくる！"; 
+                aiPet.message = "畑の様子を見てくるね！"; 
             }
             aiPet.messageTimer = 120;
         } else { 
-            aiPet.message = "手入れする畑がないよ..."; aiPet.messageTimer = 120; 
+            aiPet.message = "今は手入れが必要な畑がないみたい。"; aiPet.messageTimer = 120; 
         }
     }
 
@@ -1290,6 +1429,9 @@ window.clearSchedule = function() {
     }
 
     aiPet.schedule = []; 
+    // ★追加：店内に隔離して隠しておいたタスクも完全に破棄する
+    if (aiPet._stashedTasks) aiPet._stashedTasks = [];
+    
     aiPet.message = "中断しました"; 
     aiPet.messageTimer = 120;
     
@@ -2807,33 +2949,39 @@ window.renderBuildRecipe = function() {
     if (typeof buildingCatalog === 'undefined') return;
 
     let ai = window.aiPet;
-    let currentRank = (ai.apprentice && ai.apprentice.rank && ai.apprentice.rank['building']) ? ai.apprentice.rank['building'] : 0;
     
-    // ★修正：ランクが10に到達している場合もマスターとして扱う！
+    // 免許皆伝しているかどうかの判定
     let isMaster = ai.apprentice && (
         (ai.apprentice.retired && ai.apprentice.retired['building']) ||
         (ai.apprentice.currentMaster === 'building' && ai.apprentice.isGraduated) ||
-        currentRank >= 10
+        (ai.apprentice.rank && ai.apprentice.rank['building'] >= 10)
     );
-    let effectiveRank = isMaster ? 10 : currentRank;
 
-    // ★追加：自分の手持ちアイテムを数える
+    // ★修正：皆伝していない場合はロック画面を表示して終了する
+    if (!isMaster) {
+        listEl.innerHTML = `
+            <div style="text-align:center; padding:40px 20px; color:#aaa;">
+                <div style="font-size:40px; margin-bottom:15px;">🔒</div>
+                <div style="font-size:16px; font-weight:bold; color:#FFF; margin-bottom:10px;">設計図は未解放です</div>
+                <div style="font-size:13px; line-height:1.5;">建築士の<span style="color:#FFD700; font-weight:bold;">「免許皆伝」</span>になると<br>全ての施設の設計図（必要素材）が確認できるようになります。</div>
+            </div>
+        `;
+        return;
+    }
+
     let myItems = {};
     if (ai.inventory) {
         ai.inventory.forEach(k => myItems[k] = (myItems[k] || 0) + 1);
     }
 
-    let html = `<div style="font-size:16px; font-weight:bold; color:#FFF; margin-bottom:15px; padding:10px; background:#222; border-radius:6px; text-align:center; border:2px solid #555;">現在の建築士ランク: ${isMaster ? '<span style="color:#FFD700; text-shadow:0 0 5px #FFD700;">皆伝 (MAX)</span>' : effectiveRank}</div>`;
+    let html = `<div style="font-size:16px; font-weight:bold; color:#FFD700; margin-bottom:15px; padding:10px; background:rgba(255,215,0,0.1); border-radius:6px; text-align:center; border:2px solid #FFD700; text-shadow:0 0 5px rgba(255,215,0,0.5);">✨ 建築士 免許皆伝 ✨</div>`;
 
     for (let bId in buildingCatalog) {
         const bData = buildingCatalog[bId];
-        const reqRank = bData.reqBuildLevel || 1;
-        const canBuildByRank = effectiveRank >= reqRank;
 
         let hasMaterials = true;
         let matHtml = "";
 
-        // ★素材の判定と文字列作成（所持数 / 必要数）
         if (bData.materials && Object.keys(bData.materials).length > 0) {
             for (let mKey in bData.materials) {
                 let reqCount = bData.materials[mKey];
@@ -2854,37 +3002,23 @@ window.renderBuildRecipe = function() {
             matHtml = `<span style="color:#888; font-size:12px;">素材不要</span>`;
         }
 
-        if (canBuildByRank) {
-            // 素材とランクが足りているかどうかのバッジ
-            let statusBadge = hasMaterials 
-                ? `<span style="background:#4CAF50; color:#FFF; padding:4px 10px; border-radius:12px; font-size:12px; font-weight:bold; box-shadow:0 2px 4px rgba(0,0,0,0.3);">✅ 作成可能！</span>`
-                : `<span style="background:#ff5252; color:#FFF; padding:4px 10px; border-radius:12px; font-size:12px; font-weight:bold;">❌ 素材不足</span>`;
+        let statusBadge = hasMaterials 
+            ? `<span style="background:#4CAF50; color:#FFF; padding:4px 10px; border-radius:12px; font-size:12px; font-weight:bold; box-shadow:0 2px 4px rgba(0,0,0,0.3);">✅ 建築可能！</span>`
+            : `<span style="background:#ff5252; color:#FFF; padding:4px 10px; border-radius:12px; font-size:12px; font-weight:bold;">❌ 素材不足</span>`;
 
-            let borderColor = hasMaterials ? '#4CAF50' : '#555';
-            
-            html += `
-                <div style="background:#222; border:2px solid ${borderColor}; border-radius:8px; padding:15px; margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <div style="font-size:18px; font-weight:bold; color:${hasMaterials ? '#4CAF50' : '#ccc'};">${bData.name}</div>
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <div style="font-size:12px; color:#aaa;">(必要ランク: ${reqRank})</div>
-                            ${statusBadge}
-                        </div>
+        let borderColor = hasMaterials ? '#4CAF50' : '#555';
+        
+        html += `
+            <div style="background:#222; border:2px solid ${borderColor}; border-radius:8px; padding:15px; margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <div style="font-size:18px; font-weight:bold; color:${hasMaterials ? '#4CAF50' : '#ccc'};">${bData.name}</div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        ${statusBadge}
                     </div>
-                    <div>${matHtml}</div>
                 </div>
-            `;
-        } else {
-            html += `
-                <div style="background:#111; border:2px dashed #444; border-radius:8px; padding:15px; margin-bottom:12px; opacity:0.7;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                        <div style="font-size:18px; font-weight:bold; color:#666;">？？？ (未開放)</div>
-                        <div style="font-size:12px; color:#ff5252; font-weight:bold;">(必要ランク: ${reqRank})</div>
-                    </div>
-                    <div style="font-size:12px; color:#555;">ランクを上げると設計図が見れます</div>
-                </div>
-            `;
-        }
+                <div>${matHtml}</div>
+            </div>
+        `;
     }
     listEl.innerHTML = html;
 };
@@ -2896,7 +3030,7 @@ window.renderBuildRecipe = function() {
 
 // アセット画像をコード側で読み込む
 const imgRestAsset = new Image(); imgRestAsset.src = 'restaurant_asset.png'; // image_1.png
-const imgSmithAsset = new Image(); imgSmithAsset.src = 'smith_assert.png'; // image_2.png
+const imgSmithAsset = new Image(); imgSmithAsset.src = 'smith_asset.png'; // image_2.png
 
 // ==========================================
 // 🎨 ハウジングシステム（Canvas描画）
@@ -3136,9 +3270,10 @@ window.openShopManagementUI = function(building) {
     managementUI.innerHTML = `
         <div style="padding:20px; border-bottom:2px solid #555; display:flex; justify-content:space-between; align-items:center; background:#1a1a1a;">
             <h1 style="color:#FFC107; font-size:28px; margin:0;">${typeWord} <span style="font-size:16px; color:#aaa;">(内装Lv: ${s.interiorLevel})</span></h1>
-            <div style="display:flex; gap:15px; align-items:center;">
-                <div style="color:#4fc3f7; font-weight:bold; font-size:14px; margin-right:15px;">※AIが自分で素材を消費し、考えて経営しています。</div>
-                <button onclick="window.closeShopUI()" style="padding:10px 20px; background:#444; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">見守る（閉じる）</button>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <div style="color:#4fc3f7; font-weight:bold; font-size:12px; margin-right:10px;">※AIが自分で素材を消費し、考えて経営しています。</div>
+                <button onclick="window.closeShopUI()" style="padding:8px 15px; background:#444; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:13px;">UIを隠す(営業継続)</button>
+                <button onclick="window.exitShopManagement()" style="padding:8px 15px; background:#f44336; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:13px; box-shadow:0 2px 4px rgba(0,0,0,0.5);">店を閉めて外に出る</button>
             </div>
         </div>
         <div style="display:flex; flex:1; overflow:hidden;">
@@ -3156,6 +3291,7 @@ window.openShopManagementUI = function(building) {
                 <div style="display:flex; justify-content:space-around; background:#222; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #444;">
                     <div style="text-align:center;"><div style="font-size:12px; color:#aaa;">店舗の評判</div><div id="shop-rep-stars" style="font-size:24px; color:#FFD700; font-weight:bold; margin:5px 0;">${repStars}</div><div id="shop-rep-val" style="font-size:14px;">${s.reputation} / 100</div></div>
                     <div style="text-align:center;"><div style="font-size:12px; color:#aaa;">合計売上</div><div id="shop-sales-val" style="font-size:24px; color:#4CAF50; font-weight:bold; margin-top:5px;">💰 ${s.totalSales}</div><div style="font-size:14px;">ゴールド</div></div>
+                    <div style="text-align:center;"><div style="font-size:12px; color:#00BCD4;">AIの所持金</div><div id="shop-ai-gold" style="font-size:24px; color:#00BCD4; font-weight:bold; margin-top:5px;">💰 ${window.aiPet ? window.aiPet.gold : 0}</div><div style="font-size:14px;">ゴールド</div></div>
                 </div>
                 
                 <div style="background:#222; padding:10px; border-radius:8px; border:1px solid #444; margin-bottom:15px;">
@@ -3193,6 +3329,10 @@ window.updateShopUIData = function(building) {
     if (repValEl) repValEl.innerText = `${s.reputation} / 100`;
     let salesEl = document.getElementById('shop-sales-val');
     if (salesEl) salesEl.innerText = `💰 ${s.totalSales}`;
+    
+    // ★追加：AIの所持金もリアルタイム更新する
+    let aiGoldEl = document.getElementById('shop-ai-gold');
+    if (aiGoldEl && window.aiPet) aiGoldEl.innerText = `💰 ${window.aiPet.gold}`;
     
     let currentStock = window.getCurrentShopStock(s.recipes);
 
@@ -3437,7 +3577,7 @@ window.startShopSimulation = function(building) {
                                     vfx.innerText = `+${price}G`; npcContainer.appendChild(vfx); setTimeout(() => vfx.remove(), 1000);
                                     
                                     if (npc.isFriend && typeof window.sendItemToFriend === 'function') {
-                                        window.sendItemToFriend(npc.friendId, npc.friendName, targetItemId);
+                                        window.sendItemToFriend(npc.friendId, npc.friendName, targetItemId, price);
                                     }
 
                                     npc.state = 'leaving';
@@ -3504,7 +3644,7 @@ window.startShopSimulation = function(building) {
                         vfx.innerText = `+${npc.purchasedPrice}G`; npcContainer.appendChild(vfx); setTimeout(() => vfx.remove(), 1000);
 
                         if (npc.isFriend && typeof window.sendFoodEffectToFriend === 'function') {
-                            window.sendFoodEffectToFriend(npc.friendId, npc.friendName, npc.purchasedItemId);
+                            window.sendFoodEffectToFriend(npc.friendId, npc.friendName, npc.purchasedItemId, npc.purchasedPrice);
                         }
 
                     } else {
@@ -3580,6 +3720,18 @@ window.closeShopUI = function() {
     if (window.shopSimInterval) clearInterval(window.shopSimInterval); 
     const ui = document.getElementById('shop-management-ui');
     if (ui) ui.style.display = 'none';
+};
+
+window.exitShopManagement = function() {
+    window.closeShopUI();
+    if (window.aiPet) {
+        if (typeof window.clearSchedule === 'function') window.clearSchedule();
+        window.aiPet.actionState = 'exiting';
+        window.aiPet.isIndoors = false;
+        window.aiPet.indoorTarget = null;
+        window.aiPet.message = "今日の営業はここまで！";
+        window.aiPet.messageTimer = 180;
+    }
 };
 
 window.closeBankruptUI = function(bId) {
@@ -3893,68 +4045,595 @@ window.calculateShopPrice = function(itemId, shopData) {
     return { price: Math.floor(baseValue * multi), multi: multi, trendCount: count };
 };
 
-// ショップ施設をクリックした時に開くUI（売買不可の相場ボード）
-window.openShopUI = function(building) {
-    if (!building.shopData) building.shopData = { inventory: {}, marketTrend: {} };
-    let s = building.shopData;
-    if (!s.marketTrend) s.marketTrend = {};
-    if (!s.inventory) s.inventory = {};
+// ==========================================
+// 🩹 師匠消失＆空クエストHUD表示バグ 修正パッチ (UI側)
+// ==========================================
 
-    let myInvCounts = {};
-    if (window.aiPet && window.aiPet.inventory) {
-        window.aiPet.inventory.forEach(i => myInvCounts[i] = (myInvCounts[i] || 0) + 1);
+// 1. 空のHUDが出ないようにする自己修復機能
+const _originalUpdateQuestHUD = window.updateQuestHUD;
+window.updateQuestHUD = function() {
+    // 異常な空クエストデータが残っていたら、自動的に削除して修復する
+    if (window.aiPet && window.aiPet.apprentice && window.aiPet.apprentice.activeQuest) {
+        if (!window.aiPet.apprentice.activeQuest.name) {
+            window.aiPet.apprentice.activeQuest = null;
+        }
+    }
+    _originalUpdateQuestHUD();
+};
+
+// 2. クエストのキャンセル処理とセーブ処理の完全化
+window.confirmEncounter = function(isAccept) {
+    if (currentEncounterMode === 'encounter_intro') {
+        window.openEncounterUI(currentEncounterMaster, savedEncounterMsg, 'encounter');
+        return; 
     }
 
-    let allItemIds = new Set([...Object.keys(s.inventory), ...Object.keys(myInvCounts)]);
-    let uniqueItems = Array.from(allItemIds).filter(id => (s.inventory[id] || 0) > 0 || (myInvCounts[id] || 0) > 0);
+    document.getElementById('encounterOverlay').classList.remove('active');
+    window.isGamePaused = false;
+    
+    const hero = (typeof party !== 'undefined' && party.length > 0) ? party[0] : window.aiPet;
+    if (!hero) return;
 
-    let html = `
-        <div style="background: linear-gradient(135deg, #1a1a1a, #111); padding:20px; border-radius:12px; border:2px solid #00BCD4; width:500px; color:#fff; box-shadow:0 10px 40px rgba(0,0,0,0.8);">
-            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #333; padding-bottom:10px; margin-bottom:15px;">
-                <h2 style="margin:0; color:#00BCD4; font-size:22px;">🏪 ローカル取引所（相場ボード）</h2>
-                <button onclick="document.getElementById('player-shop-ui').remove()" style="background:transparent; border:none; color:#aaa; font-size:24px; cursor:pointer;">×</button>
-            </div>
+    const mType = currentEncounterMaster;
+    
+    if (currentEncounterMode === 'encounter') {
+        if (isAccept) hero.applyApprenticeship(mType);
+        else { hero.message = "立ち去った..."; hero.messageTimer = 120; }
+    } 
+    else if (currentEncounterMode === 'quest_offer') {
+        if (isAccept) {
+            const rank = hero.apprentice.rank[mType] || 1;
+            const qData = hero.getMasterQuestData(mType, rank);
+            qData.setup(); 
             
-            <div style="font-size:13px; color:#ccc; margin-bottom:15px; text-align:center; background:#222; padding:10px; border-radius:6px;">
-                💡 プレイヤーは直接取引できません。<br>チャットでAIに「ショップでおつかいして」と指示を出しましょう。
-            </div>
-            
-            <div style="max-height:400px; overflow-y:auto; padding-right:5px;">
-    `;
+            hero.apprentice.activeQuest = { name: qData.name, desc: qData.desc };
+            hero.message = "課題を受けた！頑張ろう！"; hero.messageTimer = 120;
+        } else {
+            // ★修正：断った場合は確実に activeQuest を消去する
+            hero.apprentice.activeQuest = null;
+            hero.message = "今はやめておこう..."; hero.messageTimer = 120;
+        }
+        if (typeof window.updateQuestHUD === 'function') window.updateQuestHUD();
+        if (typeof saveGameData === 'function') saveGameData(); // 確実なセーブ
+    }
+    else if (currentEncounterMode === 'quest_not_clear') {
+        hero.message = "引き続き課題を頑張ろう..."; hero.messageTimer = 120;
+    }
+    else if (currentEncounterMode === 'exam_pass') {
+        hero.apprentice.currentMaster = mType;
+        hero.apprentice.rank[mType] = 1;
+        hero.apprentice.activeQuest = null; // ★過去のバグデータを消去
 
-    if (uniqueItems.length === 0) {
-        html += `<div style="text-align:center; padding:30px; color:#aaa;">取引できるアイテムがありません。</div>`;
+        if (mType === 'smithing') {
+            let tx = hero.x + 100; let ty = hero.y;
+            if (tx > 750) tx = hero.x - 100;
+            if (typeof hero.isPointOnWater === 'function' && hero.isPointOnWater(tx, ty)) tx = hero.x - 100; 
+            let campId = 'blacksmith_master_camp';
+            if (typeof assets !== 'undefined') assets[campId] = { type: 'blacksmith', name: '師匠のキャンプ', dx: tx, dy: ty, sw: 100, sh: 100, scale: 0.6 };
+        }
+        else if (mType === 'building') {
+            let tx = hero.x - 120; let ty = hero.y;
+            if (tx < 50) tx = hero.x + 120;
+            if (typeof hero.isPointOnWater === 'function' && hero.isPointOnWater(tx, ty)) tx = hero.x + 120;
+            let campId = 'building_master_camp';
+            if (typeof assets !== 'undefined') assets[campId] = { type: 'palms', name: '建築士のテント', dx: tx, dy: ty, sw: 100, sh: 100, scale: 0.6 };
+        }
+        
+        const masterNames = { 'explore': '冒険家', 'farming': '農家', 'fishing': '漁師', 'cooking': '料理人', 'smithing': '鍛冶師', 'building': '建築士' };
+        const mName = masterNames[mType];
+        const wordsToLearn = [mName, "クエスト", "課題"];
+        let newlyLearned = []; 
+        wordsToLearn.forEach(w => {
+            if (!hero.apprentice.learnedWords.includes(w)) {
+                hero.apprentice.learnedWords.push(w); newlyLearned.push(w);
+            }
+        });
+        if (newlyLearned.length > 0) {
+            setTimeout(() => {
+                hero.message = `「${newlyLearned.join('、')}」という言葉を覚えた！`; hero.messageTimer = 180;
+                if (typeof addFloatingText === 'function') addFloatingText(hero.x, hero.y - 60, "言葉を学習した！", "#FF9800");
+                if (typeof updateCommandHUD === 'function') updateCommandHUD();
+            }, 1000); 
+        }
+        // ★修正：テントを生成した後は確実にセーブする！
+        if (typeof saveGameData === 'function') saveGameData();
+    }
+    else if (currentEncounterMode === 'rank_up') {
+        hero.apprentice.rank[mType] = (hero.apprentice.rank[mType] || 1) + 1;
+        hero.apprentice.activeQuest = null; 
+        if (typeof window.updateQuestHUD === 'function') window.updateQuestHUD();
+        if (typeof saveGameData === 'function') saveGameData(); // 確実なセーブ
+    }
+    else if (currentEncounterMode === 'graduate') {
+        hero.apprentice.successCount = 0; hero.apprentice.rank[mType] = 10;
+        hero.apprentice.isGraduated = true; hero.apprentice.currentMaster = null;
+        hero.apprentice.activeQuest = null; 
+        
+        if (mType === 'farming') { hero.apprentice.title = "農業マスター"; hero.stats.power += 50; }
+        else if (mType === 'cooking') { hero.apprentice.title = "三ツ星シェフ"; hero.skills.cooking = 20; hero.stats.intel += 50; }
+        else if (mType === 'smithing') { hero.apprentice.title = "伝説の鍛冶屋"; hero.skills.smithing = 20; hero.stats.power += 25; hero.stats.intel += 25; }
+        else if (mType === 'explore') { hero.apprentice.title = "大冒険家"; hero.stats.power += 50; hero.stats.mood += 50; hero.inventory.push('crystal'); }
+        else if (mType === 'fishing') { hero.apprentice.title = "伝説の漁師"; hero.stats.power += 25; hero.stats.intel += 25; if(typeof itemCatalog !== 'undefined' && itemCatalog['rod_super']) hero.inventory.push('rod_super'); }
+        else if (mType === 'building') { hero.apprentice.title = "一流建築士"; hero.skills.building = 20; hero.stats.power += 30; hero.stats.intel += 30; }
+
+        if (typeof updateStatUI === 'function') updateStatUI();
+        if (typeof window.updateQuestHUD === 'function') window.updateQuestHUD(); 
+        if (typeof saveGameData === 'function') saveGameData();
+
+        if (typeof hero.determineLifePath === 'function') {
+            const chosenPath = hero.determineLifePath();
+            setTimeout(() => {
+                if (typeof window.showLifePathEvent === 'function') window.showLifePathEvent(hero, chosenPath);
+            }, 800);
+        }
+    }
+    else if (currentEncounterMode === 'excommunicate') {
+        hero.apprentice.isExcommunicated = true; hero.apprentice.currentMaster = null; hero.apprentice.activeQuest = null;
+        if (typeof window.updateQuestHUD === 'function') window.updateQuestHUD();
+        if (typeof saveGameData === 'function') saveGameData();
+    }
+    else if (currentEncounterMode === 'retire') {
+        hero.apprentice.retired = hero.apprentice.retired || {};
+        hero.apprentice.retired[mType] = true;
+        if (mType === 'farming') { for (let k in assets) { if (assets[k].type === 'farm') { delete assets[k]; break; } } }
+        else if (mType === 'cooking') { for (let k in assets) { if (assets[k].type === 'restaurant' && assets[k].isMobile) { delete assets[k]; break; } } }
+        if (typeof saveGameData === 'function') saveGameData();
+    }
+    currentEncounterMaster = null; currentEncounterMode = '';
+};
+
+// ==========================================
+// 🃏 TCGカード獲得演出＆アンロックシステム（復元パッチ）
+// ==========================================
+
+window.unlockSupportCard = function(cardId, generation, cardType) {
+    if (!window.TCG) window.TCG = { myCollection: [], decks: [[]] };
+    if (!window.TCG.myCollection) window.TCG.myCollection = [];
+    
+    // 世代ごとの獲得履歴をチェック
+    let historyKey = 'unlocked_cards_gen_' + generation;
+    let history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+    
+    if (history.includes(cardId)) return; // この世代ですでに獲得済みなら何もしない
+    
+    // 履歴に追加
+    history.push(cardId);
+    localStorage.setItem(historyKey, JSON.stringify(history));
+    
+    // カードの名前を決定（カタログがあればそこから、なければデフォルト名）
+    let cardName = cardId;
+    if (cardId === 'support_5') cardName = "武器の鍛造";
+    if (cardId === 'support_2') cardName = "みんなで大漁";
+    if (cardId === 'support_8') cardName = "未知の洞窟探検";
+    if (cardId === 'item_card_wood') cardName = "丸太";
+    if (cardId === 'item_card_stone') cardName = "石ころ";
+    if (cardId === 'item_card_iron') cardName = "鉄鉱石";
+    if (cardId === 'item_card_berry') cardName = "野イチゴ";
+    if (cardId === 'item_card_crystal') cardName = "クリスタル";
+    if (typeof window.TCG_CARD_CATALOG !== 'undefined' && window.TCG_CARD_CATALOG[cardId]) {
+        cardName = window.TCG_CARD_CATALOG[cardId].name;
+    }
+
+    // コレクションに追加（TCG画面で使えるようにする）
+    window.TCG.myCollection.push({
+        uid: 'card_' + Date.now() + Math.floor(Math.random()*1000),
+        masterId: cardId,
+        name: cardName,
+        type: cardType
+    });
+    
+    if (typeof saveGameData === 'function') saveGameData();
+
+    // 画面にカード獲得演出を表示（チュートリアルの順番待ちシステムを活用して安全に表示）
+    if (typeof window.showGameTutorial === 'function') {
+        let typeColor = '#FF9800';
+        if (cardType === 'アクション') typeColor = '#ff5252';
+        else if (cardType === 'アイテム') typeColor = '#4CAF50';
+        else if (cardType === 'フィールド') typeColor = '#2196F3';
+
+        window.showGameTutorial(
+            `🃏 カード獲得！`,
+            `<div style="text-align:center;">
+                <div style="font-size:13px; color:#ccc; margin-bottom:10px;">新しい記憶がTCG用カードになりました！</div>
+                <div style="background:#222; border:2px solid ${typeColor}; border-radius:8px; padding:15px; display:inline-block; box-shadow:0 0 15px ${typeColor}88;">
+                    <div style="font-size:12px; color:${typeColor}; font-weight:bold; margin-bottom:5px;">【${cardType}カード】</div>
+                    <div style="font-size:20px; color:#FFF; font-weight:bold;">${cardName}</div>
+                </div>
+            </div>`
+        );
+    }
+};
+
+// AIの頭脳側に、アイテムを拾った時のカード化チェック処理を復活
+if (typeof window.AICharacter !== 'undefined') {
+    window.AICharacter.prototype.checkItemCardUnlock = function(itemKey) {
+        const map = {
+            'wood': 'item_card_wood',
+            'stone': 'item_card_stone',
+            'iron': 'item_card_iron',
+            'item_berry': 'item_card_berry',
+            'crystal': 'item_card_crystal'
+        };
+        if (map[itemKey] && typeof window.unlockSupportCard === 'function') {
+            window.unlockSupportCard(map[itemKey], this.generation || 1, 'アイテム');
+        }
+    };
+} else if (typeof window.aiPet !== 'undefined') {
+    window.aiPet.checkItemCardUnlock = function(itemKey) {
+        const map = {
+            'wood': 'item_card_wood',
+            'stone': 'item_card_stone',
+            'iron': 'item_card_iron',
+            'item_berry': 'item_card_berry',
+            'crystal': 'item_card_crystal'
+        };
+        if (map[itemKey] && typeof window.unlockSupportCard === 'function') {
+            window.unlockSupportCard(map[itemKey], this.generation || 1, 'アイテム');
+        }
+    };
+}
+
+// ==========================================
+// 🃏 AIの記憶カード化システム（転生時の演出 復元パッチ）
+// ==========================================
+if (typeof window.generateCardFromAI !== 'function') {
+    window.generateCardFromAI = function(ai) {
+        if (!window.TCG) window.TCG = { myCollection: [], decks: [[]] };
+        if (!window.TCG.myCollection) window.TCG.myCollection = [];
+        
+        let generatedCards = [];
+        
+        // 成長（ステータス）に応じたカードを付与
+        if (ai.stats.power >= 50) generatedCards.push({ id: 'support_power', name: 'みなぎる活力', type: 'アクション' });
+        if (ai.stats.intel >= 50) generatedCards.push({ id: 'support_intel', name: '深淵なる叡智', type: 'アクション' });
+        if (ai.stats.beauty >= 50) generatedCards.push({ id: 'support_beauty', name: '圧倒的な美', type: 'アクション' });
+        
+        // 職業マスター（免許皆伝）のカード
+        if (ai.apprentice && ai.apprentice.isGraduated && ai.apprentice.retired) {
+            const jobNames = { 'explore':'冒険家', 'farming':'農家', 'fishing':'漁師', 'cooking':'料理人', 'smithing':'鍛冶師', 'building':'建築士' };
+            for (let job in ai.apprentice.retired) {
+                if (jobNames[job]) {
+                    generatedCards.push({ id: `support_master_${job}`, name: `${jobNames[job]}の極意`, type: 'アクション' });
+                }
+            }
+        }
+
+        // 何も条件を満たしていなくても、最低1枚は生きた証として付与
+        if (generatedCards.length === 0) {
+            generatedCards.push({ id: 'support_memory', name: '前世の記憶', type: 'アクション' });
+        }
+
+        let htmlText = "";
+        generatedCards.forEach(c => {
+            htmlText += `<div style="font-size:18px; color:#FFD700; margin:8px 0; font-weight:bold;">✨ ${c.name}</div>`;
+            window.TCG.myCollection.push({
+                uid: 'card_' + Date.now() + Math.floor(Math.random()*1000),
+                masterId: c.id,
+                name: c.name,
+                type: c.type
+            });
+        });
+        
+        if (typeof saveGameData === 'function') saveGameData();
+
+        // ポップアップで感動のカード化演出を表示！
+        if (typeof window.showGameTutorial === 'function') {
+            window.showGameTutorial(
+                "🃏 記憶のカード化",
+                `生涯を終えたAIの経験が、TCGのカードとして具現化しました！<br><br>${htmlText}<br><span style="font-size:12px; color:#aaa;">（これらのカードはTCGメニューから確認・編成できます）</span>`
+            );
+        }
+    };
+}
+
+// ==========================================
+// 🩹 設計図ボタン＆UI文言の表示制限パッチ（皆伝バグ修正版）
+// ==========================================
+
+// 1. 1秒ごとに「設計図」ボタンの表示状態を監視・制御する
+if (window._builderBtnCheckInterval) clearInterval(window._builderBtnCheckInterval);
+
+window._builderBtnCheckInterval = setInterval(() => {
+    if (!window.aiPet) return;
+    
+    // ★修正：皆伝すると currentMaster が外れるため、rank >= 10 の判定を追加！
+    let isBuilder = window.aiPet.apprentice && 
+                   (window.aiPet.apprentice.currentMaster === 'building' || 
+                   (window.aiPet.apprentice.retired && window.aiPet.apprentice.retired['building']) ||
+                   (window.aiPet.apprentice.rank && window.aiPet.apprentice.rank['building'] >= 10));
+    
+    // 画面内の「設計図」と書かれたボタンを探して、条件に合わせて隠す/表示する
+    document.querySelectorAll('button').forEach(btn => {
+        if (btn.innerText.includes('設計図')) {
+            if (!isBuilder) {
+                btn.style.display = 'none'; // 弟子入り前・関係ない職の時は隠す
+            } else {
+                if (btn.style.display === 'none') btn.style.display = ''; // 建築士になったら表示
+            }
+        }
+    });
+}, 1000);
+
+// 2. 設計図を開く際に、皆伝前なら上の余計な説明文を自動で消去する
+const _originalOpenBuildRecipe = window.openBuildRecipe;
+window.openBuildRecipe = function() {
+    const overlay = document.getElementById('buildRecipeOverlay');
+    if (overlay) {
+        let ai = window.aiPet;
+        let isMaster = ai && ai.apprentice && (
+            (ai.apprentice.retired && ai.apprentice.retired['building']) ||
+            (ai.apprentice.currentMaster === 'building' && ai.apprentice.isGraduated) ||
+            (ai.apprentice.rank && ai.apprentice.rank['building'] >= 10)
+        );
+
+        const walk = document.createTreeWalker(overlay, NodeFilter.SHOW_TEXT, null, false);
+        let node;
+        while (node = walk.nextNode()) {
+            if (node.nodeValue.includes("ランクに応じて作れる施設が増えます") || 
+                node.nodeValue.includes("作成する場合は、チャットで")) {
+                if (node.parentElement) {
+                    node.parentElement.style.display = isMaster ? '' : 'none';
+                }
+            }
+        }
+    }
+    
+    if (typeof _originalOpenBuildRecipe === 'function') {
+        _originalOpenBuildRecipe();
     } else {
-        uniqueItems.forEach(itemId => {
-            let itemName = typeof window.getDisplayShopItemName === 'function' ? window.getDisplayShopItemName(itemId) : itemId;
-            let myCount = myInvCounts[itemId] || 0;
-            let shopCount = s.inventory[itemId] || 0;
-            
-            let market = window.calculateShopPrice(itemId, s);
-            let trendIcon = "➖ 安定"; let trendColor = "#4CAF50";
-            if (market.multi >= 1.5) { trendIcon = "🔥 高騰中"; trendColor = "#ff5252"; }
-            else if (market.multi <= 0.6) { trendIcon = "📉 暴落中"; trendColor = "#00BCD4"; }
+        window.renderBuildRecipe();
+        if (overlay) overlay.classList.add('active');
+    }
+};
 
-            html += `
-                <div style="background:#222; padding:12px; margin-bottom:10px; border-radius:8px; border:1px solid #444; display:flex; justify-content:space-between; align-items:center;">
-                    <div style="flex:1;">
-                        <div style="font-weight:bold; font-size:16px;">${itemName}</div>
-                        <div style="font-size:11px; color:#aaa; margin-top:4px;">
-                            相場: <span style="color:${trendColor}; font-weight:bold;">${trendIcon}</span> 
-                            (市場流通スコア: ${market.trendCount})
+// ==========================================
+// 🏪 ショップ完全自動化＆おつかいシステムパッチ
+// ==========================================
+
+window.executeAutoTrade = function(building) {
+    let ai = window.aiPet;
+    let s = building.shopData;
+    if (!s) { s = { inventory: {}, marketTrend: {} }; building.shopData = s; }
+    if (!s.inventory) s.inventory = {};
+    if (!s.marketTrend) s.marketTrend = {};
+
+    let intel = ai.stats.intel || 10;
+    let getMarketPrice = (itemId) => { return typeof window.calculateShopPrice === 'function' ? window.calculateShopPrice(itemId, s) : {price: 50, multi: 1.0}; };
+
+    let isVisiting = typeof currentMode !== 'undefined' && currentMode === 'visit';
+    let myRealPet = isVisiting ? JSON.parse(window.myIslandBackupLS['ai_pet_data_v1']) : ai;
+    let hostId = isVisiting ? localStorage.getItem('visiting_player_id') : null; 
+    let myName = localStorage.getItem('my_player_name') || "名無し";
+    
+    let sellCandidates = [];
+    (myRealPet.inventory || []).forEach(i => {
+        if (typeof itemCatalog !== 'undefined' && itemCatalog[i]) {
+            sellCandidates.push({id: i, market: getMarketPrice(i)});
+        }
+    });
+
+    let buyCandidates = [];
+    Object.keys(s.inventory).forEach(i => { 
+        if (s.inventory[i] > 0) buyCandidates.push({id: i, market: getMarketPrice(i)}); 
+    });
+
+    let tradeResults = [];
+    let tradeTurns = 1 + Math.floor(Math.random() * (intel / 40)); 
+    if (tradeTurns > 4) tradeTurns = 4;
+
+    for(let i=0; i<tradeTurns; i++) {
+        let action = Math.random() < 0.5 ? 'sell' : 'buy';
+        
+        if (action === 'sell' && sellCandidates.length > 0) {
+            // ★賢いほど高く売れるものを選ぶ！
+            sellCandidates.sort((a, b) => (b.market.multi - a.market.multi) + (Math.random()*0.5 - 0.25) * (100/Math.max(1, intel)));
+            let pick = sellCandidates[0];
+            
+            let idx = myRealPet.inventory.indexOf(pick.id);
+            if (idx > -1) {
+                myRealPet.inventory.splice(idx, 1);
+                myRealPet.gold = (myRealPet.gold || 0) + pick.market.price;
+                s.inventory[pick.id] = (s.inventory[pick.id] || 0) + 1; 
+                
+                if (isVisiting) {
+                    ai.gold -= pick.market.price; 
+                    s.marketTrend[pick.id] = (s.marketTrend[pick.id] || 0) + 1; // 他島なら相場下落
+                    if (typeof window.sendTradeToHost === 'function') window.sendTradeToHost(hostId, myName, 'visitor_sell', pick.id, pick.market.price);
+                }
+                // ★自島なら s.marketTrend を操作しない＝相場変動なし！
+                
+                let itemName = typeof window.getDisplayShopItemName === 'function' ? window.getDisplayShopItemName(pick.id) : pick.id;
+                tradeResults.push(`📤 「${itemName}」を ${pick.market.price}G で売却`);
+                sellCandidates.shift(); 
+            }
+        } 
+        else if (action === 'buy' && buyCandidates.length > 0) {
+            // ★賢いほど安く買えるものを選ぶ！
+            buyCandidates.sort((a, b) => (a.market.multi - b.market.multi) + (Math.random()*0.5 - 0.25) * (100/Math.max(1, intel)));
+            let pick = buyCandidates[0];
+            
+            if (myRealPet.gold >= pick.market.price && s.inventory[pick.id] > 0) {
+                s.inventory[pick.id]--; 
+                myRealPet.gold -= pick.market.price;
+                if (!myRealPet.inventory) myRealPet.inventory = [];
+                myRealPet.inventory.push(pick.id); 
+                
+                if (isVisiting) {
+                    ai.gold += pick.market.price; 
+                    if (s.marketTrend[pick.id] > 0) s.marketTrend[pick.id]--; // 他島なら相場上昇
+                    if (typeof window.sendTradeToHost === 'function') window.sendTradeToHost(hostId, myName, 'visitor_buy', pick.id, pick.market.price);
+                }
+                // ★自島なら s.marketTrend を操作しない＝相場変動なし！
+
+                let itemName = typeof window.getDisplayShopItemName === 'function' ? window.getDisplayShopItemName(pick.id) : pick.id;
+                tradeResults.push(`📥 「${itemName}」を ${pick.market.price}G で購入`);
+                if (s.inventory[pick.id] <= 0) buyCandidates.shift();
+            }
+        }
+    }
+
+    if (isVisiting) window.myIslandBackupLS['ai_pet_data_v1'] = JSON.stringify(myRealPet);
+    else if (typeof saveGameData === 'function') saveGameData();
+
+    if (tradeResults.length > 0) {
+        ai.message = `おつかい完了！\n` + tradeResults.join('\n');
+        ai.messageTimer = 350;
+        if (typeof addFloatingText === 'function') addFloatingText(ai.x, ai.y - 60, "取引成功！", "#FFD700");
+    } else {
+        ai.message = `今回はいい取引がなかったみたい...`;
+        ai.messageTimer = 200;
+    }
+    
+    // UI用に結果を一時保存
+    window._lastTradeResultsHtml = tradeResults.length > 0 
+        ? tradeResults.map(r => `<div style="color:#FFD700; margin-bottom:4px;">${r}</div>`).join('')
+        : `<div style="color:#aaa;">（今回はめぼしい取引がありませんでした）</div>`;
+        
+    if (typeof updateStatUI === 'function') updateStatUI();
+};
+
+// ==========================================
+// 🏪 ショップ完全自動化＆インタラクティブ演出パッチ（買値・売値 分離版）
+// ==========================================
+
+if (typeof window.originalSendChat !== 'undefined') {
+    window.sendChat = window.originalSendChat;
+}
+
+window.clickShopBuilding = function() {
+    alert("💡 プレイヤーは直接取引できません。\nチャットでAIに「ショップ」と指示を出しておつかいさせましょう！");
+};
+
+window.openShopUI = function(building) {
+    let ai = window.aiPet;
+    if (!ai) return;
+
+    let s = building.shopData;
+    if (!s) { s = { inventory: {}, marketTrend: {} }; building.shopData = s; }
+    if (!s.inventory) s.inventory = {};
+    if (!s.marketTrend) s.marketTrend = {};
+
+    let isVisiting = typeof currentMode !== 'undefined' && currentMode === 'visit';
+    let myRealPet = isVisiting ? JSON.parse(window.myIslandBackupLS['ai_pet_data_v1']) : ai;
+    let hostId = isVisiting ? localStorage.getItem('visiting_player_id') : null; 
+    let myName = localStorage.getItem('my_player_name') || "名無し";
+
+    let getMarketPrice = (itemId) => { 
+        return typeof window.calculateShopPrice === 'function' ? window.calculateShopPrice(itemId, s) : {price: 50, multi: 1.0, trendCount: 0}; 
+    };
+
+    let avatarHtml = "";
+    let myConf = (typeof aiConfigs !== 'undefined') ? aiConfigs[ai.currentSkin || ai.baseType || 'robot'] : null;
+    if (myConf) {
+        let myFrames = (myConf.actions && myConf.actions['idle']) ? myConf.actions['idle'] : null;
+        if (myFrames && myFrames.length > 0) {
+            let mFrame = myFrames[0];
+            let mImgKey = ai.currentSkin || ai.baseType || 'robot';
+            if (myConf.img) mImgKey = myConf.img;
+            if (mFrame.img) mImgKey = mFrame.img;
+            
+            let mImgUrl = 'characters.png';
+            if (typeof images !== 'undefined' && images[mImgKey] && images[mImgKey].src) mImgUrl = images[mImgKey].src; 
+            else if (typeof window.dynamicImageCatalog !== 'undefined' && window.dynamicImageCatalog[mImgKey]) mImgUrl = window.dynamicImageCatalog[mImgKey]; 
+            else if (typeof imageSources !== 'undefined' && imageSources[mImgKey]) mImgUrl = imageSources[mImgKey]; 
+
+            let sScale = myConf.scale || 0.25; 
+            sScale *= 1.5; 
+            if (sScale > 0.8) sScale = 0.8;
+            
+            let sw = mFrame.sw || 300; let sh = mFrame.sh || 300; let sx = mFrame.sx || 0; let sy = mFrame.sy || 0;
+            let myBgStyle = `width:${sw}px; height:${sh}px; background-image:url('${mImgUrl}'); background-position:-${sx}px -${sy}px; background-repeat:no-repeat; transform:scale(${sScale}); transform-origin: center center;`;
+            avatarHtml = `<div style="display:flex; justify-content:center; align-items:center; width:100%; height:160px; overflow:hidden;"><div style="${myBgStyle}"></div></div>`;
+        }
+    }
+
+    const renderInventory = () => {
+        let counts = {};
+        (myRealPet.inventory || []).forEach(i => counts[i] = (counts[i] || 0) + 1);
+        let html = "";
+        for (let k in counts) {
+            let name = typeof window.getDisplayShopItemName === 'function' ? window.getDisplayShopItemName(k) : k;
+            html += `<span style="background:#333; padding:4px 8px; border-radius:4px; margin:2px; font-size:11px; border:1px solid #555; display:inline-block;">${name} <span style="color:#FFD700;">x${counts[k]}</span></span>`;
+        }
+        if (html === "") html = `<span style="color:#888; font-size:11px;">なにも持っていない</span>`;
+        return html;
+    };
+
+    const renderBoard = () => {
+        let allItemIds = new Set([...Object.keys(s.inventory), ...(myRealPet.inventory || [])]);
+        let uniqueItems = Array.from(allItemIds).filter(id => (s.inventory[id] || 0) > 0 || (myRealPet.inventory || []).filter(i => i === id).length > 0);
+        let html = "";
+        
+        if (uniqueItems.length === 0) {
+            html += `<div style="text-align:center; padding:30px; color:#aaa;">市場に流通しているアイテムがありません。</div>`;
+        } else {
+            uniqueItems.forEach(itemId => {
+                let itemName = typeof window.getDisplayShopItemName === 'function' ? window.getDisplayShopItemName(itemId) : itemId;
+                let myCount = (myRealPet.inventory || []).filter(i => i === itemId).length;
+                let shopCount = s.inventory[itemId] || 0;
+                
+                let market = getMarketPrice(itemId);
+                
+                // ★追加：買値と売値（半額）を計算
+                let buyPrice = market.price;
+                let sellPrice = Math.max(1, Math.floor(market.price * 0.5));
+
+                let trendIcon = "➖ 安定"; let trendColor = "#4CAF50";
+                if (market.multi >= 1.5) { trendIcon = "🔥 高騰中"; trendColor = "#ff5252"; }
+                else if (market.multi <= 0.6) { trendIcon = "📉 暴落中"; trendColor = "#00BCD4"; }
+
+                html += `
+                    <div style="background:#222; padding:10px; margin-bottom:8px; border-radius:8px; border:1px solid #444; display:flex; justify-content:space-between; align-items:center;">
+                        <div style="flex:1;">
+                            <div style="font-weight:bold; font-size:14px; color:#fff;">${itemName}</div>
+                            <div style="font-size:10px; color:#aaa; margin-top:2px;">相場: <span style="color:${trendColor}; font-weight:bold;">${trendIcon}</span></div>
+                        </div>
+                        <div style="text-align:right; margin-right:5px;">
+                            <div style="font-size:14px; font-weight:bold; color:#FFD700;">買:${buyPrice}G <span style="color:#aaa;">/</span> 売:${sellPrice}G</div>
+                            <div style="font-size:10px; color:#aaa; margin-top:2px;">店在庫: <span style="color:#FFF;">${shopCount}</span> / 所持: <span style="color:#FFF;">${myCount}</span></div>
                         </div>
                     </div>
-                    <div style="text-align:right; margin-right:5px;">
-                        <div style="font-size:20px; font-weight:bold; color:#FFD700;">${market.price} G</div>
-                        <div style="font-size:11px; color:#aaa; margin-top:4px;">店在庫: <span style="color:#FFF;">${shopCount}</span> / 所持: <span style="color:#FFF;">${myCount}</span></div>
+                `;
+            });
+        }
+        return html;
+    };
+
+    let html = `
+        <div style="background: linear-gradient(135deg, #1a1a1a, #111); padding:20px; border-radius:12px; border:2px solid #00BCD4; width:650px; color:#fff; box-shadow:0 10px 40px rgba(0,0,0,0.8); display:flex; flex-direction:column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #333; padding-bottom:10px; margin-bottom:15px;">
+                <h2 style="margin:0; color:#00BCD4; font-size:22px;">🏪 ローカル取引所</h2>
+                <button id="shop-close-btn" onclick="document.getElementById('player-shop-ui').remove(); if(window.aiPet && window.aiPet.indoorTarget && (window.aiPet.indoorTarget.type==='shop' || window.aiPet.indoorTarget.type==='restaurant' || window.aiPet.indoorTarget.type==='smith')){ window.aiPet.actionState = 'exiting'; window.aiPet.isIndoors = false; window.aiPet.indoorTarget = null; window.aiPet.message='お店から出たよ！'; window.aiPet.messageTimer=150; }" style="background:transparent; border:none; color:#aaa; font-size:24px; cursor:pointer; display:none;">×</button>
+            </div>
+            
+            <div style="display:flex; gap:20px; height:380px;">
+                <div style="width:220px; display:flex; flex-direction:column; align-items:center; position:relative; background:#111; border-radius:8px; border:1px solid #444; padding:15px; box-sizing:border-box;">
+                    <div id="shop-speech-bubble" style="background:rgba(255,255,255,0.9); color:#000; padding:8px 12px; border-radius:8px; font-size:13px; font-weight:bold; position:absolute; top:10px; width:85%; text-align:center; box-shadow:0 4px 6px rgba(0,0,0,0.5); z-index:10; border:2px solid #aaa; transition:all 0.3s; opacity:0; transform:translateY(10px);">
+                        ...
+                    </div>
+                    
+                    <div style="flex:1; display:flex; justify-content:center; align-items:center; margin-top:20px;">
+                        ${avatarHtml}
+                    </div>
+                    
+                    <div style="width:100%; margin-top:10px; background:#222; padding:10px; border-radius:6px; border:1px inset #555; box-sizing:border-box;">
+                        <div style="font-size:11px; color:#aaa;">所持金</div>
+                        <div id="shop-ui-gold" style="font-size:16px; font-weight:bold; color:#FFD700; margin-bottom:8px; transition:color 0.3s;">${myRealPet.gold || 0} G</div>
+                        <div style="font-size:11px; color:#aaa; margin-bottom:4px;">手持ちのアイテム</div>
+                        <div id="shop-ui-inv" style="max-height:85px; overflow-y:auto; padding-right:5px;">${renderInventory()}</div>
                     </div>
                 </div>
-            `;
-        });
-    }
+                
+                <div style="flex:1; display:flex; flex-direction:column; background:#111; border-radius:8px; border:1px solid #444; padding:10px; overflow:hidden;">
+                    <div style="font-size:14px; color:#00BCD4; font-weight:bold; margin-bottom:10px; text-align:center; border-bottom:1px dashed #333; padding-bottom:5px;">📊 現在の相場ボード</div>
+                    <div id="shop-ui-board" style="flex:1; overflow-y:auto; padding-right:5px;">
+                        ${renderBoard()}
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 
-    html += `</div></div>`;
-    
     let ui = document.getElementById('player-shop-ui');
     if (ui) ui.remove();
     ui = document.createElement('div');
@@ -3962,4 +4641,457 @@ window.openShopUI = function(building) {
     ui.style.cssText = `position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:90000; display:flex; justify-content:center; align-items:center; font-family:sans-serif;`;
     ui.innerHTML = html;
     document.body.appendChild(ui);
+
+    const updateSpeech = (text, color="#000") => {
+        let bubble = document.getElementById('shop-speech-bubble');
+        if (bubble) {
+            bubble.style.opacity = 0; bubble.style.transform = 'translateY(10px)';
+            setTimeout(() => {
+                bubble.innerText = text; bubble.style.color = color;
+                bubble.style.borderColor = color === "#000" ? "#aaa" : color;
+                bubble.style.opacity = 1; bubble.style.transform = 'translateY(0)';
+            }, 300);
+        }
+    };
+
+    const refreshUI = (flashGoldColor = null) => {
+        let goldEl = document.getElementById('shop-ui-gold');
+        if (goldEl) {
+            goldEl.innerText = `${myRealPet.gold || 0} G`;
+            if (flashGoldColor) {
+                goldEl.style.color = flashGoldColor;
+                setTimeout(() => { goldEl.style.color = '#FFD700'; }, 500);
+            }
+        }
+        let invEl = document.getElementById('shop-ui-inv');
+        if (invEl) invEl.innerHTML = renderInventory();
+        let boardEl = document.getElementById('shop-ui-board');
+        if (boardEl) boardEl.innerHTML = renderBoard();
+    };
+
+    let intel = ai.stats.intel || 10;
+    let tradeTurns = 1 + Math.floor(intel / 40) + Math.floor(Math.random() * 2); 
+    if (tradeTurns > 5) tradeTurns = 5;
+    let currentTurn = 0;
+
+    let tradeLoop = () => {
+        if (!document.getElementById('player-shop-ui')) return; 
+
+        if (currentTurn >= tradeTurns) {
+            updateSpeech("これで今回の取引は終わりかな～！", "#4CAF50");
+            document.getElementById('shop-close-btn').style.display = 'block'; 
+            
+            if (isVisiting) window.myIslandBackupLS['ai_pet_data_v1'] = JSON.stringify(myRealPet);
+            else if (typeof saveGameData === 'function') saveGameData();
+            if (typeof updateStatUI === 'function') updateStatUI();
+            
+            setTimeout(() => {
+                if(document.getElementById('player-shop-ui')){
+                    document.getElementById('player-shop-ui').remove();
+                    ai.actionState = 'exiting'; 
+                    ai.isIndoors = false; 
+                    ai.indoorTarget = null; // ★これがないと、出た瞬間にまた吸い込まれます！
+                    ai.message = "お店から出たよ！"; 
+                    ai.messageTimer = 150;
+                }
+            }, 3000);
+            return;
+        }
+
+        // ★修正1：売る候補を「持っている個数」ではなく「種類（重複なし）」でまとめる！
+        let sellCandidates = [];
+        let uniqueMyInv = [...new Set(myRealPet.inventory || [])];
+        uniqueMyInv.forEach(i => {
+            if (typeof itemCatalog !== 'undefined' && itemCatalog[i]) sellCandidates.push({id: i, market: getMarketPrice(i)});
+        });
+        
+        let buyCandidates = [];
+        Object.keys(s.inventory).forEach(i => { 
+            if (s.inventory[i] > 0) buyCandidates.push({id: i, market: getMarketPrice(i)}); 
+        });
+
+        let action = Math.random() < 0.5 ? 'sell' : 'buy';
+        let didTrade = false;
+        let tradeMsg = "";
+        let flashColor = null;
+
+        if (action === 'sell' && sellCandidates.length > 0) {
+            // ★修正2：思考ロジックを改善。相場(multi)をベースに、賢さが低いほどランダムなブレを生じさせる。
+            sellCandidates.forEach(c => {
+                c.score = c.market.multi + (Math.random() * 2.0 - 1.0) * (50 / Math.max(1, intel));
+            });
+            // スコアが高い（売り時な）順に並び替え
+            sellCandidates.sort((a, b) => b.score - a.score);
+            let pick = sellCandidates[0];
+            
+            let idx = myRealPet.inventory.indexOf(pick.id);
+            if (idx > -1) {
+                let sellPrice = Math.max(1, Math.floor(pick.market.price * 0.5));
+
+                myRealPet.inventory.splice(idx, 1);
+                myRealPet.gold = (myRealPet.gold || 0) + sellPrice;
+                s.inventory[pick.id] = (s.inventory[pick.id] || 0) + 1; 
+                
+                if (isVisiting) {
+                    ai.gold += sellPrice; 
+                    s.marketTrend[pick.id] = (s.marketTrend[pick.id] || 0) + 1;
+                    if (typeof window.sendTradeToHost === 'function') window.sendTradeToHost(hostId, myName, 'visitor_sell', pick.id, sellPrice);
+                }
+                
+                let itemName = typeof window.getDisplayShopItemName === 'function' ? window.getDisplayShopItemName(pick.id) : pick.id;
+                tradeMsg = `よし、「${itemName}」を ${sellPrice}G で売ろう！`;
+                flashColor = "#4CAF50"; 
+                didTrade = true;
+            }
+        } 
+        else if (action === 'buy' && buyCandidates.length > 0) {
+            // ★修正2：買う時は相場(multi)が低いほど高スコアになるように計算。
+            buyCandidates.forEach(c => {
+                c.score = (2.0 - c.market.multi) + (Math.random() * 2.0 - 1.0) * (50 / Math.max(1, intel));
+            });
+            // スコアが高い（買い時な）順に並び替え
+            buyCandidates.sort((a, b) => b.score - a.score);
+            let pick = buyCandidates[0];
+            let buyPrice = pick.market.price;
+            
+            if (myRealPet.gold >= buyPrice && s.inventory[pick.id] > 0) {
+                s.inventory[pick.id]--; 
+                myRealPet.gold -= buyPrice;
+                if (!myRealPet.inventory) myRealPet.inventory = [];
+                myRealPet.inventory.push(pick.id); 
+                
+                if (isVisiting) {
+                    ai.gold -= buyPrice; 
+                    if (s.marketTrend[pick.id] > 0) s.marketTrend[pick.id]--; 
+                    if (typeof window.sendTradeToHost === 'function') window.sendTradeToHost(hostId, myName, 'visitor_buy', pick.id, buyPrice);
+                }
+
+                let itemName = typeof window.getDisplayShopItemName === 'function' ? window.getDisplayShopItemName(pick.id) : pick.id;
+                tradeMsg = `安い！「${itemName}」を ${buyPrice}G で買っちゃおう！`;
+                flashColor = "#ff5252"; 
+                didTrade = true;
+            }
+        }
+
+        if (didTrade) {
+            updateSpeech(tradeMsg, "#000");
+            refreshUI(flashColor);
+        } else {
+            updateSpeech("うーん、今はいい取引がないかも...", "#888");
+        }
+
+        currentTurn++;
+        setTimeout(tradeLoop, 2500); 
+    };
+
+    setTimeout(() => {
+        updateSpeech("んー、この相場だから～...", "#000");
+        setTimeout(tradeLoop, 2500);
+    }, 1000);
 };
+
+// ==========================================
+// 💡 【超究極パッチ】独自レシピ（カスタムアイテム）感染・増殖システム 💡
+// ==========================================
+
+// 1. AIが研究を終えた時、名前と性能がランダムな「オリジナルレシピ」をひらめく！
+window.generateCustomRecipe = function(shopData) {
+    let ai = window.aiPet; if (!ai) return;
+    
+    let isRest = false; 
+    for (let k in assets) {
+        if (assets[k].shopData === shopData) {
+            if (assets[k].type === 'restaurant') { isRest = true; }
+            break;
+        }
+    }
+    
+    // カオスな名前の生成（漢字・記号・カナ混じり）
+    const chars = "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをんアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン亜伊宇江於加幾久介己差之須世曾多千川手戸奈二奴祢乃波比不部保真見無女毛也由代良利流礼呂和遠ン武神魔殺滅暗炎氷雷光闇光刃剣盾斧槍兜鎧腕靴石木鉄金銀銅鋼水晶幻妖精霊竜獣鬼";
+    const symbols = "!?#$%&@*+~_-";
+    let len = 2 + Math.floor(Math.random() * 4); 
+    let prefix = "";
+    for(let i=0; i<len; i++) {
+        if (Math.random() < 0.15) prefix += symbols.charAt(Math.floor(Math.random() * symbols.length));
+        else prefix += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    
+    let name = "";
+    let itemType = '';
+    let reqs = [];
+
+    // ★修正：店舗のタイプによって閃くジャンルを完全に分離！
+    if (isRest) {
+        itemType = 'dish';
+        name = prefix + ["の炒め", "スープ", "焼き", "の刺身", "丼", "煮込み", "ポワレ", "カレー", "サラダ", "パイ"][Math.floor(Math.random()*10)];
+        reqs = Math.random() < 0.5 ? ['veg', 'water'] : ['meat', 'veg']; 
+        if (Math.random() < 0.2) reqs = ['fish', 'any_food'];
+    } else {
+        itemType = 'equipment';
+        let r = Math.random();
+        if (r < 0.4) {
+            // 武器
+            name = prefix + ["ソード", "ブレード", "の剣", "ランス", "アックス", "ハンマー", "の塊"][Math.floor(Math.random()*7)];
+            reqs = ['iron', 'iron'];
+        } else if (r < 0.8) {
+            // 防具
+            name = prefix + ["シールド", "の盾", "メイル", "アーマー", "クローク", "の兜", "の鎧"][Math.floor(Math.random()*7)];
+            reqs = ['wood', 'iron'];
+        } else {
+            // アクセサリー
+            name = prefix + ["リング", "ネックレス", "の指輪", "のお守り", "ピアス", "の腕輪", "ブローチ"][Math.floor(Math.random()*7)];
+            reqs = ['iron', 'any_food']; // アクセの素材は謎な感じに
+        }
+    }
+    
+    // 賢さ依存の性能生成（5%で神アイテム化！）
+    let intel = ai.stats.intel || 10;
+    let power = Math.floor((intel * 0.5) + (Math.random() * intel));
+    if (Math.random() < 0.05) power *= 5; // 神アイテム！
+    if (power < 10) power = 10;
+    
+    let price = power * 2 + 50; 
+    let itemId = 'custom_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+    
+    let recipeData = { id: itemId, name: name, type: itemType, value: Math.floor(price / 4), power: power, reqs: reqs, creator: localStorage.getItem('my_player_name') || '名無しのAI' };
+    
+    if (!ai.customRecipes) ai.customRecipes = {};
+    ai.customRecipes[itemId] = recipeData; // 自分の図鑑に保存
+    
+    if (!shopData.recipes) shopData.recipes = {};
+    shopData.recipes[itemId] = { learned: true }; // 店のメニューに追加
+    shopData.inventory[itemId] = 1; // 試作第一号
+    shopData.prices[itemId] = price; // 初回価格設定
+    
+    if (typeof addFloatingText === 'function') addFloatingText(ai.x, ai.y - 60, "💡新発明！", "#FFEB3B");
+    if (typeof saveGameData === 'function') saveGameData();
+    if (typeof window.updateShopUIData === 'function') window.updateShopUIData(assets[Object.keys(assets).find(k=>assets[k].shopData === shopData)]);
+    return name;
+};
+
+// 2. ログに「ヒントを得た」と出たら、本当にオリジナルレシピを閃かせる（完全上書き版）
+window.addShopLog = function(shopData, text) {
+    if (!shopData) return;
+    if (text === "新しいレシピのヒントを得た！") {
+        if (typeof window.generateCustomRecipe === 'function') {
+            let newName = window.generateCustomRecipe(shopData);
+            text = `💡 謎の閃きによりオリジナルレシピ『${newName}』を開発した！`;
+        }
+    }
+    
+    // 元の処理
+    if (!shopData.logs) shopData.logs = [];
+    let timeStr = new Date().toLocaleTimeString('ja-JP', { hour12: false, hour: '2-digit', minute:'2-digit', second:'2-digit' });
+    shopData.logs.unshift(`[${timeStr}] ${text}`);
+    if (shopData.logs.length > 8) shopData.logs.pop(); 
+    let shopAsset = Object.values(assets).find(a => a.shopData === shopData);
+    if (typeof window.updateShopUIData === 'function' && shopAsset) window.updateShopUIData(shopAsset);
+};
+
+// 3. 表示名の解決（図鑑から名前を引っ張ってくる 完全上書き版）
+window.getDisplayShopItemName = function(itemId) {
+    if (window.aiPet && window.aiPet.customRecipes && window.aiPet.customRecipes[itemId]) { return window.aiPet.customRecipes[itemId].name; }
+    if (typeof currentMode !== 'undefined' && currentMode === 'visit' && window.myIslandBackupLS) {
+         let myRealPet = JSON.parse(window.myIslandBackupLS['ai_pet_data_v1'] || '{}');
+         if (myRealPet && myRealPet.customRecipes && myRealPet.customRecipes[itemId]) return myRealPet.customRecipes[itemId].name;
+    }
+    
+    // 元の処理
+    if (typeof itemCatalog !== 'undefined' && itemCatalog[itemId] && itemCatalog[itemId].name) return itemCatalog[itemId].name;
+    const dict = { 'item_sword_iron': '鉄の剣', 'item_shield_wood': '木の盾', 'eq_sword': '普通の剣', 'eq_shield': '普通の盾', 'tool_pan': 'フライパン', 'dish_stirfry': '野菜炒め', 'dish_steak': 'ステーキ', 'dish_soup': '特製スープ', 'baked_carrot': '焼きニンジン', 'baked_fish': '焼き魚', 'gold_sword': '金の剣', 'sashimi': 'お刺身' };
+    return dict[itemId] || itemId;
+};
+
+// 4. カスタムレシピの素材判定（何が必要かを理解させる 完全上書き版）
+window.checkRecipeMaterials = function(inventory, recipeId, shopType) {
+    if (!inventory) return null;
+    
+    // 1. カスタムレシピの判定
+    let customRecipe = (window.aiPet && window.aiPet.customRecipes) ? window.aiPet.customRecipes[recipeId] : null;
+    if (!customRecipe && typeof currentMode !== 'undefined' && currentMode === 'visit' && window.myIslandBackupLS) {
+         let myRealPet = JSON.parse(window.myIslandBackupLS['ai_pet_data_v1'] || '{}');
+         if (myRealPet && myRealPet.customRecipes && myRealPet.customRecipes[recipeId]) {
+             customRecipe = myRealPet.customRecipes[recipeId];
+         }
+    }
+
+    let reqs = [];
+    if (customRecipe) {
+        reqs = customRecipe.reqs;
+    } else {
+        // 2. 通常レシピの判定
+        if (recipeId === 'dish_stirfry') reqs = ['veg', 'veg']; 
+        else if (recipeId === 'dish_steak') reqs = ['meat', 'veg']; 
+        else if (recipeId === 'dish_soup') reqs = ['water', 'veg']; 
+        else if (recipeId === 'baked_carrot') reqs = ['carrot']; 
+        else if (recipeId === 'baked_fish') reqs = ['fish']; 
+        else if (recipeId === 'sashimi') reqs = ['fish', 'fish']; 
+        else if (recipeId === 'item_sword_iron') reqs = ['iron', 'iron']; 
+        else if (recipeId === 'item_shield_wood') reqs = ['wood', 'wood']; 
+        else if (recipeId === 'eq_shield') reqs = ['iron', 'wood']; 
+        else if (recipeId === 'tool_pan') reqs = ['iron']; 
+        else if (recipeId === 'gold_sword') reqs = ['gold', 'iron']; 
+        else {
+            if (shopType === 'restaurant') reqs = ['any_food', 'any_food'];
+            else reqs = ['iron', 'wood'];
+        }
+    }
+
+    let consumedIndices = []; 
+    let tempInv = [...inventory];
+    for (let req of reqs) {
+        let foundIdx = -1;
+        for (let i = 0; i < tempInv.length; i++) {
+            let item = tempInv[i]; if (!item) continue;
+            let match = false;
+            if (req === 'veg') match = ['carrot', 'tomato', 'pepper', '七草', 'キノコ', 'ニンジン', 'ピーマン', 'トマト', 'berry', 'イチゴ', '春の七草', '野イチゴ'].some(k => item.includes(k));
+            else if (req === 'meat') match = ['meat', '肉', 'chicken', 'beef'].some(k => item.includes(k));
+            else if (req === 'water') match = ['water', '水'].some(k => item.includes(k));
+            else if (req === 'fish') match = ['fish', 'コイ', 'サケ', 'ザリガニ', 'バス', 'メダカ', 'ワカサギ', 'イワシ', 'マグロ', 'ダイ', 'イカ', 'サンマ'].some(k => item.includes(k));
+            else if (req === 'carrot') match = item.includes('carrot') || item.includes('ニンジン');
+            else if (req === 'any_food') {
+                let c = typeof itemCatalog !== 'undefined' ? itemCatalog[item] : null;
+                match = (c && (c.type === 'food' || c.type === 'ingredient')) || ['七草', 'キノコ', 'ニンジン', 'ピーマン', 'トマト', 'コイ', 'サケ', 'ザリガニ', 'バス', 'メダカ', 'ワカサギ', 'イワシ', 'マグロ', 'ダイ', 'イカ', 'サンマ', 'イチゴ', '春の七草', '野イチゴ'].some(k => item.includes(k));
+            } else match = item.includes(req);
+            
+            if (match) { foundIdx = i; break; }
+        }
+        if (foundIdx !== -1) { consumedIndices.push(foundIdx); tempInv[foundIdx] = null; } 
+        else { return null; }
+    }
+    let consumedIds = []; 
+    consumedIndices.forEach(idx => consumedIds.push(inventory[idx])); 
+    return consumedIds;
+};
+
+// 5. カスタムレシピの相場計算（神アイテムは高く売れる）
+const _originalCalculateLocalPrice = window.calculateLocalPrice;
+window.calculateLocalPrice = function(itemId, hostInventory) {
+    if (itemId.startsWith('custom_')) {
+        let count = hostInventory.filter(i => i === itemId).length;
+        let baseValue = 50;
+        if (window.aiPet && window.aiPet.customRecipes && window.aiPet.customRecipes[itemId]) baseValue = window.aiPet.customRecipes[itemId].value * 4;
+        let multi = count === 0 ? 2.0 : (count <= 2 ? 1.5 : (count <= 5 ? 1.0 : (count <= 9 ? 0.6 : 0.2)));
+        return { price: Math.floor(baseValue * multi), count: count, multi: multi };
+    }
+    return _originalCalculateLocalPrice(itemId, hostInventory);
+};
+
+const _originalCalculateShopPrice = window.calculateShopPrice;
+window.calculateShopPrice = function(itemId, shopData) {
+    if (itemId.startsWith('custom_')) {
+        if (!shopData) return { price: 50, multi: 1.0, trendCount: 0 };
+        let count = shopData.marketTrend ? (shopData.marketTrend[itemId] || 0) : 0; 
+        let baseValue = 50;
+        if (window.aiPet && window.aiPet.customRecipes && window.aiPet.customRecipes[itemId]) baseValue = window.aiPet.customRecipes[itemId].value * 4;
+        let multi = count === 0 ? 2.0 : (count <= 2 ? 1.5 : (count <= 5 ? 1.0 : (count <= 9 ? 0.6 : 0.2)));
+        return { price: Math.floor(baseValue * multi), multi: multi, trendCount: count };
+    }
+    return _originalCalculateShopPrice(itemId, shopData);
+};
+
+// ==========================================
+// 📖 オリジナルレシピ図鑑 UIシステム
+// ==========================================
+
+window.openRecipeBook = function() {
+    let ai = window.aiPet;
+    if (!ai) return;
+    
+    let html = `
+        <div style="background: linear-gradient(135deg, #1a1a1a, #111); padding:20px; border-radius:12px; border:2px solid #FF9800; width:500px; max-height:80vh; overflow-y:auto; color:#fff; box-shadow:0 10px 40px rgba(0,0,0,0.8); display: flex; flex-direction: column;">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #333; padding-bottom:10px; margin-bottom:15px; flex-shrink: 0;">
+                <h2 style="margin:0; color:#FF9800; font-size:22px;">📖 AIオリジナルレシピ図鑑</h2>
+                <button onclick="document.getElementById('recipe-book-overlay').remove()" style="background:transparent; border:none; color:#aaa; font-size:24px; cursor:pointer;">×</button>
+            </div>
+            <div style="font-size:12px; color:#aaa; margin-bottom:15px; flex-shrink: 0;">
+                これまでにAIが自らの知恵で発明した、またはフレンドから感染して学習した独自のレシピ一覧です。
+            </div>
+    `;
+
+    if (!ai.customRecipes || Object.keys(ai.customRecipes).length === 0) {
+        html += `<div style="text-align:center; padding:40px; color:#666; font-size:14px; background:#222; border-radius:8px;">まだ独自のレシピを知りません。<br>お店で「研究」をさせたり、フレンドの島から買ってくることで増えていきます。</div>`;
+    } else {
+        html += `<div style="display:flex; flex-direction:column; gap:12px; overflow-y:auto; padding-right:5px; padding-bottom:15px;">`;
+        
+        for (let key in ai.customRecipes) {
+            let r = ai.customRecipes[key];
+            let typeIcon = r.type === 'dish' ? '🍲' : r.type === 'equipment' ? '⚔️' : '🎁';
+            let typeName = r.type === 'dish' ? '料理' : r.type === 'equipment' ? '武具・アクセ' : 'アイテム';
+            
+            let reqsHtml = r.reqs.map(req => {
+                let name = req === 'veg' ? '野菜類' : req === 'meat' ? '肉類' : req === 'water' ? '水' : req === 'fish' ? '魚類' : req === 'any_food' ? '食材なら何でも' : req === 'iron' ? '鉄鉱石' : req === 'wood' ? '木材' : req;
+                return `<span style="display:inline-block; background:#333; border:1px solid #555; padding:2px 6px; border-radius:4px; font-size:11px; margin-right:4px;">${name}</span>`;
+            }).join('');
+
+            let isGodItem = r.power > ((ai.stats ? ai.stats.intel : 50) * 2);
+            let powerColor = isGodItem ? '#ff5252' : '#FFD700';
+            let godBadge = isGodItem ? `<span style="background:#ff5252; color:#fff; font-size:10px; padding:2px 6px; border-radius:10px; margin-left:8px; font-weight:bold; animation: pulse 1s infinite alternate;">神の閃き</span>` : '';
+
+            // ★修正：flex-shrink: 0; を追加して、絶対に枠が潰れないように保護！
+            html += `
+                <div style="flex-shrink: 0; background:#222; border:1px solid ${isGodItem ? '#ff5252' : '#444'}; border-radius:8px; padding:15px; position:relative; overflow:hidden;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+                        <div>
+                            <div style="font-size:18px; font-weight:bold; color:#FFF;">${typeIcon} ${r.name} ${godBadge}</div>
+                            <div style="font-size:11px; color:#aaa; margin-top:4px;">種類: ${typeName} / 考案者: ${r.creator || '名無しのAI'}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:16px; color:#4CAF50; font-weight:bold;">適正 ${r.value * 4} G</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; background:#111; padding:8px; border-radius:6px;">
+                        <div style="font-size:12px; color:#ccc;">
+                            必要素材:<br><div style="margin-top:4px;">${reqsHtml}</div>
+                        </div>
+                        <div style="font-size:12px; color:#ccc; text-align:right;">
+                            性能スコア<br>
+                            <span style="color:${powerColor}; font-size:20px; font-weight:bold;">${r.power}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        html += `</div>`;
+    }
+
+    html += `</div>`;
+
+    let ui = document.getElementById('recipe-book-overlay');
+    if (ui) ui.remove();
+    ui = document.createElement('div');
+    ui.id = 'recipe-book-overlay';
+    ui.style.cssText = `position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:90000; display:flex; justify-content:center; align-items:center; font-family:sans-serif; backdrop-filter:blur(3px);`;
+    ui.innerHTML = html;
+    document.body.appendChild(ui);
+};
+
+// 2. 「設計図」ボタンの隣に、自動で「📖 レシピ」ボタンを差し込むハック
+setInterval(() => {
+    if (document.getElementById('btnOpenRecipe')) return; // すでにあれば何もしない
+
+    // 画面内の「設計図」ボタンを探す
+    let buildBtn = null;
+    document.querySelectorAll('button').forEach(btn => {
+        if (btn.innerText.includes('設計図')) buildBtn = btn;
+    });
+
+    if (buildBtn && buildBtn.parentNode) {
+        let recipeBtn = document.createElement('button');
+        recipeBtn.id = 'btnOpenRecipe';
+        recipeBtn.innerText = '📖 レシピ';
+        
+        // 設計図ボタンのスタイルを丸パクリして、色だけオレンジに変える
+        recipeBtn.style.cssText = buildBtn.style.cssText; 
+        recipeBtn.style.background = '#FF9800'; 
+        recipeBtn.style.color = '#000';
+        recipeBtn.style.border = '2px solid #E65100';
+        recipeBtn.style.marginLeft = '8px'; // 少し隙間を空ける
+        
+        recipeBtn.onclick = window.openRecipeBook;
+
+        // 設計図ボタンの「次」に挿入する
+        buildBtn.parentNode.insertBefore(recipeBtn, buildBtn.nextSibling);
+    }
+}, 2000);

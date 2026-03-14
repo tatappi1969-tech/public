@@ -239,36 +239,75 @@ aiPet.workFarm = function() {
 
     if (this.intendedSeed) {
         farm.waterLevel = 100; farm.pestState = false; farm.pestTimer = 0; farm.careCount = 0; farm.isDead = false; farm.isEaten = false;
-        const seedIndex = this.inventory.indexOf(this.intendedSeed);
-        if (seedIndex !== -1) {
-            this.inventory.splice(seedIndex, 1);
-            const cropName = this.intendedSeed.replace('seed_', '');
-            farm.plantedCrop = cropName; farm.growth = 0;
-            this.message = `${itemCatalog[cropName].name}の種を植えたよ！`; this.messageTimer = 120;
-        } else { this.message = "種を持っていなかった..."; this.messageTimer = 120; }
+        
+        if (this.intendedSeed === 'seed_carrot_given') {
+            // ★特別仕様の作物としてマーキング
+            farm.plantedCrop = 'carrot_special'; 
+            farm.growth = 0;
+            this.message = `支給されたニンジンの種を植えたよ！`; 
+        } else {
+            // 通常の種
+            const seedIndex = this.inventory.indexOf(this.intendedSeed);
+            if (seedIndex !== -1) {
+                this.inventory.splice(seedIndex, 1);
+                farm.plantedCrop = this.intendedSeed.replace('seed_', '');
+                farm.growth = 0;
+                this.message = `${itemCatalog[farm.plantedCrop].name}の種を植えたよ！`;
+            }
+        }
         this.intendedSeed = null;
     } else {
+        // 1. 枯れた・食べられた畑の片付け
         if (farm.isDead || farm.isEaten) {
+            const isApprentice = this.apprentice && this.apprentice.currentMaster === 'farming';
             const itemKey = farm.isDead ? 'dead_crop' : 'eaten_crop';
-            this.inventory.push(itemKey);
-            this.message = `${itemCatalog[itemKey].name}を片付けた...`; this.messageTimer = 120;
-            farm.plantedCrop = null; farm.growth = 0; farm.isDead = false; farm.isEaten = false; farm.pestState = false;
-        } else if (this.intendedAction === 'pest_control' && farm.pestState) {
+            
+            // 弟子入り中ならアイテムとして回収、そうでなければただの片付け
+            if (isApprentice) {
+                this.inventory.push(itemKey);
+                this.message = `${itemCatalog[itemKey].name}を回収して片付けたよ...`;
+            } else {
+                this.message = "ダメになった野菜を片付けたよ。";
+            }
+            
+            farm.plantedCrop = null; farm.growth = 0; 
+            farm.isDead = false; farm.isEaten = false; farm.pestState = false;
+            this.messageTimer = 120;
+        } 
+        // 2. 害虫退治
+        else if (this.intendedAction === 'pest_control' && farm.pestState) {
             farm.pestState = false; farm.pestTimer = 0; farm.careCount = (farm.careCount || 0) + 2; 
             this.message = "害虫・害獣を退治したよ！"; this.messageTimer = 120; this.intendedAction = null;
-        } else if (farm.growth >= 100) {
-            let itemKey = farm.plantedCrop;
+        } 
+        // 3. 収穫
+        else if (farm.growth >= 100) {
+            let itemKey = farm.plantedCrop === 'carrot_special' ? 'carrot' : farm.plantedCrop;
+            
+            // 世話を頑張ったボーナス
             if (farm.careCount >= 3 && Math.random() < 0.5) { 
-                if (itemKey === 'carrot') itemKey = 'high_carrot'; if (itemKey === 'pepper') itemKey = 'high_pepper'; if (itemKey === 'tomato') itemKey = 'high_tomato';
+                if (itemKey === 'carrot') itemKey = 'high_carrot'; 
+                if (itemKey === 'pepper') itemKey = 'high_pepper'; 
+                if (itemKey === 'tomato') itemKey = 'high_tomato';
                 this.message = `大成功！${itemCatalog[itemKey].name}を収穫した！`;
-            } else { this.message = `やったー！${itemCatalog[itemKey].name}を収穫したよ！`; }
-            this.inventory.push(itemKey); this.messageTimer = 150; 
-            farm.plantedCrop = null; farm.growth = 0; farm.isDead = false; farm.isEaten = false; farm.pestState = false; farm.careCount = 0;
-        } else {
-            farm.waterLevel = 100; farm.growth += 20; if (farm.growth > 100) farm.growth = 100;
+            } else { 
+                this.message = `やったー！${itemCatalog[itemKey].name}を収穫したよ！`; 
+            }
+            
+            this.inventory.push(itemKey); 
+            this.messageTimer = 150; 
+            farm.plantedCrop = null; farm.growth = 0; 
+            farm.isDead = false; farm.isEaten = false; farm.pestState = false; farm.careCount = 0;
+        } 
+        // 4. 水やり・手入れ
+        else {
+            farm.waterLevel = 100; 
+            farm.growth += 20; 
+            if (farm.growth > 100) farm.growth = 100;
             farm.careCount = (farm.careCount || 0) + 1;
             this.message = "畑に水をやり、手入れをしたよ"; this.messageTimer = 120;
         }
+        
+        // インベントリパネルが開いていれば更新
         if (typeof openInventoryPanel === 'function') {
             const invPanel = document.getElementById('panel-inventory');
             if (invPanel && invPanel.classList.contains('active')) { openInventoryPanel(); }
@@ -276,10 +315,10 @@ aiPet.workFarm = function() {
     }
 
     // ==========================================
-    // ★追加：アクションカード「豊穣の畑仕事」を取得
+    // ★カード解禁・保存処理も維持
     // ==========================================
     if (typeof window.unlockSupportCard === 'function') {
-        const gen = this.generation || 1; // 現在の世代
+        const gen = this.generation || 1;
         window.unlockSupportCard('support_11', gen, 'アクション');
     }
 

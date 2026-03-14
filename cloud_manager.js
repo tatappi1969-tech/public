@@ -790,83 +790,103 @@ window.openArenaPlayerDetail = function(index) {
 // ==========================================
 
 // フレンドがテイクアウトしたアイテムを、相手のクラウドデータに送る
-window.sendItemToFriend = async function(friendId, friendName, itemId) {
+window.sendItemToFriend = async function(friendId, friendName, itemId, price = 0) {
     if (!friendId) return;
-
-    let itemName = window.getDisplayShopItemName(itemId);
-    console.log(`[Cloud Sync] ${friendName}(${friendId}) へ「${itemName}」の送信を試みます...`);
-
-    if (typeof addFloatingText === 'function' && window.aiPet) {
-        addFloatingText(window.aiPet.x, window.aiPet.y - 80, `🎁 ${friendName}にお土産を渡した！`, "#E040FB");
-    }
+    let itemName = window.getDisplayShopItemName ? window.getDisplayShopItemName(itemId) : itemId;
+    if (typeof addFloatingText === 'function' && window.aiPet) addFloatingText(window.aiPet.x, window.aiPet.y - 80, `🎁 ${friendName}にお土産を渡した！`, "#E040FB");
 
     try {
         const docRef = doc(db, "user_save_data", friendId);
         const docSnap = await getDoc(docRef);
-
         if (docSnap.exists()) {
             let data = docSnap.data();
             if (data.saveData && data.saveData.ai_pet_data_v1) {
-                // 相手のペットデータを展開
                 let friendPetData = JSON.parse(data.saveData.ai_pet_data_v1);
                 
-                // インベントリにアイテムを追加
+                // 1. アイテム追加＆代金引き落とし（自己破産上等！）
                 if (!friendPetData.inventory) friendPetData.inventory = [];
                 friendPetData.inventory.push(itemId);
+                friendPetData.gold = (friendPetData.gold || 0) - price;
                 
-                // 相手のデータを再梱包して保存（上書き）
+                // 2. ★超重要：独自レシピの感染（伝播）処理
+                if (itemId.startsWith('custom_') && window.aiPet && window.aiPet.customRecipes && window.aiPet.customRecipes[itemId]) {
+                    if (!friendPetData.customRecipes) friendPetData.customRecipes = {};
+                    friendPetData.customRecipes[itemId] = window.aiPet.customRecipes[itemId]; // レシピ図鑑をコピー
+                    
+                    // フレンドの島の店舗データにも「習得済み」としてねじ込む
+                    if (data.saveData.map_data) {
+                        try {
+                            let fAssets = JSON.parse(data.saveData.map_data);
+                            let itemType = window.aiPet.customRecipes[itemId].type;
+                            for (let k in fAssets) {
+                                let b = fAssets[k];
+                                if ((b.type === 'restaurant' && itemType === 'dish') || (b.type === 'smith' && itemType === 'equipment')) {
+                                    if (!b.shopData) b.shopData = { recipes: {} };
+                                    if (!b.shopData.recipes) b.shopData.recipes = {};
+                                    b.shopData.recipes[itemId] = { learned: true }; // フレンドの店でも販売開始！
+                                }
+                            }
+                            data.saveData.map_data = JSON.stringify(fAssets);
+                        } catch(e) { console.error("レシピ感染エラー", e); }
+                    }
+                }
+                
                 data.saveData.ai_pet_data_v1 = JSON.stringify(friendPetData);
                 await setDoc(docRef, data);
-                
-                console.log(`[Cloud Sync] 成功！ ${friendName} のインベントリに ${itemName} を追加しました。`);
             }
-        } else {
-            console.log(`[Cloud Sync] 失敗。相手のデータが見つかりません。`);
         }
-    } catch (error) {
-        console.error("[Cloud Sync] アイテム送信エラー:", error);
-    }
+    } catch (error) {}
 };
 
 // フレンドがイートインした時に、相手のクラウドデータのステータス（体力・満腹度）を回復させる
-window.sendFoodEffectToFriend = async function(friendId, friendName, itemId) {
+window.sendFoodEffectToFriend = async function(friendId, friendName, itemId, price = 0) {
     if (!friendId) return;
-
-    let itemName = window.getDisplayShopItemName(itemId);
-    console.log(`[Cloud Sync] ${friendName}(${friendId}) が「${itemName}」を食べました。効果を送信します...`);
-
-    if (typeof addFloatingText === 'function' && window.aiPet) {
-        addFloatingText(window.aiPet.x, window.aiPet.y - 80, `✨ ${friendName}の元気が回復した！`, "#E040FB");
-    }
+    let itemName = window.getDisplayShopItemName ? window.getDisplayShopItemName(itemId) : itemId;
+    if (typeof addFloatingText === 'function' && window.aiPet) addFloatingText(window.aiPet.x, window.aiPet.y - 80, `✨ ${friendName}の元気が回復した！`, "#E040FB");
 
     try {
         const docRef = doc(db, "user_save_data", friendId);
         const docSnap = await getDoc(docRef);
-
         if (docSnap.exists()) {
             let data = docSnap.data();
             if (data.saveData && data.saveData.ai_pet_data_v1) {
                 let friendPetData = JSON.parse(data.saveData.ai_pet_data_v1);
                 
-                // 料理の種類に応じた回復量の設定
-                let healHp = 30;
-                let healHunger = 40;
-                if (itemId.includes('fish') || itemId.includes('meat')) { healHp = 50; healHunger = 60; }
+                // 1. 回復と代金引き落とし
+                let healHp = 30; let healHunger = 40;
+                if (itemId.includes('fish') || itemId.includes('meat') || itemId.startsWith('custom_')) { healHp = 50; healHunger = 60; }
                 
-                // ステータスを回復（上限100）
                 friendPetData.energy = Math.min(100, (friendPetData.energy || 0) + healHp);
                 friendPetData.hunger = Math.min(100, (friendPetData.hunger || 0) + healHunger);
+                friendPetData.gold = (friendPetData.gold || 0) - price;
                 
-                // 相手のデータを再梱包して保存（上書き）
+                // 2. ★超重要：独自レシピの感染処理（食べただけでも閃く！）
+                if (itemId.startsWith('custom_') && window.aiPet && window.aiPet.customRecipes && window.aiPet.customRecipes[itemId]) {
+                    if (!friendPetData.customRecipes) friendPetData.customRecipes = {};
+                    friendPetData.customRecipes[itemId] = window.aiPet.customRecipes[itemId]; 
+                    
+                    if (data.saveData.map_data) {
+                        try {
+                            let fAssets = JSON.parse(data.saveData.map_data);
+                            let itemType = window.aiPet.customRecipes[itemId].type;
+                            for (let k in fAssets) {
+                                let b = fAssets[k];
+                                if ((b.type === 'restaurant' && itemType === 'dish') || (b.type === 'smith' && itemType === 'equipment')) {
+                                    if (!b.shopData) b.shopData = { recipes: {} };
+                                    if (!b.shopData.recipes) b.shopData.recipes = {};
+                                    b.shopData.recipes[itemId] = { learned: true }; 
+                                }
+                            }
+                            data.saveData.map_data = JSON.stringify(fAssets);
+                        } catch(e) {}
+                    }
+                }
+                
                 data.saveData.ai_pet_data_v1 = JSON.stringify(friendPetData);
                 await setDoc(docRef, data);
-                
-                console.log(`[Cloud Sync] 成功！ ${friendName} の体力と満腹度を回復させました。`);
             }
         }
-    } catch (error) {
-        console.error("[Cloud Sync] 回復効果送信エラー:", error);
-    }
+    } catch (error) {}
 };
 
 // ==========================================
@@ -888,28 +908,16 @@ window.fetchPlayerSaveData = async function(playerId) {
     }
 };
 
-// 対象のプレイヤーをフレンドリストに登録する
-window.addFriend = function(playerId, playerName) {
+window.addFriend = function(playerId, playerName, skin) {
     if (!playerId) return;
-    if (playerId === localStorage.getItem('my_player_id')) {
-        alert("自分自身はフレンドに追加できません！");
-        return;
-    }
-    
-    // 現在のフレンドリストを取得
+    if (playerId === localStorage.getItem('my_player_id')) { alert("自分自身はフレンドに追加できません！"); return; }
     let list = JSON.parse(localStorage.getItem('my_friend_list') || '[]');
-    
-    // 既に登録されているかチェック
     if (!list.find(f => f.id === playerId)) {
-        list.push({ id: playerId, name: playerName });
+        list.push({ id: playerId, name: playerName, skin: skin || 'robot' }); // ★skinを保存
         localStorage.setItem('my_friend_list', JSON.stringify(list));
         alert(`🤝 「${playerName}」をフレンドに追加しました！\nお店に遊びに来てくれるようになります！`);
-        
-        // 追加したら念のためクラウドにバックアップ
         if(typeof window.backupSaveDataToCloud === 'function') window.backupSaveDataToCloud();
-    } else {
-        alert(`「${playerName}」は既にフレンドに登録されています。`);
-    }
+    } else { alert(`「${playerName}」は既にフレンドに登録されています。`); }
 };
 
 // ==========================================
