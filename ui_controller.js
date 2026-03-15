@@ -2508,34 +2508,75 @@ window.hireCloudAI = function(index) {
 // ★ 総合ランキングシステム制御
 // ==========================================
 window.switchRankingCategory = function(category) {
-    // UIを開く
     document.getElementById('dungeon-ranking-ui').classList.add('active');
 
-    // ★ タブ切り替え時は、開いている詳細パネルを一旦隠す
     const detailArea = document.getElementById('ranking-detail-area');
     if (detailArea) detailArea.style.display = 'none';
 
     const tabStatus = document.getElementById('main-tab-status');
     const tabDungeon = document.getElementById('main-tab-dungeon');
+    const tabArena = document.getElementById('main-tab-arena'); // ★追加：闘技場メインタブ
+
     const subStatus = document.getElementById('sub-tabs-status');
     const subDungeon = document.getElementById('sub-tabs-dungeon');
+    const subArena = document.getElementById('sub-tabs-arena'); // ★追加：闘技場サブタブ
+
+    // ★修正：クラス名に頼らず、すべてのサブタブのIDを直接指定して確実に隠す
+    if (subStatus) subStatus.style.display = 'none';
+    if (subDungeon) subDungeon.style.display = 'none';
+    if (subArena) subArena.style.display = 'none';
 
     if (category === 'status') {
-        tabStatus.style.color = '#FFF'; tabStatus.style.borderBottom = '3px solid #FFD700';
-        tabDungeon.style.color = '#aaa'; tabDungeon.style.borderBottom = '3px solid transparent';
-        subStatus.style.display = 'flex';
-        subDungeon.style.display = 'none';
+        if (tabStatus) { tabStatus.style.background = '#333'; tabStatus.style.color = '#FFF'; tabStatus.style.borderBottom = '3px solid #FFD700'; }
+        if (tabDungeon) { tabDungeon.style.background = '#222'; tabDungeon.style.color = '#aaa'; tabDungeon.style.borderBottom = '3px solid transparent'; tabDungeon.style.borderRight = '1px solid #444'; }
+        if (tabArena) { tabArena.style.background = '#222'; tabArena.style.color = '#aaa'; tabArena.style.borderBottom = '3px solid transparent'; tabArena.style.borderLeft = '1px solid #444'; }
+        
+        if (subStatus) subStatus.style.display = 'flex';
         window.openRankingPanel('power'); 
-    } else {
-        tabDungeon.style.color = '#FFF'; tabDungeon.style.borderBottom = '3px solid #FFD700';
-        tabStatus.style.color = '#aaa'; tabStatus.style.borderBottom = '3px solid transparent';
-        subStatus.style.display = 'none';
-        subDungeon.style.display = 'flex';
+    } else if (category === 'dungeon') {
+        if (tabDungeon) { tabDungeon.style.background = '#333'; tabDungeon.style.color = '#FFF'; tabDungeon.style.borderBottom = '3px solid #00BCD4'; tabDungeon.style.borderRight = '1px solid #444'; }
+        if (tabStatus) { tabStatus.style.background = '#222'; tabStatus.style.color = '#aaa'; tabStatus.style.borderBottom = '3px solid transparent'; }
+        if (tabArena) { tabArena.style.background = '#222'; tabArena.style.color = '#aaa'; tabArena.style.borderBottom = '3px solid transparent'; tabArena.style.borderLeft = '1px solid #444'; }
+        
+        if (subDungeon) subDungeon.style.display = 'flex';
         window.renderDungeonRankingList('skull'); 
+    } else if (category === 'arena') {
+        // ★追加：闘技場タブが押されたときの処理
+        if (tabArena) { tabArena.style.background = '#333'; tabArena.style.color = '#FFF'; tabArena.style.borderBottom = '3px solid #FF9800'; tabArena.style.borderLeft = '1px solid #444'; }
+        if (tabStatus) { tabStatus.style.background = '#222'; tabStatus.style.color = '#aaa'; tabStatus.style.borderBottom = '3px solid transparent'; }
+        if (tabDungeon) { tabDungeon.style.background = '#222'; tabDungeon.style.color = '#aaa'; tabDungeon.style.borderBottom = '3px solid transparent'; tabDungeon.style.borderRight = '1px solid #444'; }
+        
+        window.renderArenaRankingList('normal');
     }
 };
 
 window.openRankingPanel = async function(sortKey = 'power') {
+    // ★修正：ステータスタブを「選択中以外は中抜き（アウトライン）」にする処理
+    const subStatus = document.getElementById('sub-tabs-status');
+    if (subStatus) {
+        const btns = subStatus.children;
+        const configs = [
+            { key: 'power', color: '#F44336' }, // 活力(赤)
+            { key: 'intel', color: '#2196F3' }, // 賢さ(青)
+            { key: 'beauty', color: '#9C27B0' }, // 美しさ(紫)
+            { key: 'words', color: '#4CAF50' }  // 語彙(緑)
+        ];
+        for (let i = 0; i < Math.min(btns.length, configs.length); i++) {
+            let btn = btns[i];
+            let conf = configs[i];
+            if (sortKey === conf.key) {
+                btn.style.background = conf.color;
+                btn.style.color = '#FFF';
+                btn.style.border = 'none';
+            } else {
+                btn.style.background = '#222';
+                btn.style.color = conf.color;
+                btn.style.border = `1px solid ${conf.color}`;
+            }
+            btn.style.boxSizing = 'border-box';
+        }
+    }
+
     const list = document.getElementById('ranking-list-container');
     if(!list) return;
     list.innerHTML = "<div style='color:#aaa; text-align:center; padding: 50px; font-size:18px;'>📡 クラウドから集計中...</div>";

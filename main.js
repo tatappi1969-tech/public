@@ -210,20 +210,52 @@ window.switchMode = function(mode) {
             else b.classList.remove('active');
         });
     }
-    const gameControls = document.getElementById('gameControls'); const debugOverlay = document.getElementById('debugOverlay'); const help = document.getElementById('controls-help');
+    const gameControls = document.getElementById('gameControls'); 
+    const debugOverlay = document.getElementById('debugOverlay'); 
+    const help = document.getElementById('controls-help');
     document.querySelectorAll('.overlay').forEach(o => o.classList.remove('active'));
     document.querySelectorAll('.panel-view').forEach(p => p.classList.remove('active'));
 
-    if (mode === 'play') { 
-        if(gameControls) gameControls.style.display = 'flex'; if(help) help.style.display = 'none';
-        const defPanel = document.getElementById('panel-default'); if(defPanel) defPanel.classList.add('active');
-    } else if (mode === 'debug') { 
-        if(gameControls) gameControls.style.display = 'none'; if(help) help.style.display = 'none';
-        if(debugOverlay) { debugOverlay.classList.add('active'); if(typeof loadDebugData === 'function') loadDebugData(); }
-    } else { 
-        if(gameControls) gameControls.style.display = 'none'; if(help) help.style.display = 'block';
-        const sidePanel = document.getElementById('side-panel'); if(sidePanel) { sidePanel.classList.add('active'); sidePanel.style.display = 'flex'; }
+    // ==========================================
+    // ★追加：Play Mode以外の時はゲームのメインUIをすべて隠す！
+    // ==========================================
+    const mainUIElements = [
+        document.getElementById('aiStatus'),      // 上部のステータスバー
+        document.getElementById('info-column'),   // 右側のコマンドセンター
+        document.getElementById('chat-container') // 下部のチャット欄（※IDはHTMLに合わせて適宜読み替えてください）
+    ];
+    // もしチャット欄のIDが 'chat-container' ではない場合を考慮し、chatInputの親要素も隠す
+    const chatInput = document.getElementById('chatInput');
+    if (chatInput && chatInput.parentElement) {
+        mainUIElements.push(chatInput.parentElement);
     }
+
+    if (mode === 'play') { 
+        if(gameControls) gameControls.style.display = 'flex'; 
+        if(help) help.style.display = 'none';
+        const defPanel = document.getElementById('panel-default'); if(defPanel) defPanel.classList.add('active');
+        
+        // UIを再表示
+        mainUIElements.forEach(el => { if (el) el.style.display = ''; });
+
+    } else if (mode === 'debug') { 
+        if(gameControls) gameControls.style.display = 'none'; 
+        if(help) help.style.display = 'none';
+        if(debugOverlay) { debugOverlay.classList.add('active'); if(typeof loadDebugData === 'function') loadDebugData(); }
+        
+        // UIを隠す
+        mainUIElements.forEach(el => { if (el) el.style.display = 'none'; });
+
+    } else { 
+        // editor, ai_adjust などの開発モード
+        if(gameControls) gameControls.style.display = 'none'; 
+        if(help) help.style.display = 'block';
+        const sidePanel = document.getElementById('side-panel'); if(sidePanel) { sidePanel.classList.add('active'); sidePanel.style.display = 'flex'; }
+        
+        // UIを隠す（これでチャット欄などにフォーカスを奪われなくなります！）
+        mainUIElements.forEach(el => { if (el) el.style.display = 'none'; });
+    }
+    
     selectedAsset = null; createPalette(); render();
 };
 

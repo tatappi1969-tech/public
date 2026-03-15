@@ -1120,119 +1120,102 @@ aiPet.processSmithingFinish = function(task) {
     }
 };
 
-aiPet.processBuildingStart = function(task) {
-    let bId = task.targetBuilding;
-    if (!bId) {
-        let buildKeys = ['hut', 'farm'];
-        if (typeof buildingCatalog !== 'undefined') {
-            const level = this.skills && this.skills.building ? this.skills.building : 1;
-            buildKeys = Object.keys(buildingCatalog).filter(k => buildingCatalog[k].reqBuildLevel <= level && k !== 'castle' && k !== 'casino');
-        }
-        bId = buildKeys[Math.floor(Math.random() * buildKeys.length)];
-    }
+// aiPet.processBuildingStart = function(task) {
+//     let bId = task.targetBuilding;
+//     if (!bId) {
+//         let buildKeys = ['hut', 'farm'];
+//         if (typeof buildingCatalog !== 'undefined') {
+//             const level = this.skills && this.skills.building ? this.skills.building : 1;
+//             buildKeys = Object.keys(buildingCatalog).filter(k => buildingCatalog[k].reqBuildLevel <= level && k !== 'castle' && k !== 'casino');
+//         }
+//         bId = buildKeys[Math.floor(Math.random() * buildKeys.length)];
+//     }
 
-    const bData = (typeof buildingCatalog !== 'undefined' && buildingCatalog[bId]) ? buildingCatalog[bId] : null;
-    if (!bData) {
-        this.message = "建て方がわからない..."; this.messageTimer = 120; return false;
-    }
+//     const bData = (typeof buildingCatalog !== 'undefined' && buildingCatalog[bId]) ? buildingCatalog[bId] : null;
+//     if (!bData) { this.message = "建て方がわからない..."; this.messageTimer = 120; return false; }
 
-    if (this.apprentice && this.apprentice.currentMaster === 'building') {
-        if (!this.inventory) this.inventory = [];
-        if (bData.materials) {
-            for (let mKey in bData.materials) {
-                let req = bData.materials[mKey];
-                while (this.inventory.filter(i => i === mKey).length < req) { this.inventory.push(mKey); }
-            }
-        }
-    }
+//     if (this.apprentice && this.apprentice.currentMaster === 'building') {
+//         if (!this.inventory) this.inventory = [];
+//         if (bData.materials) {
+//             for (let mKey in bData.materials) {
+//                 let req = bData.materials[mKey];
+//                 while (this.inventory.filter(i => i === mKey).length < req) { this.inventory.push(mKey); }
+//             }
+//         }
+//     }
 
-    // ★重要：チェックのみ行う（素材消費は建築完了時になったので、連続タスクでも失敗しません）
-    let myItems = {};
-    if (this.inventory) this.inventory.forEach(k => myItems[k] = (myItems[k] || 0) + 1);
-    let canBuild = true;
-    if (bData.materials) {
-        for (let mKey in bData.materials) {
-            if ((myItems[mKey] || 0) < bData.materials[mKey]) canBuild = false;
-        }
-    }
-    if (!canBuild) {
-        this.message = `${bData.name}を作る素材が足りないみたい...`; this.messageTimer = 120; return false;
-    }
+//     // ★修正：事前チェックのみ行う（ここではまだ消費しない！）
+//     let myItems = {};
+//     if (this.inventory) this.inventory.forEach(k => myItems[k] = (myItems[k] || 0) + 1);
+//     let canBuild = true;
+//     if (bData.materials) {
+//         for (let mKey in bData.materials) {
+//             if ((myItems[mKey] || 0) < bData.materials[mKey]) canBuild = false;
+//         }
+//     }
+//     if (!canBuild) {
+//         this.message = `${bData.name}を作る素材が足りないみたい...`; this.messageTimer = 120; return false;
+//     }
 
-    // 4. 建築先を探す
-    let tx = this.x; let ty = this.y;
-    let walkX = this.x; let walkY = this.y; 
-    let foundSpot = false;
+//     // 建築先を探す
+//     let tx = this.x; let ty = this.y;
+//     let walkX = this.x; let walkY = this.y; 
+//     let foundSpot = false;
 
-    if (bId === 'bridge') {
-        // ★超進化：自分を中心にして同心円状に探し、一番近い「まだ橋がない水上」を見つける
-        for(let r=20; r<800; r+=20) {
-            for(let angle=0; angle<Math.PI*2; angle+=Math.PI/16) { // 細かく360度探す
-                let cx = this.x + Math.cos(angle)*r;
-                let cy = this.y + Math.sin(angle)*r;
-                
-                if (cx < 0 || cx > 800 || cy < 0 || cy > 480) continue;
-
-                if (typeof this.isPointOnWater === 'function' && this.isPointOnWater(cx, cy)) {
-                    // その水上にすでに橋があるかチェック
-                    let hasBridge = false;
-                    for (let k in assets) {
-                        let a = assets[k];
-                        if (a.type === 'bridge') {
-                            let bcx = a.dx + (a.sw * (a.scale||0.5)) / 2;
-                            let bcy = a.dy + (a.sh * (a.scale||0.5)) / 2;
-                            // 半径25px以内に橋の中心があれば「架かっている」とみなす
-                            if (Math.hypot(cx - bcx, cy - bcy) < 25) {
-                                hasBridge = true; break;
-                            }
-                        }
-                    }
-
-                    // 橋がない水上なら、そこに架ける！
-                    if (!hasBridge) {
-                        // ★ポイント：手前（自分側）に35px戻った位置を「歩く目的地」にする
-                        // これにより、対岸を選んでしまう事故が絶対になくなります。
-                        let px = cx - Math.cos(angle) * 35;
-                        let py = cy - Math.sin(angle) * 35;
-                        
-                        tx = cx; ty = cy; // 建てるのは水上
-                        walkX = px; walkY = py; // 歩くのは手前（自分と同じ岸、または1つ目の橋の上）
-                        foundSpot = true; break;
-                    }
-                }
-            }
-            if (foundSpot) break;
-        }
+//     if (bId === 'bridge') {
+//         let existingBridges = [];
+//         for (let k in assets) { if (assets[k].type === 'bridge') existingBridges.push(assets[k]); }
         
-        if (!foundSpot) { this.message = "川が見つからないよ..."; this.messageTimer = 120; return false; }
-        
-    } else {
-        // 陸地の建物（水上を避ける）
-        for (let i = 0; i < 30; i++) {
-            let checkX = this.x + (Math.random() - 0.5) * 200; let checkY = this.y + (Math.random() - 0.5) * 200;
-            checkX = Math.max(50, Math.min(750, checkX)); checkY = Math.max(50, Math.min(430, checkY));
-            if (typeof this.isPointOnWater === 'function' && !this.isPointOnWater(checkX, checkY)) {
-                tx = checkX; ty = checkY;
-                walkX = checkX; walkY = checkY; 
-                foundSpot = true; break;
-            }
-        }
-    }
+//         if (existingBridges.length > 0) {
+//             // すでにある橋の隣に架ける
+//             let base = existingBridges[existingBridges.length - 1]; 
+//             tx = base.dx + (base.sw * (base.scale || 0.5)); 
+//             ty = base.dy;
+//             walkX = base.dx; // 歩くのはすでにある橋の上
+//             walkY = base.dy; 
+//             foundSpot = true;
+//         } else {
+//             // 1本目の橋を架ける川を探す
+//             for (let i = 0; i < 100; i++) {
+//                 let checkX = 100 + Math.random() * 600;
+//                 let checkY = 100 + Math.random() * 300;
+//                 if (typeof this.isPointOnWater === 'function' && this.isPointOnWater(checkX, checkY)) {
+//                     tx = checkX; ty = checkY; 
+//                     walkX = checkX - 40; walkY = checkY; // 手前の陸地に立つ
+//                     foundSpot = true;
+//                     break;
+//                 }
+//             }
+//         }
+//         if (!foundSpot) { this.message = "川が見つからないよ..."; this.messageTimer = 120; return false; }
+//     } else {
+//         // 陸地の建物
+//         for (let i = 0; i < 30; i++) {
+//             let checkX = this.x + (Math.random() - 0.5) * 200; let checkY = this.y + (Math.random() - 0.5) * 200;
+//             checkX = Math.max(50, Math.min(750, checkX)); checkY = Math.max(50, Math.min(430, checkY));
+//             if (typeof this.isPointOnWater === 'function' && !this.isPointOnWater(checkX, checkY)) {
+//                 tx = checkX; ty = checkY;
+//                 walkX = checkX; walkY = checkY; 
+//                 foundSpot = true; break;
+//             }
+//         }
+//     }
 
-    this.message = `${bData.name}を建てる場所へ行くよ！`; this.messageTimer = 120;
-    let vSrc = (typeof catalog !== 'undefined' && catalog[bId]) ? catalog[bId] : {img: bId, sw: 50, sh: 50, sx: 0, sy: 0, scale: 0.5};
+//     this.message = `${bData.name}を建てる場所へ行くよ！`; this.messageTimer = 120;
+//     let vSrc = (typeof catalog !== 'undefined' && catalog[bId]) ? catalog[bId] : {img: bId, sw: 50, sh: 50, sx: 0, sy: 0, scale: 0.5};
 
-    task.buildData = {
-        typeKey: bId, name: bData.name,
-        visualSource: { img: vSrc.img || vSrc.image || 'field', sx: vSrc.sx || 0, sy: vSrc.sy || 0, sw: vSrc.sw || 50, sh: vSrc.sh || 50 },
-        targetScale: vSrc.scale || 0.5,
-        bestX: tx, bestY: ty,
-        walkX: walkX, walkY: walkY,
-        targetFlip: false, maxDurability: bData.maxDurability || -1
-    };
-
-    return true;
-};
+//     task.buildData = {
+//         typeKey: bId, name: bData.name,
+//         visualSource: { img: vSrc.img || vSrc.image || 'field', sx: vSrc.sx || 0, sy: vSrc.sy || 0, sw: vSrc.sw || 50, sh: vSrc.sh || 50 },
+//         targetScale: vSrc.scale || 0.5,
+//         bestX: tx, bestY: ty,
+//         walkX: walkX, walkY: walkY,
+//         targetFlip: false, maxDurability: bData.maxDurability || -1
+//     };
+    
+//     task._hasBeenBuilt = false; // 建設済みフラグをリセット
+//     return true;
+// };
 
 aiPet.processFishingFrame = function() {
     if (!this.fishingData) {
@@ -1463,7 +1446,7 @@ aiPet.assignApprenticeQuest = function() {};
 aiPet.checkExcommunication = function() {};
 
 // ==========================================
-// ★ 修正：空気を読むランダムエンカウント（出会い）ロジック
+// ★ 修正：空気を読むランダムエンカウント（仕様完全準拠版）
 // ==========================================
 aiPet.checkEncounter = function() {
     if (this.isHelper || window.isGamePaused) return;
@@ -1477,11 +1460,12 @@ aiPet.checkEncounter = function() {
     if (!this.apprentice || !this.apprentice.learnedWords || this.apprentice.learnedWords.length < 3) return;
     
     // ==========================================
-    // ★ 乱入防止ガード：弟子入り中、または「どれか一つでも皆伝」していれば終了
+    // ★ 修正：全体ブロックの条件整理
+    // 1. 現在弟子入り中なら他の師匠には会わない
+    // 2. 「今世」ですでにいずれかの免許皆伝となり、余生を過ごしているなら会わない
+    // ※「前世」の皆伝状況はここではブロックせず、下の isAlreadyMastered で個別に判定する
     // ==========================================
-    const isGraduatedAny = (this.apprentice.rank && Object.values(this.apprentice.rank).some(r => r >= 10)) || this.apprentice.isGraduated;
-    if (this.apprentice.currentMaster || isGraduatedAny) return;
-    // ==========================================
+    if (this.apprentice.currentMaster || this.apprentice.isGraduated) return;
 
     if (this.schedule && this.schedule.length > 0) return;
     if (['apprentice_training', 'inside', 'entering'].includes(this.actionState)) return;
@@ -1491,6 +1475,8 @@ aiPet.checkEncounter = function() {
 
     // --- 抽選フェーズ ---
     let candidates = [];
+    
+    // 個別の師匠ごとに「過去の世代含めて極めているか」を判定
     const isAlreadyMastered = (mType) => {
         if (this.apprentice.retired && this.apprentice.retired[mType] === true) return true;
         if (this.apprentice.retiredList && this.apprentice.retiredList.includes(mType)) return true;
@@ -1505,8 +1491,6 @@ aiPet.checkEncounter = function() {
     } 
     else if (['idle', 'moving'].includes(this.actionState)) {
         let nearFlags = { explore: false, building: false, fishing: false, farming: false, cooking: false };
-        let minFoundDist = Infinity;
-        let closestType = "なし";
 
         for (let k in assets) {
             const a = assets[k];
@@ -1515,12 +1499,6 @@ aiPet.checkEncounter = function() {
             const cy = a.dy + (a.sh * aScale) / 2;
             const dist = Math.hypot(this.x - cx, this.y - cy);
             
-            if (dist < minFoundDist) {
-                minFoundDist = dist;
-                closestType = a.type || k;
-            }
-
-            // ★判定距離を 150 → 250 に大幅緩和！
             if (dist < 250) {
                 const typeBase = k.split('_')[0];
                 if (typeBase === 'palms' || typeBase === 'mountain' || typeBase === 'skull') nearFlags.explore = true;
@@ -1531,9 +1509,7 @@ aiPet.checkEncounter = function() {
             }
         }
 
-        // デバッグログ：一番近いものとの距離を表示
-        console.log(`%c[Distance Check] 最寄施設: ${closestType}, 距離: ${Math.floor(minFoundDist)}px (判定閾値: 250px)`, "color: #888");
-        
+        // 過去の世代でまだ皆伝していない（ランク10未満の）師匠だけが候補に入る
         if (nearFlags.explore && !isAlreadyMastered('explore') && getAttempts('explore') < 3) candidates.push('explore');
         if (nearFlags.building && !isAlreadyMastered('building') && getAttempts('building') < 3) candidates.push('building');
         if (nearFlags.fishing && !isAlreadyMastered('fishing') && getAttempts('fishing') < 3) candidates.push('fishing');
@@ -1542,13 +1518,10 @@ aiPet.checkEncounter = function() {
     }
 
     if (candidates.length > 0) {
-        console.log(`%c[Encounter] 候補リスト: [${candidates.join(', ')}]`, "color: #FF9800;");
         if (Math.random() < 0.3) { 
             this.apprentice.encounterTimer = 0;
             const metType = candidates[Math.floor(Math.random() * candidates.length)];
             
-            // 以下、遭遇メッセージ表示などの既存ロジック
-            console.log(`%c[Encounter SUCCESS] ${metType} の出現確定`, "color: #4CAF50; font-weight: bold;");
             this.message = "（誰かの気配がする...！）";
             this.messageTimer = 120;
             let encounterMsg = "";
@@ -1561,11 +1534,7 @@ aiPet.checkEncounter = function() {
             
             setTimeout(() => { if (typeof window.openEncounterUI === 'function') window.openEncounterUI(metType, encounterMsg, 'encounter_intro'); }, 1000);
             if (metType === 'cooking') { for (let k in assets) { if (assets[k].type === 'restaurant' && assets[k].isMobile) { delete assets[k]; break; } } }
-        } else {
-            console.log("%c[Encounter] 30%の抽選に漏れました。", "color: #888");
         }
-    } else {
-        console.log("%c[Encounter] 有効な候補者がいません。施設から離れすぎているか、既に皆伝済みです。", "color: #ff5252;");
     }
 };
 
@@ -1850,10 +1819,23 @@ aiPet.update = function() {
                 
                 if (task.type === 'explore') {
                     task.duration = 60; task.maxDuration = 60;
-                    let targets = Object.values(assets).filter(a => a.type === 'nature' || a.type === 'building');
-                    let finalTarget = targets[Math.floor(Math.random() * targets.length)];
+                    let targets = Object.values(assets).filter(a => a.type === 'nature' || a.type === 'building' || a.type === 'skull' || a.type === 'crystal');
+                    
+                    // ★修正：ダンジョンがマップにあれば、70%の確率で優先的に向かう！
+                    let dungeons = targets.filter(a => a.type === 'skull' || a.type === 'crystal');
+                    let others = targets.filter(a => a.type !== 'skull' && a.type !== 'crystal');
+                    let finalTarget = null;
+                    
+                    if (dungeons.length > 0 && Math.random() < 0.7) {
+                        finalTarget = dungeons[Math.floor(Math.random() * dungeons.length)];
+                    } else if (others.length > 0) {
+                        finalTarget = others[Math.floor(Math.random() * others.length)];
+                    } else if (dungeons.length > 0) {
+                        finalTarget = dungeons[Math.floor(Math.random() * dungeons.length)];
+                    }
+                    
                     if (finalTarget) this.startBuildingInteraction(finalTarget); else { task.duration = 0; task.aborted = true; }
-                } 
+                }
                 else if (task.type === 'eat') {
                     const facility = findFacilityForTask('eat');
                     if (facility) this.startBuildingInteraction(facility); else { this.actionState = 'camping'; this.message = "ここでご飯にするよ！"; }
@@ -1964,6 +1946,10 @@ aiPet.update = function() {
 
                 if (!waitingExit) {
                     if (task.duration <= 0 && !task.aborted) {
+                        
+                        // ★ここを1行追加（時間が0になったら完成処理を呼ぶ）★
+                        if (task.type === 'build' && typeof this.processBuildingFinish === 'function') this.processBuildingFinish(task);
+
                         const mType = task.masterType || this.apprentice?.currentMaster;
                         if (task.type === 'visit_master' || task.type === 'master_quest' || task.type === 'apprentice_exam') {
                             if (task.type === 'visit_master' && mType) window.checkMasterVisit?.(mType);
@@ -2009,7 +1995,24 @@ aiPet.update = function() {
                 const dist = Math.sqrt(dx*dx + dy*dy); let speed = 3.5;
                 if (dist > 5) { this.flip = (dx < 0); this.x += (dx / dist) * speed; this.y += (dy / dist) * speed; }
                 else { this.pathQueue.shift(); if (this.pathQueue.length === 0) { if (this.actionState === 'moving_to_enter') { if (this.schedule[0]?.type === 'explore') { this.actionState = 'inside'; this.isIndoors = true; this.indoorTarget = this.interactionTarget; this.exploreTimer = 0; } else { this.executeEnterAction(); } } else { this.actionState = 'idle'; } } }
-            } else if (this.actionState === 'moving_to_enter') { if (this.schedule[0]?.type === 'explore') { this.actionState = 'inside'; this.isIndoors = true; this.indoorTarget = this.interactionTarget; this.exploreTimer = 0; } else { this.executeEnterAction(); } }
+            } else if (this.actionState === 'moving_to_enter') { 
+                if (this.schedule[0]?.type === 'explore') { 
+                    // ★ダンジョンならUIを開く！
+                    if (this.interactionTarget && (this.interactionTarget.type === 'skull' || this.interactionTarget.type === 'crystal')) {
+                        this.actionState = 'idle'; this.isIndoors = false; this.indoorTarget = null;
+                        
+                        // ★修正：残りの予定（探検40回分など）をすべてキャンセルして立ち止まらせる！
+                        this.schedule = []; 
+                        if (typeof window.updateScheduleList === 'function') window.updateScheduleList(); // 画面右の予定リストも空にする
+                        
+                        if (typeof window.openDungeonUI === 'function') window.openDungeonUI(this.interactionTarget.type);
+                    } else {
+                        this.actionState = 'inside'; this.isIndoors = true; this.indoorTarget = this.interactionTarget; this.exploreTimer = 0; 
+                    }
+                } else { 
+                    this.executeEnterAction(); 
+                } 
+            }
         }
         else if (this.actionState === 'inside') {
             this.exploreTimer++; let isShopUIOpen = document.getElementById('shop-management-ui')?.style.display !== 'none';
@@ -2068,21 +2071,15 @@ aiPet.update = function() {
 // };
 
 aiPet.executeEnterAction = function() {
-    // 現在のタスクを取得
     const currentTask = (this.schedule && this.schedule.length > 0) ? this.schedule[0] : null;
 
-    if (this.interactionTarget && this.interactionTarget.type === 'farm') {
-        // ★修正：もし「師匠への報告(visit_master)」や「弟子入り試験」に向かっている最中なら、農作業は絶対にしない！
-        if (currentTask && (currentTask.type === 'visit_master' || currentTask.type === 'apprentice_exam')) {
-            this.actionState = 'inside'; // 中に入る（会話イベント用）
-            this.indoorTarget = this.interactionTarget;
-            this.isIndoors = true;
-            this.exploreTimer = 0;
-            this.message = "師匠、来ました！"; 
-            this.messageTimer = 120;
-            return; // ここで終了
-        }
+    // ★修正: 城や農場に到着した瞬間にフリーズしないよう、報告・試験タスクを最優先でキャッチ！
+    if (currentTask && (currentTask.type === 'visit_master' || currentTask.type === 'apprentice_exam')) {
+        this.actionState = 'inside'; this.indoorTarget = this.interactionTarget; this.isIndoors = true; this.exploreTimer = 0;
+        this.message = "師匠、来ました！"; this.messageTimer = 120; return; 
+    }
 
+    if (this.interactionTarget && this.interactionTarget.type === 'farm') {
         this.actionState = 'farming_work'; this.exploreTimer = 0;
         let farmAct = 'farm_plow'; let msg = "手入れ中...";
         if (this.intendedSeed) { farmAct = 'farm_seed'; msg = "種まき中..."; }
@@ -2093,89 +2090,49 @@ aiPet.executeEnterAction = function() {
         this.visualAction = farmAct; this.message = msg;
     } 
     else if (this.interactionTarget && (this.interactionTarget.type === 'bridge' || this.interactionTarget.type === 'sea')) {
-        // 釣り師匠への報告中なら釣りをしない
-        if (currentTask && (currentTask.type === 'visit_master' || currentTask.type === 'apprentice_exam')) {
-            this.actionState = 'inside'; this.isIndoors = true; this.exploreTimer = 0;
-            this.message = "師匠、お疲れ様です！"; return;
-        }
-
         this.actionState = 'fishing'; this.visualAction = 'fish'; this.fishingData = null; 
         this.message = "釣り開始！"; this.messageTimer = 60;
         if (this.schedule.length > 0 && this.schedule[0].type === 'fish') this.schedule[0]._started = true;
     } else if (this.interactionTarget && this.interactionTarget.type === 'building_site') {
-        // ★修正：屋内（真っ暗）に入らず、草原の背景を呼び出して建築を開始する
-        this.actionState = 'camping'; 
-        this.visualAction = 'smith'; 
-        this.message = "建築開始！"; this.messageTimer = 60;
+        this.actionState = 'camping'; this.visualAction = 'smith'; this.message = "建築開始！"; this.messageTimer = 60;
         if (this.schedule.length > 0 && this.schedule[0].type === 'build') this.schedule[0]._started = true;
     }
-    // --- 4. ショップ/レストラン/鍛冶屋に到着した時の処理 ---
+    else if (this.interactionTarget && (this.interactionTarget.type === 'skull' || this.interactionTarget.type === 'crystal')) {
+        this.actionState = 'idle'; this.isIndoors = false; this.indoorTarget = null;
+        this.schedule = []; 
+        if (typeof window.updateScheduleList === 'function') window.updateScheduleList();
+        if (typeof window.openDungeonUI === 'function') window.openDungeonUI(this.interactionTarget.type);
+        return;
+    }
     else if (this.interactionTarget && (this.interactionTarget.type === 'restaurant' || this.interactionTarget.type === 'smith' || this.interactionTarget.type === 'shop')) {
-        
-        // 現在のタスクを取得
-        const currentTask = (this.schedule && this.schedule.length > 0) ? this.schedule[0] : null;
-
-        // 【新仕様】
-        // 1. 修行中の「お試し料理（isTrial）」、または「報告(visit_master)」の場合
-        if (currentTask && (currentTask.isTrial || currentTask.type === 'visit_master' || currentTask.type === 'apprentice_exam')) {
-            // 経営画面には入らず、枠付きアニメーション（camping 状態）で作業を開始する
-            this.actionState = 'camping'; 
-            this.indoorTarget = null;
-            this.isIndoors = false; // 屋内フラグを立てないことで枠付き演出を維持
-            
-            if (currentTask.isTrial) {
-                this.visualAction = 'cook';
-                this.message = "師匠の道具を借りて料理中...";
-            } else {
-                this.message = "師匠、来ました！";
-            }
-            this.messageTimer = 120;
-            return; // ここで終了。経営UIは開かない。
+        if (currentTask && currentTask.isTrial) {
+            this.actionState = 'camping'; this.indoorTarget = null; this.isIndoors = false; 
+            this.visualAction = 'cook'; this.message = "師匠の道具を借りて作業中...";
+            this.messageTimer = 120; return; 
         }
-
-        // 2. ショップの場合
         if (this.interactionTarget.type === 'shop') {
-            this.actionState = 'inside';
-            this.isIndoors = true;
-            this.message = "おつかいを始めるよ！";
+            this.actionState = 'inside'; this.isIndoors = true; this.message = "おつかいを始めるよ！";
             if (typeof window.openShopUI === 'function') window.openShopUI(this.interactionTarget);
             return;
         }
-
-        // 3. 免許皆伝後の「通常経営」モード
-        // ここに来るのは isTrial でもない、純粋な施設利用の場合
-        this.actionState = 'inside';
-        this.indoorTarget = this.interactionTarget; 
-        this.isIndoors = true; 
-        this.exploreTimer = 0; 
-        this.message = "いらっしゃいませ！";
-        
+        this.actionState = 'inside'; this.indoorTarget = this.interactionTarget; this.isIndoors = true; this.exploreTimer = 0; this.message = "いらっしゃいませ！";
         if (typeof window.openShopManagementUI === 'function') {
             let targetId = Object.keys(assets).find(k => assets[k] === this.interactionTarget);
-            if (targetId) { 
-                this.interactionTarget.id = targetId; 
-                window.openShopManagementUI(this.interactionTarget); 
-            }
+            if (targetId) { this.interactionTarget.id = targetId; window.openShopManagementUI(this.interactionTarget); }
         }
     }
-    // ==========================================
-    // ★ ショップに到着して中に入った時の処理
-    // ==========================================
-    else if (this.interactionTarget && this.interactionTarget.type === 'shop') {
-        this.actionState = 'inside';
+    // ★追加：城などの一般施設に入った時の処理
+    else if (this.interactionTarget && ['house', 'hut', 'castle', 'school', 'library', 'gym'].includes(this.interactionTarget.type)) {
+        this.actionState = 'inside'; 
+        this.isIndoors = true; 
         this.indoorTarget = this.interactionTarget; 
-        this.isIndoors = true; this.exploreTimer = 0; 
-        this.message = "おつかいを始めるよ！"; this.messageTimer = 120;
+        this.exploreTimer = 0;
         
-        // 中に入った瞬間にリッチなUIを開く！
-        if (typeof window.openShopUI === 'function') {
-            window.openShopUI(this.interactionTarget);
-        }
+        let msg = "中に入ったよ";
+        if (this.interactionTarget.type === 'castle') msg = "城の中を探索中...";
+        this.message = msg; this.messageTimer = 120;
     }
-    // ==========================================
-    else {
-        this.actionState = 'entering'; 
-    }
+    else { this.actionState = 'entering'; }
 };
 
 function processWeatherAndDisaster() {
@@ -2485,7 +2442,11 @@ aiPet.startBuildingInteraction = function(targetAsset) {
     let tx = targetAsset.dx + (targetAsset.sw * aScale)/2;
     let ty = targetAsset.dy + (targetAsset.sh * aScale) - 10; 
     
-    // ★修正: 目的地が水辺（海や川）の場合、水の中は歩けないので「一番近い岸（陸地）」に目的地をズラす
+    // ★修正: 城など巨大な建物の場合は、中心座標ではなく少し手前を目的地にする！
+    if (targetAsset.type === 'castle') {
+        ty += 50;
+    }
+    
     if (targetAsset.type === 'water' || targetAsset.type === 'sea') {
         let found = false;
         for(let r=20; r<=150; r+=20) {
@@ -2505,7 +2466,9 @@ aiPet.startBuildingInteraction = function(targetAsset) {
     const fData = (typeof facilityData !== 'undefined' && facilityData[keyPrefix]) ? facilityData[keyPrefix] : { maxDepth: 5, name: targetAsset.name };
     this.exploreState = { depth: 0, maxDepth: fData.maxDepth || 5, currentFacility: keyPrefix, name: fData.name || targetAsset.name };
     
-    if (this.setDestination(tx, ty, false)) {
+    // ★修正: 城の場合は、水判定のせいで近づけないバグを防ぐため、ignoreWater = true を渡して強引に向かわせる
+    let ignoreWater = targetAsset.type === 'castle';
+    if (this.setDestination(tx, ty, false, ignoreWater)) {
         this.actionState = 'moving_to_enter'; 
         this.message = "移動中..."; 
         this.messageTimer = 60;
@@ -2521,9 +2484,25 @@ aiPet.startBuildingInteraction = function(targetAsset) {
 
 aiPet.processExploration = function() {
     const state = this.exploreState; 
+    if (!state) return;
+
+    // ★修正：探検処理の最初に、対象がダンジョンならUIを開いて終了する処理を追加
+    if (state.currentFacility === 'skull' || state.currentFacility === 'crystal') {
+        this.actionState = 'idle'; 
+        this.isIndoors = false;
+        this.indoorTarget = null;
+        // ★修正：40回積まれた予定もすべて消去する！
+        this.schedule = [];
+        if (typeof window.updateScheduleList === 'function') window.updateScheduleList();
+        
+        if (typeof window.openDungeonUI === 'function') {
+            window.openDungeonUI(state.currentFacility);
+        }
+        return;
+    }
+
     const fData = facilityData[state.currentFacility] || facilityData['default'];
     const consumeRate = this.getTraitData().consumption || 1.0;
-    // ★追加：アクションカード「未知の洞窟探検」を取得
     if (typeof window.unlockSupportCard === 'function') window.unlockSupportCard('support_8', this.generation || 1, 'アクション');
     
     if (!this.godMode) { this.energy -= 2 * consumeRate; this.hunger -= 2 * consumeRate; }
@@ -2567,7 +2546,6 @@ aiPet.processExploration = function() {
             if (item) { 
                 this.inventory.push(itemKey); 
                 this.message = `${item.name}を見つけた！`; 
-                // ★追加：拾ったアイテムがカード対象かチェック
                 if (typeof this.checkItemCardUnlock === 'function') this.checkItemCardUnlock(itemKey);
                 const bMood = (this.getTraitData().statBonus && this.getTraitData().statBonus.mood) ? this.getTraitData().statBonus.mood : 1.0;
                 this.stats.mood += 1 * bMood; 
@@ -3528,7 +3506,7 @@ window.openDungeonUI = function(mapType = 'skull') {
                     <span style="display:inline-block; margin-left:15px;">満腹: <span id="dg-hunger" style="color:#FF9800; font-weight:bold;">100</span>%</span>
                     <span id="dg-level-display">${levelHtml}</span>
                 </div>
-                <div id="dg-inventory-container" style="margin-top: 12px; border-top: 1px dashed #555; padding-top: 8px; display: ${mapType === 'crystal' ? 'none' : 'block'};">
+                <div id="dg-inventory-container" style="margin-top: 12px; border-top: 1px dashed #555; padding-top: 8px; display: block;">
                     <div style="font-size: 12px; color: #aaa; margin-bottom: 5px;">🎒 持ち込みアイテム (自動消費)</div>
                     <div id="dg-inventory-list" style="font-size: 13px; max-height: 60px; overflow-y: auto; display: flex; flex-wrap: wrap; gap: 5px;">
                         </div>
@@ -3575,16 +3553,11 @@ window.closeDungeonUI = function(isGameOver = false, isRescued = false) {
     let goldReward = reachedFloor * (s.mapType === 'crystal' ? 100 : 50); 
     let itemsReward = [];
     
-    // 生還したか、救助された場合は報酬がもらえる
     if (reachedFloor > 1 && (!isGameOver || isRescued)) {
-        // 通常のランダムドロップ
         let numItems = Math.floor(reachedFloor / 2);
         const dropPool = s.mapType === 'crystal' ? ['crystal', 'item_berry'] : ['stone', 'iron', 'item_berry']; 
         for (let i = 0; i < numItems; i++) itemsReward.push(dropPool[Math.floor(Math.random() * dropPool.length)]);
         
-        // ==========================================
-        // ★追加：到達階層に応じた「伝説の建築素材」を確定ドロップ！
-        // ==========================================
         if (s.mapType === 'skull') {
             if (reachedFloor >= 5) itemsReward.push('mat_castle_1');
             if (reachedFloor >= 10) itemsReward.push('mat_castle_2');
@@ -3597,7 +3570,6 @@ window.closeDungeonUI = function(isGameOver = false, isRescued = false) {
     }
     
     if (isGameOver && !isRescued) { 
-        // 救助されずに死んだ場合は報酬激減
         goldReward = Math.floor(goldReward / 2); 
         itemsReward = itemsReward.slice(0, Math.floor(itemsReward.length / 2)); 
     }
@@ -3606,33 +3578,60 @@ window.closeDungeonUI = function(isGameOver = false, isRescued = false) {
         if (typeof window.aiPet.gold === 'undefined') window.aiPet.gold = 0;
         window.aiPet.gold += goldReward;
         
-        if (s.mapType === 'skull') {
-            window.aiPet.hunger = s.player.hunger;
-            if (!isGameOver || isRescued) {
-                window.aiPet.inventory = [...s.player.tempInventory]; 
-            } else {
-                window.aiPet.inventory = [];
-            }
-        }
+        // ★新規追加：装備中のアイテムも一旦鞄に戻して持ち帰る準備をする
+        if (s.player.equipWeapon) { s.player.tempInventory.push(s.player.equipWeapon); s.player.equipWeapon = null; }
+        if (s.player.equipShield) { s.player.tempInventory.push(s.player.equipShield); s.player.equipShield = null; }
+        
         if (!window.aiPet.inventory) window.aiPet.inventory = [];
+
+        // ★大改修：クリスタルダンジョンでも生還すれば道中のアイテムを持ち帰れる！
+        if (!isGameOver || isRescued) {
+            if (s.mapType === 'skull') {
+                window.aiPet.inventory = [...s.player.tempInventory]; 
+            } else if (s.mapType === 'crystal') {
+                s.player.tempInventory.forEach(item => window.aiPet.inventory.push(item));
+            }
+        } else {
+            if (s.mapType === 'skull') {
+                window.aiPet.inventory = []; // スカルで死んだらロスト
+            }
+            // クリスタルで死んだ場合は、元々のインベントリは失われない
+        }
+        
         itemsReward.forEach(item => window.aiPet.inventory.push(item)); 
         if (typeof saveGameData === 'function') saveGameData();
+        
+        // ★修正：裏にある持ち物パネルを確実に更新させて報酬を表示させる
+        if (typeof updateStatUI === 'function') updateStatUI();
+        if (typeof openInventoryPanel === 'function') {
+            const invPanel = document.getElementById('panel-inventory');
+            if (invPanel && invPanel.classList.contains('active')) openInventoryPanel();
+        }
     }
 
     let rewardHtml = `<div style="font-size:22px; margin-bottom:20px;">到達フロア: <b>B${reachedFloor}F</b></div>`;
     rewardHtml += `<div style="color:#FFD700; font-size:24px; font-weight:bold; margin-bottom:15px;">💰 ${goldReward} G 獲得！</div>`;
     
-    if (itemsReward.length > 0) {
-        let itemCounts = {}; itemsReward.forEach(i => itemCounts[i] = (itemCounts[i]||0) + 1);
-        rewardHtml += `<div style="text-align:left; background:#222; padding:15px; border-radius:8px; border:2px solid #555; width:80%; margin:0 auto;">`;
-        rewardHtml += `<div style="color:#aaa; font-size:14px; margin-bottom:5px;">▼ 持ち帰ったアイテム</div>`;
-        for(let key in itemCounts) {
-            let itemName = typeof itemCatalog !== 'undefined' && itemCatalog[key] ? itemCatalog[key].name : key;
-            // 伝説の素材なら色を変えて目立たせる
-            let nameColor = key.startsWith('mat_') ? '#E040FB' : '#FFF';
-            rewardHtml += `<div style="font-size:18px; color:${nameColor};">🎁 ${itemName} <span style="color:#4CAF50;">x ${itemCounts[key]}</span></div>`;
+    if (itemsReward.length > 0 || (!isGameOver || isRescued)) {
+        // 表示用に、持ち帰ったすべてを合算
+        let displayRewards = [...itemsReward];
+        if (!isGameOver || isRescued) {
+            if (s.mapType === 'crystal') displayRewards = displayRewards.concat(s.player.tempInventory);
         }
-        rewardHtml += `</div>`;
+        
+        if (displayRewards.length > 0) {
+            let itemCounts = {}; displayRewards.forEach(i => itemCounts[i] = (itemCounts[i]||0) + 1);
+            rewardHtml += `<div style="text-align:left; background:#222; padding:15px; border-radius:8px; border:2px solid #555; width:80%; margin:0 auto; max-height: 200px; overflow-y: auto;">`;
+            rewardHtml += `<div style="color:#aaa; font-size:14px; margin-bottom:5px;">▼ 持ち帰ったアイテム</div>`;
+            for(let key in itemCounts) {
+                let itemName = typeof itemCatalog !== 'undefined' && itemCatalog[key] ? itemCatalog[key].name : key;
+                if (key === 'item_sword_iron') itemName = "鉄の剣";
+                if (key === 'item_shield_wood') itemName = "木の盾";
+                let nameColor = key.startsWith('mat_') ? '#E040FB' : '#FFF';
+                rewardHtml += `<div style="font-size:18px; color:${nameColor};">🎁 ${itemName} <span style="color:#4CAF50;">x ${itemCounts[key]}</span></div>`;
+            }
+            rewardHtml += `</div>`;
+        }
     } else {
         rewardHtml += `<div style="color:#aaa; margin-top:20px;">アイテムの獲得はありませんでした。</div>`;
     }
@@ -3836,9 +3835,10 @@ window.generateDungeonFloor = async function() {
     s.player.x = rooms[0].x; s.player.y = rooms[0].y;
     let lastRoom = rooms[rooms.length - 1]; s.grid[lastRoom.y][lastRoom.x] = 2; 
 
-    const enemyCount = 4 + Math.floor(s.floor / 2);
-    const eHpBase = s.mapType === 'crystal' ? 30 : 20;
-    const eDmgBase = s.mapType === 'crystal' ? 8 : 5;
+    // ★修正：敵の基礎ステータスを大幅に下げて、初期レベルでも戦えるようにする
+    const enemyCount = 3 + Math.floor(s.floor / 3); // 数も減らす
+    const eHpBase = s.mapType === 'crystal' ? 10 : 20;  // HP: 30 -> 10
+    const eDmgBase = s.mapType === 'crystal' ? 3 : 5;   // Dmg: 8 -> 3
 
     for(let i=0; i<enemyCount; i++) {
         let roomIdx = 1 + Math.floor(Math.random() * (rooms.length - 1)); let r = rooms[roomIdx];
@@ -4036,7 +4036,7 @@ window.updateDungeonUI = function() {
     // ★ 修正：インベントリUIに装備状態を表示
     // ==========================================
     const invListEl = document.getElementById('dg-inventory-list');
-    if (invListEl && s.mapType === 'skull') {
+    if (invListEl) {
         let invHtml = "";
         
         // 装備中の武器・盾を先頭に表示
@@ -4129,11 +4129,9 @@ window.drawMinimap = function() {
 };
 
 window.dealDungeonDamage = function(attacker, defender) {
-    // 攻撃側のダメージ計算
     let basePwr = attacker === window.DUNGEON_STATE.player ? window.DUNGEON_STATE.player.basePwr : 10;
     let dmg = attacker.damage || (5 + Math.floor(basePwr * 0.5));
     
-    // ★修正：装備している武器の攻撃力を加算
     if (attacker === window.DUNGEON_STATE.player && window.DUNGEON_STATE.player.equipWeapon) {
         dmg += window.getDungeonItemEffect(window.DUNGEON_STATE.player.equipWeapon).atk;
     }
@@ -4143,19 +4141,17 @@ window.dealDungeonDamage = function(attacker, defender) {
     }
     if (attacker.type === 'magician') { window.addDungeonLog(`魔法攻撃！`, '#E040FB'); }
 
-    // 防御側の計算
     if (defender.type === 'ghost' && Math.random() < 0.3) {
         window.addDungeonLog(`ゴーストは攻撃をすり抜けた！`, '#aaa'); return 0;
     }
     
-    // ★修正：装備している盾の防御力でダメージを減算
     let defBuff = 0;
     if (defender === window.DUNGEON_STATE.player && window.DUNGEON_STATE.player.equipShield) {
         defBuff = window.getDungeonItemEffect(window.DUNGEON_STATE.player.equipShield).def;
     }
-    if (defender.type === 'stone') defBuff += 5; // ストーンは元々固い
+    if (defender.type === 'stone') defBuff += 5; 
     
-    dmg = Math.max(1, dmg - defBuff); // 最低1ダメージは保証
+    dmg = Math.max(1, dmg - defBuff); 
 
     defender.hp -= dmg;
     window.addDungeonLog(`${defender.name || '敵'}に ${dmg} ダメージ！`, '#ff5252');
@@ -4181,7 +4177,28 @@ window.dealDungeonDamage = function(attacker, defender) {
         }
     } else if (defender !== window.DUNGEON_STATE.player) {
         window.addDungeonLog(`${defender.name} を倒した！`, '#FFD700');
-        // ★ クリスタルダンジョン専用：レベルアップ処理
+        
+        // ★新規追加：敵のアイテムドロップ処理（40%で回復や装備を落とす！）
+        if (Math.random() < 0.4) {
+            const dropTable = [
+                { id: 'herb', name: '薬草', weight: 30 },
+                { id: 'item_berry', name: '野イチゴ', weight: 30 },
+                { id: 'dish_stirfry', name: '野菜炒め', weight: 15 },
+                { id: 'item_sword_iron', name: '鉄の剣', weight: 10 },
+                { id: 'item_shield_wood', name: '木の盾', weight: 15 }
+            ];
+            let totalWeight = dropTable.reduce((sum, item) => sum + item.weight, 0);
+            let rand = Math.random() * totalWeight;
+            let dropped = dropTable[0];
+            for (let item of dropTable) {
+                if (rand < item.weight) { dropped = item; break; }
+                rand -= item.weight;
+            }
+            window.DUNGEON_STATE.player.tempInventory.push(dropped.id);
+            window.addDungeonLog(`敵は ${dropped.name} を落とした！`, '#4CAF50');
+            window.updateDungeonUI();
+        }
+
         if (window.DUNGEON_STATE.mapType === 'crystal') {
             let s = window.DUNGEON_STATE;
             s.player.exp += defender.maxHp;
@@ -4190,9 +4207,9 @@ window.dealDungeonDamage = function(attacker, defender) {
                 s.player.exp -= s.player.nextExp;
                 s.player.nextExp = Math.floor(s.player.nextExp * 1.5);
                 s.player.maxHp += 20;
-                s.player.hp = s.player.maxHp; // レベルアップでHP全回復
-                s.player.basePwr += 5;
-                s.player.hunger = 100; // ★追加：満腹度も全回復！
+                s.player.hp = s.player.maxHp; 
+                s.player.basePwr += 8; // ★上方修正: レベルアップ時の攻撃力上昇をアップ
+                s.player.hunger = 100; 
                 window.addDungeonLog(`✨ レベルアップ！ Lv.${s.player.level} になった！（体力・満腹度 全回復！） ✨`, '#E040FB');
             }
         }
@@ -4212,6 +4229,8 @@ window.processDungeonTurn = function() {
     if (s.player.hunger <= 0) {
         s.player.hp -= 2;
         window.addDungeonLog(`お腹が空いて倒れそうだ... (HP-2)`, '#ff5252');
+    } else if (s.player.hunger > 40 && s.player.hp < s.player.maxHp) {
+        s.player.hp = Math.min(s.player.maxHp, s.player.hp + 1);
     }
 
     if (s.player.type === 'seed' && s.floor % 5 === 0) {
@@ -4223,7 +4242,6 @@ window.processDungeonTurn = function() {
         if (e.hp <= 0) return;
         let dist = Math.abs(e.x - s.player.x) + Math.abs(e.y - s.player.y);
         if (dist === 1) enemyAdjacent = e; 
-        
         if (window.isTileVisible(s, e.x, e.y)) enemyInSight = e;
         
         if (s.player.type === 'magician' && dist <= 3 && (e.x === s.player.x || e.y === s.player.y)) {
@@ -4247,19 +4265,13 @@ window.processDungeonTurn = function() {
     }
 
     let chosenCommand = null; 
-    let smartChance = Math.min(0.9, (ai.stats.intel || 10) / 100); 
+    let smartChance = Math.min(0.95, (ai.stats.intel || 10) / 100); 
     
-    // ==========================================
-    // ★ 修正１：確実に「文字列（ID）」だけを抽出してリストを作る
-    // ==========================================
     let myWords = (ai.apprentice && ai.apprentice.learnedWords) ? ai.apprentice.learnedWords : [];
     let validCmdIds = [];
     myWords.forEach(w => {
         let cmd = window.DUNGEON_AVAILABLE_COMMANDS.find(c => c.name === w);
-        // cmdが存在し、かつcmd.idが存在する場合のみ、文字列(id)をプッシュする
-        if (cmd && cmd.id) {
-            validCmdIds.push(cmd.id); 
-        }
+        if (cmd && cmd.id) validCmdIds.push(cmd.id); 
     });
 
     let pType = typeof window.getPersonalityType === 'function' ? window.getPersonalityType(ai.stats) : 'average';
@@ -4281,45 +4293,83 @@ window.processDungeonTurn = function() {
             chosenCommand = randomActions[Math.floor(Math.random() * randomActions.length)];
         } else {
             if (Math.random() < smartChance) {
-                // 回復と逃げる判断
-                if (s.player.hp < s.player.maxHp * 0.4 && validCmdIds.includes('heal')) chosenCommand = 'heal'; 
-                else if (s.player.hunger < 40 && validCmdIds.includes('eat')) chosenCommand = 'eat'; 
+                // ★修正：回復アイテムや食料を「持っている時だけ」コマンドを選ぶようにする！
+                let hasFood = s.player.tempInventory.some(i => window.getDungeonItemEffect(i).isConsumable && window.getDungeonItemEffect(i).hunger > 0);
+                let hasHeal = s.player.tempInventory.some(i => window.getDungeonItemEffect(i).isConsumable && window.getDungeonItemEffect(i).hp > 0);
+
+                if (s.player.hp < s.player.maxHp * 0.4 && hasHeal && validCmdIds.includes('heal')) chosenCommand = 'heal'; 
+                else if (s.player.hunger < 40 && hasFood && validCmdIds.includes('eat')) chosenCommand = 'eat'; 
                 else if (s.player.hp < s.player.maxHp * 0.3 && enemyInSight && validCmdIds.includes('flee')) chosenCommand = 'flee';
-                
-                // ★追加：賢いAIは、インベントリに武器や盾があれば優先して装備する！
                 else if (!s.player.equipWeapon && s.player.tempInventory.some(i => window.getDungeonItemEffect(i).isWeapon) && validCmdIds.includes('equip')) chosenCommand = 'equip';
                 else if (!s.player.equipShield && s.player.tempInventory.some(i => window.getDungeonItemEffect(i).isShield) && validCmdIds.includes('equip')) chosenCommand = 'equip';
-                
                 else if (enemyAdjacent && validCmdIds.includes('attack')) chosenCommand = 'attack'; 
                 else {
                     let validMoves = [];
-                    if (validCmdIds.includes('move_up') && s.grid[s.player.y - 1][s.player.x] !== 1) validMoves.push('move_up');
-                    if (validCmdIds.includes('move_down') && s.grid[s.player.y + 1][s.player.x] !== 1) validMoves.push('move_down');
-                    if (validCmdIds.includes('move_left') && s.grid[s.player.y][s.player.x - 1] !== 1) validMoves.push('move_left');
-                    if (validCmdIds.includes('move_right') && s.grid[s.player.y][s.player.x + 1] !== 1) validMoves.push('move_right');
-                    if (validMoves.length > 0) chosenCommand = validMoves[Math.floor(Math.random() * validMoves.length)];
+                    let possibleDirs = [
+                        { cmd: 'move_up', dx: 0, dy: -1 }, { cmd: 'move_down', dx: 0, dy: 1 },
+                        { cmd: 'move_left', dx: -1, dy: 0 }, { cmd: 'move_right', dx: 1, dy: 0 }
+                    ];
+                    let targetPos = null;
+                    
+                    // 1. 階段を目指す
+                    for(let y=0; y<s.mapHeight; y++) {
+                        for(let x=0; x<s.mapWidth; x++) {
+                            if (s.visited[y][x] && s.grid[y][x] === 2) { targetPos = { x: x, y: y }; break; }
+                        }
+                        if (targetPos) break;
+                    }
+                    
+                    // ★追加：階段がない場合は、一番近い「まだ行ったことがないマス」を目標にする（行き止まりぐるぐる回避）
+                    if (!targetPos) {
+                        let nearestUnvisited = null; let minDist = Infinity;
+                        for(let y=0; y<s.mapHeight; y++) {
+                            for(let x=0; x<s.mapWidth; x++) {
+                                if (!s.visited[y][x] && s.grid[y][x] !== 1) {
+                                    let dist = Math.abs(s.player.x - x) + Math.abs(s.player.y - y);
+                                    if (dist < minDist) { minDist = dist; nearestUnvisited = { x: x, y: y }; }
+                                }
+                            }
+                        }
+                        if (nearestUnvisited) targetPos = nearestUnvisited;
+                    }
+
+                    // 2. 敵を狩りに行く
+                    if (!targetPos && s.player.hp > s.player.maxHp * 0.4 && enemyInSight) {
+                        targetPos = { x: enemyInSight.x, y: enemyInSight.y };
+                    }
+                    
+                    possibleDirs.forEach(dir => {
+                        if (validCmdIds.includes(dir.cmd)) {
+                            let nx = s.player.x + dir.dx; let ny = s.player.y + dir.dy;
+                            if (nx >= 0 && nx < s.mapWidth && ny >= 0 && ny < s.mapHeight && s.grid[ny][nx] !== 1) {
+                                let score = 10;
+                                if (s.player.lastX === nx && s.player.lastY === ny) score -= 8; // 行ったり来たり防止
+                                
+                                if (targetPos) {
+                                    let currentDist = Math.abs(s.player.x - targetPos.x) + Math.abs(s.player.y - targetPos.y);
+                                    let nextDist = Math.abs(nx - targetPos.x) + Math.abs(ny - targetPos.y);
+                                    if (nextDist < currentDist) score += 15; else score -= 5;
+                                }
+                                validMoves.push({ cmd: dir.cmd, score: score, nx: nx, ny: ny });
+                            }
+                        }
+                    });
+                    
+                    if (validMoves.length > 0) {
+                        validMoves.sort((a, b) => b.score - a.score);
+                        let topScore = validMoves[0].score;
+                        let bestMoves = validMoves.filter(m => m.score === topScore);
+                        chosenCommand = bestMoves[Math.floor(Math.random() * bestMoves.length)].cmd;
+                    }
                 }
             }
 
-            if (!chosenCommand) {
-                chosenCommand = validCmdIds[Math.floor(Math.random() * validCmdIds.length)];
-            }
-            
-            // ==========================================
-            // ★ 修正２：もし何らかのバグでオブジェクトが混入していても、強制的に文字列に直す！
-            // ==========================================
-            if (typeof chosenCommand === 'object' && chosenCommand !== null) {
-                chosenCommand = chosenCommand.id;
-            }
+            if (!chosenCommand) chosenCommand = validCmdIds[Math.floor(Math.random() * validCmdIds.length)];
+            if (typeof chosenCommand === 'object' && chosenCommand !== null) chosenCommand = chosenCommand.id;
 
             const cmdInfo = window.DUNGEON_AVAILABLE_COMMANDS.find(c => c.id === chosenCommand); 
-            if (cmdInfo) {
-                window.addDungeonLog(`${aiName} は「${cmdInfo.name}」と考えた！`, '#FFF');
-            } else {
-                // ここまできても見つからない場合は、最後の保険で攻撃する
-                chosenCommand = 'attack';
-                window.addDungeonLog(`${aiName} はとっさに身構えた！`, '#ff9800');
-            }
+            if (cmdInfo) window.addDungeonLog(`${aiName} は「${cmdInfo.name}」と考えた！`, '#FFF');
+            else { chosenCommand = 'attack'; window.addDungeonLog(`${aiName} はとっさに身構えた！`, '#ff9800'); }
         }
     }
 
@@ -4343,7 +4393,11 @@ window.processDungeonTurn = function() {
         if (newX >= 0 && newX < s.mapWidth && newY >= 0 && newY < s.mapHeight && s.grid[newY][newX] !== 1) {
             let hitEnemy = s.enemies.find(e => e.x === newX && e.y === newY && e.hp > 0);
             if (hitEnemy) { window.addDungeonLog(`ゴツン！ 敵にぶつかった！`, '#FF9800'); s.player.attackAnim = true; } 
-            else { s.player.x = newX; s.player.y = newY; }
+            else { 
+                s.player.lastX = s.player.x; 
+                s.player.lastY = s.player.y;
+                s.player.x = newX; s.player.y = newY; 
+            }
         } else {
             window.addDungeonLog(`ガンッ！ 壁にぶつかった！`, '#aaa');
         }
@@ -4357,48 +4411,31 @@ window.processDungeonTurn = function() {
     } else if (chosenCommand === 'heal' || chosenCommand === 'eat') {
         let consumed = false;
         if (s.player.tempInventory && s.player.tempInventory.length > 0) {
-            // インベントリから「食べられるアイテム」を探す
             for(let i=0; i<s.player.tempInventory.length; i++) {
                 let itemId = s.player.tempInventory[i];
                 let effect = window.getDungeonItemEffect(itemId);
-                
                 if (effect.isConsumable) {
                     let isFull = (s.player.hp >= s.player.maxHp && s.player.hunger >= 100);
-                    
-                    // ★ 賢さ判定：満タンなのに使おうとした場合
                     if (isFull) {
-                        // 賢いAIなら「今は不要だ」と判断して使用をキャンセルする
                         if (Math.random() < smartChance) {
                             window.addDungeonLog(`${aiName} は「今は必要ない」と判断して手を止めた。`, '#aaa');
-                            consumed = true; // 行動ターンは消費する
-                            break;
+                            consumed = true; break;
                         } else {
-                            // 賢くないAIは、満タンでも食欲に負けて食べてしまう（無駄遣い）
                             window.addDungeonLog(`満タンなのに ${effect.name} を食べてしまった...（無駄遣い！）`, '#ff9800');
                         }
                     } else {
-                        // 普通に回復した時
                         window.addDungeonLog(`${effect.name} を使い、HPが ${effect.hp}、満腹度が ${effect.hunger} 回復した！`, '#4CAF50');
                     }
-                    
-                    // アイテムを消費してステータスを回復
                     s.player.tempInventory.splice(i, 1); 
                     s.player.hp = Math.min(s.player.maxHp, s.player.hp + effect.hp); 
                     s.player.hunger = Math.min(100, s.player.hunger + effect.hunger); 
-                    
-                    consumed = true; 
-                    break;
+                    consumed = true; break;
                 }
             }
         }
-        if (!consumed) {
-            window.addDungeonLog(`しかし使えるアイテムを持っていなかった！`, '#ff5252');
-        }
+        if (!consumed) { window.addDungeonLog(`しかし使えるアイテムを持っていなかった！`, '#ff5252'); }
     } else if (chosenCommand === 'equip') {
-        // ★修正：気合（バフ）を入れるのではなく、実際のアイテムを装備する
         let equippedSomething = false;
-        
-        // 武器を装備
         if (!s.player.equipWeapon) {
             let wIdx = s.player.tempInventory.findIndex(i => window.getDungeonItemEffect(i).isWeapon);
             if (wIdx !== -1) {
@@ -4408,7 +4445,6 @@ window.processDungeonTurn = function() {
                 equippedSomething = true;
             }
         }
-        // 盾を装備（武器を装備しなかった場合のみ、1ターン1アクション）
         if (!s.player.equipShield && !equippedSomething) { 
             let sIdx = s.player.tempInventory.findIndex(i => window.getDungeonItemEffect(i).isShield);
             if (sIdx !== -1) {
@@ -4418,43 +4454,22 @@ window.processDungeonTurn = function() {
                 equippedSomething = true;
             }
         }
-        
-        if (!equippedSomething) {
-            window.addDungeonLog(`装備できるものを持っていなかった...`, '#aaa');
-        }
-        
-    // ★追加：「はずす」の処理
+        if (!equippedSomething) window.addDungeonLog(`装備できるものを持っていなかった...`, '#aaa');
     } else if (chosenCommand === 'unequip') {
         if (s.player.equipWeapon) {
-            s.player.tempInventory.push(s.player.equipWeapon);
-            window.addDungeonLog(`武器をはずして鞄にしまった。`, '#aaa');
-            s.player.equipWeapon = null;
+            s.player.tempInventory.push(s.player.equipWeapon); window.addDungeonLog(`武器をはずして鞄にしまった。`, '#aaa'); s.player.equipWeapon = null;
         } else if (s.player.equipShield) {
-            s.player.tempInventory.push(s.player.equipShield);
-            window.addDungeonLog(`盾をはずして鞄にしまった。`, '#aaa');
-            s.player.equipShield = null;
-        } else {
-            window.addDungeonLog(`はずす装備がなかった。`, '#aaa');
-        }
+            s.player.tempInventory.push(s.player.equipShield); window.addDungeonLog(`盾をはずして鞄にしまった。`, '#aaa'); s.player.equipShield = null;
+        } else { window.addDungeonLog(`はずす装備がなかった。`, '#aaa'); }
     }
 
-    // ==========================================
-    // ★ 追加：他プレイヤーの救助処理（重なった瞬間）
-    // ==========================================
     if (s.rescueTargets) {
         let targetToRescue = s.rescueTargets.find(t => t.x === s.player.x && t.y === s.player.y && !t.rescued);
         if (targetToRescue) {
             targetToRescue.rescued = true;
             window.addDungeonLog(`倒れていた ${targetToRescue.name} を救助した！！`, '#FFEB3B');
-            
-            // クラウドに救助完了を報告
-            if (typeof window.completeRescue === 'function') {
-                window.completeRescue(targetToRescue.id);
-            }
-            
-            // 救助のお礼としてステータス全回復！
-            s.player.hp = s.player.maxHp;
-            s.player.hunger = 100;
+            if (typeof window.completeRescue === 'function') window.completeRescue(targetToRescue.id);
+            s.player.hp = s.player.maxHp; s.player.hunger = 100;
             window.addDungeonLog(`感謝の光に包まれ、体力と満腹度が全回復した！✨`, '#4CAF50');
         }
     }
@@ -4463,12 +4478,7 @@ window.processDungeonTurn = function() {
         window.addDungeonLog(`階段を見つけた！ 次のフロアへ進む！`, '#00BCD4');
         if (s.isAuto) window.toggleDungeonAuto(); 
         s.floor++; 
-        
-        // ★修正：非同期で次のフロアを生成（救助データの読み込みを待つため）
-        (async () => {
-            await window.generateDungeonFloor(); 
-            window.updateDungeonUI(); 
-        })();
+        (async () => { await window.generateDungeonFloor(); window.updateDungeonUI(); })();
         return; 
     }
 
@@ -4515,12 +4525,36 @@ window.processDungeonTurn = function() {
         }
     });
 
+    // ★追加：敵の定期的なリスポーン（レベル上げ救済）
+    s.turnCount = (s.turnCount || 0) + 1;
+    if (s.turnCount % 40 === 0 && s.enemies.filter(e => e.hp > 0).length < 15) {
+        let rooms = s.roomsInfo;
+        if (rooms && rooms.length > 0) {
+            let r = rooms[Math.floor(Math.random() * rooms.length)];
+            let ex, ey; let attempts = 0;
+            do { 
+                ex = r.x + Math.floor(Math.random() * r.w); ey = r.y + Math.floor(Math.random() * r.h); attempts++;
+            } while (attempts < 10 && (s.grid[ey][ex] !== 0 || (ex === s.player.x && ey === s.player.y) || window.isTileVisible(s, ex, ey)));
+            
+            if (attempts < 10) {
+                let eType = window._dungeonAiTypesList[Math.floor(Math.random() * window._dungeonAiTypesList.length)];
+                const eHpBase = s.mapType === 'crystal' ? 30 : 20;
+                const eDmgBase = s.mapType === 'crystal' ? 8 : 5;
+                s.enemies.push({ 
+                    id: 'e_spawn_'+Date.now(), x: ex, y: ey, 
+                    hp: eHpBase + s.floor * 5, maxHp: eHpBase + s.floor * 5, 
+                    damage: eDmgBase + s.floor * 2, name: `迷宮の${eType}`, type: eType, face: 'down', attackAnim: false 
+                });
+                window.addDungeonLog(`どこからか魔物の気配がする...`, '#aaa');
+            }
+        }
+    }
+
     window.updateDungeonUI();
 
     if (s.player.hp <= 0) {
         window.addDungeonLog(`${aiName} は倒れてしまった...`, '#ff5252');
         if (s.isAuto) window.toggleDungeonAuto(); 
-        
         setTimeout(() => { 
             if (typeof window.updateDungeonRanking === 'function') {
                 window.updateDungeonRanking(s.mapType, s.floor, s.player.level);
@@ -4566,190 +4600,782 @@ window.findFacilityForTask = function(taskType, masterType = null) {
 };
 
 // ==========================================
-// 🔨 建築システムの完全版（場所決め ＋ 確実なマップ配置）
+// 🔨 建築システムの完全復旧（近い川を探す ＋ 確実な完成）
+// ==========================================
+
+// ★重要：設計図ではなく、主人公(aiPet)に直接教え込む！
+aiPet.processBuildingStart = function(task) {
+    let bId = task.targetBuilding;
+    
+    // ★修正: blacksmith と smith の名前の揺れを強制的に吸収してエラーを防ぐ！
+    if (bId === 'blacksmith' && typeof buildingCatalog !== 'undefined' && !buildingCatalog['blacksmith']) {
+        bId = 'smith';
+    } else if (bId === 'smith' && typeof buildingCatalog !== 'undefined' && !buildingCatalog['smith']) {
+        bId = 'blacksmith';
+    }
+
+    if (!bId) {
+        let buildKeys = ['hut', 'farm'];
+        if (typeof buildingCatalog !== 'undefined') {
+            const level = this.skills && this.skills.building ? this.skills.building : 1;
+            buildKeys = Object.keys(buildingCatalog).filter(k => buildingCatalog[k].reqBuildLevel <= level && k !== 'castle' && k !== 'casino');
+        }
+        bId = buildKeys[Math.floor(Math.random() * buildKeys.length)];
+    }
+
+    let bData = (typeof buildingCatalog !== 'undefined' && buildingCatalog[bId]) ? buildingCatalog[bId] : null;
+    
+    // 万が一データが見つからなくても、手動でsmithデータをでっち上げて無理やり通す（フェイルセーフ）
+    if (!bData && (bId === 'smith' || bId === 'blacksmith')) {
+        bData = { name: "鍛冶屋", materials: { stone: 2, wood: 1 } };
+        bId = 'smith';
+    }
+
+    if (!bData) { this.message = "建て方がわからない..."; this.messageTimer = 120; return false; }
+
+    if (this.apprentice && this.apprentice.currentMaster === 'building') {
+        if (!this.inventory) this.inventory = [];
+        if (bData.materials) {
+            for (let mKey in bData.materials) {
+                let req = bData.materials[mKey];
+                while (this.inventory.filter(i => i === mKey).length < req) { this.inventory.push(mKey); }
+            }
+        }
+    }
+
+    let myItems = {};
+    if (this.inventory) this.inventory.forEach(k => myItems[k] = (myItems[k] || 0) + 1);
+    let canBuild = true;
+    if (bData.materials) {
+        for (let mKey in bData.materials) {
+            if ((myItems[mKey] || 0) < bData.materials[mKey]) canBuild = false;
+        }
+    }
+    if (!canBuild) {
+        this.message = `${bData.name}を作る素材が足りないみたい...`; this.messageTimer = 120; return false;
+    }
+
+    let tx = this.x; let ty = this.y;
+    let walkX = this.x; let walkY = this.y; 
+    let foundSpot = false;
+
+    if (bId === 'bridge') {
+        let existingBridges = [];
+        for (let k in assets) { if (assets[k].type === 'bridge') existingBridges.push(assets[k]); }
+        
+        if (existingBridges.length > 0) {
+            let base = existingBridges[existingBridges.length - 1]; 
+            tx = base.dx + (base.sw * (base.scale || 0.5)); ty = base.dy; walkX = base.dx; walkY = base.dy; foundSpot = true;
+        } else {
+            for (let i = 0; i < 100; i++) {
+                let checkX = 100 + Math.random() * 600; let checkY = 100 + Math.random() * 300;
+                if (typeof this.isPointOnWater === 'function' && this.isPointOnWater(checkX, checkY)) {
+                    tx = checkX; ty = checkY; walkX = checkX - 40; walkY = checkY; foundSpot = true; break;
+                }
+            }
+        }
+        if (!foundSpot) { this.message = "川が見つからないよ..."; this.messageTimer = 120; return false; }
+    } else {
+        for (let i = 0; i < 30; i++) {
+            let checkX = this.x + (Math.random() - 0.5) * 200; let checkY = this.y + (Math.random() - 0.5) * 200;
+            checkX = Math.max(50, Math.min(750, checkX)); checkY = Math.max(50, Math.min(430, checkY));
+            if (typeof this.isPointOnWater === 'function' && !this.isPointOnWater(checkX, checkY)) {
+                tx = checkX; ty = checkY; walkX = checkX; walkY = checkY; foundSpot = true; break;
+            }
+        }
+    }
+
+    this.message = `${bData.name}を建てる場所へ行くよ！`; this.messageTimer = 120;
+    let vSrc = (typeof catalog !== 'undefined' && catalog[bId]) ? catalog[bId] : {img: bId, sw: 50, sh: 50, sx: 0, sy: 0, scale: 0.5};
+
+    task.buildData = {
+        typeKey: bId, name: bData.name,
+        visualSource: { img: vSrc.img || vSrc.image || 'field', sx: vSrc.sx || 0, sy: vSrc.sy || 0, sw: vSrc.sw || 50, sh: vSrc.sh || 50 },
+        targetScale: vSrc.scale || 0.5, bestX: tx, bestY: ty, walkX: walkX, walkY: walkY, targetFlip: false, maxDurability: bData.maxDurability || -1
+    };
+    task._hasBeenBuilt = false;
+    return true;
+};
+
+// ★ここが最も重要：確実にaiPetに完成処理を直接生やす！
+aiPet.processBuildingFinish = function(task) {
+    if (!task || !task.buildData || task._hasBeenBuilt) return;
+    task._hasBeenBuilt = true;
+    
+    let bId = task.buildData.typeKey;
+    let bData = (typeof buildingCatalog !== 'undefined') ? buildingCatalog[bId] : null;
+    
+    if (!this.godMode && bData && bData.materials) {
+        let myItems = {};
+        (this.inventory || []).forEach(k => myItems[k] = (myItems[k] || 0) + 1);
+        let canBuild = true;
+        for (let mKey in bData.materials) {
+            if ((myItems[mKey] || 0) < bData.materials[mKey]) canBuild = false;
+        }
+        if (!canBuild) {
+            this.message = "あれ？ 途中で素材を落としちゃったみたい..."; this.messageTimer = 120;
+            return;
+        }
+        for (let mKey in bData.materials) {
+            for (let i = 0; i < bData.materials[mKey]; i++) {
+                let idx = this.inventory.indexOf(mKey);
+                if (idx !== -1) this.inventory.splice(idx, 1);
+            }
+        }
+        if (typeof updateStatUI === 'function') updateStatUI();
+    }
+
+    let uid = 'build_' + bId + '_' + Date.now();
+    let vSrc = task.buildData.visualSource || {};
+
+    // ★修正：透明化を防ぐため、img, sx, sy を完全に反映させる
+    if (bId === 'bridge') {
+        assets[uid] = {
+            type: 'bridge',
+            name: '橋',
+            img: 'field_6',
+            sx: 183, sy: 1126, sw: 769, sh: 691, scale: 0.10000000000000007,
+            dx: task.buildData.bestX, 
+            dy: task.buildData.bestY,
+            durability: -1, maxDurability: -1
+        };
+    } else {
+        let vSrc = task.buildData.visualSource || {};
+        assets[uid] = {
+            type: bId,
+            name: task.buildData.name,
+            img: vSrc.img || 'field',
+            sx: vSrc.sx !== undefined ? vSrc.sx : 0,
+            sy: vSrc.sy !== undefined ? vSrc.sy : 0,
+            dx: task.buildData.bestX, 
+            dy: task.buildData.bestY, 
+            sw: sw, sh: sh,
+            scale: task.buildData.targetScale || 0.5,
+            durability: task.buildData.maxDurability || -1,
+            maxDurability: task.buildData.maxDurability || -1
+        };
+    }
+
+    if (bId === 'farm') {
+        assets[uid].plantedCrop = null;
+        assets[uid].growth = 0; assets[uid].waterLevel = 100; assets[uid].pestState = false;
+    }
+
+    this.message = `${task.buildData.name}が完成したよ！`;
+    this.messageTimer = 180;
+    if (typeof addFloatingText === 'function') addFloatingText(this.x, this.y - 40, "✨ 完成！", "#FFD700");
+    if (typeof saveGameData === 'function') saveGameData();
+    console.log(`[Build Success] ${task.buildData.name} を設置しました！`);
+};
+
+// パーティメンバー等にも反映させるための保険
+if (typeof window.AICharacter !== 'undefined') {
+    window.AICharacter.prototype.processBuildingStart = aiPet.processBuildingStart;
+    window.AICharacter.prototype.processBuildingFinish = aiPet.processBuildingFinish;
+}
+
+// ==========================================
+// 🩹 最終デバッグパッチ（透明橋の修正 ＆ ダンジョン突入フック）
 // ==========================================
 
 if (typeof window.AICharacter !== 'undefined') {
-
-    // ------------------------------------------
-    // 1. 建築の「予約」と「場所決め（橋の連携含む）」
-    // ------------------------------------------
-    window.AICharacter.prototype.processBuildingStart = function(task) {
-        let bId = task.targetBuilding;
-        if (!bId) {
-            let buildKeys = ['hut', 'farm'];
-            if (typeof buildingCatalog !== 'undefined') {
-                const level = this.skills && this.skills.building ? this.skills.building : 1;
-                buildKeys = Object.keys(buildingCatalog).filter(k => buildingCatalog[k].reqBuildLevel <= level && k !== 'castle' && k !== 'casino');
-            }
-            bId = buildKeys[Math.floor(Math.random() * buildKeys.length)];
-        }
-
-        const bData = (typeof buildingCatalog !== 'undefined' && buildingCatalog[bId]) ? buildingCatalog[bId] : null;
-        if (!bData) { this.message = "建て方がわからない..."; this.messageTimer = 120; return false; }
-
-        if (this.apprentice && this.apprentice.currentMaster === 'building') {
-            if (!this.inventory) this.inventory = [];
-            if (bData.materials) {
-                for (let mKey in bData.materials) {
-                    let req = bData.materials[mKey];
-                    while (this.inventory.filter(i => i === mKey).length < req) { this.inventory.push(mKey); }
-                }
-            }
-        }
-
-        // 事前チェックのみ行う（ここではまだ消費しない！）
-        let myItems = {};
-        if (this.inventory) this.inventory.forEach(k => myItems[k] = (myItems[k] || 0) + 1);
-        let canBuild = true;
-        if (bData.materials) {
+    
+    // 1. 透明だった橋に「画像データ」を持たせて実体化させる！
+    window.AICharacter.prototype.processBuildingFinish = function(task) {
+        if (!task || !task.buildData || task._hasBeenBuilt) return;
+        task._hasBeenBuilt = true;
+        
+        let bId = task.buildData.typeKey;
+        let bData = (typeof buildingCatalog !== 'undefined') ? buildingCatalog[bId] : null;
+        
+        // 素材の消費
+        if (!this.godMode && bData && bData.materials) {
+            let myItems = {};
+            (this.inventory || []).forEach(k => myItems[k] = (myItems[k] || 0) + 1);
+            let canBuild = true;
             for (let mKey in bData.materials) {
                 if ((myItems[mKey] || 0) < bData.materials[mKey]) canBuild = false;
             }
-        }
-        if (!canBuild) {
-            this.message = `${bData.name}を作る素材が足りないみたい...`; this.messageTimer = 120; return false;
-        }
-
-        // 建築先を探す
-        let tx = this.x; let ty = this.y;
-        let walkX = this.x; let walkY = this.y; 
-        let foundSpot = false;
-
-        if (bId === 'bridge') {
-            let existingBridges = [];
-            for (let k in assets) { if (assets[k].type === 'bridge') existingBridges.push(assets[k]); }
-            
-            if (existingBridges.length > 0) {
-                // すでにある橋の隣に架ける
-                let base = existingBridges[existingBridges.length - 1]; 
-                tx = base.dx + (base.sw * (base.scale || 0.5)); 
-                ty = base.dy;
-                walkX = base.dx; // 歩くのはすでにある橋の上
-                walkY = base.dy; 
-                foundSpot = true;
-            } else {
-                // 1本目の橋を架ける川を探す
-                for (let i = 0; i < 100; i++) {
-                    let checkX = 100 + Math.random() * 600;
-                    let checkY = 100 + Math.random() * 300;
-                    if (typeof this.isPointOnWater === 'function' && this.isPointOnWater(checkX, checkY)) {
-                        tx = checkX; ty = checkY; 
-                        walkX = checkX - 40; walkY = checkY; // 手前の陸地に立つ
-                        foundSpot = true;
-                        break;
-                    }
+            if (!canBuild) {
+                this.message = "あれ？ 途中で素材を落としちゃったみたい..."; this.messageTimer = 120;
+                return;
+            }
+            for (let mKey in bData.materials) {
+                for (let i = 0; i < bData.materials[mKey]; i++) {
+                    let idx = this.inventory.indexOf(mKey);
+                    if (idx !== -1) this.inventory.splice(idx, 1);
                 }
             }
-            if (!foundSpot) { this.message = "川が見つからないよ..."; this.messageTimer = 120; return false; }
-        } else {
-            // 陸地の建物
-            for (let i = 0; i < 30; i++) {
-                let checkX = this.x + (Math.random() - 0.5) * 200; let checkY = this.y + (Math.random() - 0.5) * 200;
-                checkX = Math.max(50, Math.min(750, checkX)); checkY = Math.max(50, Math.min(430, checkY));
-                if (typeof this.isPointOnWater === 'function' && !this.isPointOnWater(checkX, checkY)) {
-                    tx = checkX; ty = checkY;
-                    walkX = checkX; walkY = checkY; 
-                    foundSpot = true; break;
-                }
-            }
+            if (typeof updateStatUI === 'function') updateStatUI();
         }
 
-        this.message = `${bData.name}を建てる場所へ行くよ！`; this.messageTimer = 120;
-        let vSrc = (typeof catalog !== 'undefined' && catalog[bId]) ? catalog[bId] : {img: bId, sw: 50, sh: 50, sx: 0, sy: 0, scale: 0.5};
+        // マップへの配置（★ここに画像データ: img, sx, sy を追加しました！）
+        let uid = 'build_' + bId + '_' + Date.now();
+        let vSrc = task.buildData.visualSource || {};
+        let sw = vSrc.sw || 50;
+        let sh = vSrc.sh || 50;
 
-        task.buildData = {
-            typeKey: bId, name: bData.name,
-            visualSource: { img: vSrc.img || vSrc.image || 'field', sx: vSrc.sx || 0, sy: vSrc.sy || 0, sw: vSrc.sw || 50, sh: vSrc.sh || 50 },
-            targetScale: vSrc.scale || 0.5,
-            bestX: tx, bestY: ty,
-            walkX: walkX, walkY: walkY,
-            targetFlip: false, maxDurability: bData.maxDurability || -1
+        assets[uid] = {
+            type: bId,
+            name: task.buildData.name,
+            img: vSrc.img || 'field', // ★画像ソース
+            sx: vSrc.sx || 0,         // ★切り抜きX座標
+            sy: vSrc.sy || 0,         // ★切り抜きY座標
+            dx: task.buildData.bestX, 
+            dy: task.buildData.bestY, 
+            sw: sw, sh: sh,
+            scale: task.buildData.targetScale || 0.5,
+            durability: task.buildData.maxDurability || -1,
+            maxDurability: task.buildData.maxDurability || -1
         };
-        
-        task._hasBeenBuilt = false; // 建設済みフラグをリセット
-        return true;
+
+        if (bId === 'farm') {
+            assets[uid].plantedCrop = null;
+            assets[uid].growth = 0; assets[uid].waterLevel = 100; assets[uid].pestState = false;
+        }
+
+        this.message = `${task.buildData.name}が完成したよ！`;
+        this.messageTimer = 180;
+        if (typeof addFloatingText === 'function') addFloatingText(this.x, this.y - 40, "✨ 完成！", "#FFD700");
+        if (typeof saveGameData === 'function') saveGameData();
     };
 
-    // ------------------------------------------
-    // 2. アップデート関数のフック（完了の監視と強制配置）
-    // ------------------------------------------
-    if (!window._buildHookApplied_V3) {
-        window._buildHookApplied_V3 = true;
-        const _originalUpdate = window.AICharacter.prototype.update;
-        
-        window.AICharacter.prototype.update = function(dt) {
-            let currentTask = this.schedule && this.schedule.length > 0 ? this.schedule[0] : null;
-            let wasBuilding = currentTask && currentTask.type === 'build';
-
-            // 本来のゲームループを実行させる
-            if (typeof _originalUpdate === 'function') {
-                _originalUpdate.call(this, dt);
+    // 2. スカルやクリスタルに入った時、「普通の探索」ではなく「ダンジョンUI」を開くように横取りする
+    const _origProcessExploration = window.AICharacter.prototype.processExploration;
+    window.AICharacter.prototype.processExploration = function() {
+        // ★対象がダンジョンの場合はUIを開いて探索をストップ！
+        if (this.interactionTarget && (this.interactionTarget.type === 'skull' || this.interactionTarget.type === 'crystal')) {
+            this.actionState = 'idle';
+            this.isIndoors = false;
+            // ★修正：40回積まれた予定もすべて消去する！
+            this.schedule = [];
+            if (typeof window.updateScheduleList === 'function') window.updateScheduleList();
+            
+            if (typeof window.openDungeonUI === 'function') {
+                window.openDungeonUI(this.interactionTarget.type);
             }
+            return;
+        }
+        // 普通の森や山なら元の探検処理をする
+        if (typeof _origProcessExploration === 'function') {
+            _origProcessExploration.call(this);
+        }
+    };
+    
+    const _origExecuteEnterAction = window.AICharacter.prototype.executeEnterAction;
+    window.AICharacter.prototype.executeEnterAction = function() {
+        // ★歩いて直接ぶつかった場合もUIを開く！
+        if (this.interactionTarget && (this.interactionTarget.type === 'skull' || this.interactionTarget.type === 'crystal')) {
+            this.actionState = 'idle';
+            this.isIndoors = false;
+            // ★修正：40回積まれた予定もすべて消去する！
+            this.schedule = [];
+            if (typeof window.updateScheduleList === 'function') window.updateScheduleList();
+            
+            if (typeof window.openDungeonUI === 'function') {
+                window.openDungeonUI(this.interactionTarget.type);
+            }
+            return;
+        }
+        if (typeof _origExecuteEnterAction === 'function') {
+            _origExecuteEnterAction.call(this);
+        }
+    };
 
-            // 本来のループが終わった直後、タスクが「完了」していたら強制的に配置！
-            if (wasBuilding && currentTask && !currentTask.aborted) {
-                let isFinished = false;
-                // 時間が0になった、またはスケジュールから消化されて消えたら完了
-                if (currentTask.duration <= 0) isFinished = true;
-                if (this.schedule.length === 0 || this.schedule[0] !== currentTask) isFinished = true;
+    // aiPet(現在の主人公の実体) にも反映させる
+    if (window.aiPet) {
+        window.aiPet.processBuildingFinish = window.AICharacter.prototype.processBuildingFinish;
+        window.aiPet.processExploration = window.AICharacter.prototype.processExploration;
+        window.aiPet.executeEnterAction = window.AICharacter.prototype.executeEnterAction;
+    }
+}
 
-                if (isFinished && !currentTask._hasBeenBuilt) {
-                    currentTask._hasBeenBuilt = true;
-                    
-                    let bId = currentTask.buildData.typeKey;
-                    let bData = (typeof buildingCatalog !== 'undefined') ? buildingCatalog[bId] : null;
-                    
-                    // 【ここで素材を消費する！】
-                    if (!this.godMode && bData && bData.materials) {
-                        let myItems = {};
-                        (this.inventory || []).forEach(k => myItems[k] = (myItems[k] || 0) + 1);
-                        let canBuild = true;
-                        for (let mKey in bData.materials) {
-                            if ((myItems[mKey] || 0) < bData.materials[mKey]) canBuild = false;
-                        }
-                        if (canBuild) {
-                            for (let mKey in bData.materials) {
-                                for (let i = 0; i < bData.materials[mKey]; i++) {
-                                    let idx = this.inventory.indexOf(mKey);
-                                    if (idx !== -1) this.inventory.splice(idx, 1);
-                                }
-                            }
-                        } else {
-                            this.message = "素材が足りなくて作れなかったよ...";
-                            this.messageTimer = 120;
-                            return; 
-                        }
-                    }
+// ==========================================
+// 🩹 最終救済パッチ（橋の完全実体化 ＆ ダンジョンUIの復旧）
+// ==========================================
+(function() {
+    if (typeof window.aiPet === 'undefined') return;
 
-                    // 【指定した座標（水上）にマップチップを配置する！】
-                    let uid = 'build_' + bId + '_' + Date.now();
-                    let sw = currentTask.buildData.visualSource ? currentTask.buildData.visualSource.sw : 50;
-                    let sh = currentTask.buildData.visualSource ? currentTask.buildData.visualSource.sh : 50;
+    // 1. 透明な橋に「data.jsの画像データ」を強制注入する完成処理
+    aiPet.processBuildingFinish = function(task) {
+        if (!task || !task.buildData || task._hasBeenBuilt) return;
+        task._hasBeenBuilt = true;
+        
+        let bId = task.buildData.typeKey;
+        let bData = (typeof buildingCatalog !== 'undefined') ? buildingCatalog[bId] : null;
+        
+        // 素材の消費
+        if (!this.godMode && bData && bData.materials) {
+            let myItems = {};
+            (this.inventory || []).forEach(k => myItems[k] = (myItems[k] || 0) + 1);
+            let canBuild = true;
+            for (let mKey in bData.materials) {
+                if ((myItems[mKey] || 0) < bData.materials[mKey]) canBuild = false;
+            }
+            if (!canBuild) {
+                this.message = "あれ？ 途中で素材を落としちゃったみたい..."; this.messageTimer = 120;
+                return;
+            }
+            for (let mKey in bData.materials) {
+                for (let i = 0; i < bData.materials[mKey]; i++) {
+                    let idx = this.inventory.indexOf(mKey);
+                    if (idx !== -1) this.inventory.splice(idx, 1);
+                }
+            }
+            if (typeof updateStatUI === 'function') updateStatUI();
+        }
 
-                    assets[uid] = {
-                        type: bId,
-                        name: currentTask.buildData.name,
-                        dx: currentTask.buildData.bestX, 
-                        dy: currentTask.buildData.bestY, 
-                        sw: sw, sh: sh,
-                        scale: currentTask.buildData.targetScale || 0.5,
-                        durability: currentTask.buildData.maxDurability || -1,
-                        maxDurability: currentTask.buildData.maxDurability || -1
-                    };
+        let uid = 'build_' + bId + '_' + Date.now();
 
-                    if (bId === 'farm') {
-                        assets[uid].plantedCrop = null;
-                        assets[uid].growth = 0; assets[uid].waterLevel = 100; assets[uid].pestState = false;
-                    }
+        // ★ ユーザー様から提供いただいたデータを直接設定！絶対に透明になりません！
+        if (bId === 'bridge') {
+            assets[uid] = {
+                type: 'bridge',
+                name: '橋',
+                img: 'field_6',
+                sx: 183, sy: 1126, sw: 769, sh: 691, scale: 0.10000000000000007,
+                dx: task.buildData.bestX, dy: task.buildData.bestY,
+                durability: -1, maxDurability: -1
+            };
+        } else {
+            let vSrc = task.buildData.visualSource || {};
+            assets[uid] = {
+                type: bId, name: task.buildData.name,
+                img: vSrc.img || 'field', sx: vSrc.sx || 0, sy: vSrc.sy || 0,
+                dx: task.buildData.bestX, dy: task.buildData.bestY, 
+                sw: vSrc.sw || 50, sh: vSrc.sh || 50, scale: task.buildData.targetScale || 0.5,
+                durability: task.buildData.maxDurability || -1, maxDurability: task.buildData.maxDurability || -1
+            };
+        }
 
-                    this.message = `${currentTask.buildData.name}が完成したよ！`;
-                    this.messageTimer = 180;
-                    if (typeof addFloatingText === 'function') addFloatingText(this.x, this.y - 40, "✨ 完成！", "#FFD700");
-                    if (typeof updateStatUI === 'function') updateStatUI();
-                    if (typeof saveGameData === 'function') saveGameData();
+        if (bId === 'farm') {
+            assets[uid].plantedCrop = null; assets[uid].growth = 0; assets[uid].waterLevel = 100; assets[uid].pestState = false;
+        }
+
+        this.message = `${task.buildData.name}が完成したよ！`;
+        this.messageTimer = 180;
+        if (typeof addFloatingText === 'function') addFloatingText(this.x, this.y - 40, "✨ 完成！", "#FFD700");
+        if (typeof saveGameData === 'function') saveGameData();
+        console.log(`[Build Success] ${task.buildData.name} を設置しました！`);
+    };
+
+    // 2. スカルやクリスタルに入ったら「探索」ではなくダンジョンUIを開く！
+    if (!aiPet._dungeonPatchApplied) {
+        aiPet._dungeonPatchApplied = true;
+        
+        aiPet._origProcessExploration = aiPet.processExploration;
+        aiPet.processExploration = function() {
+            if (this.interactionTarget && (this.interactionTarget.type === 'skull' || this.interactionTarget.type === 'crystal')) {
+                this.actionState = 'idle'; this.isIndoors = false; this.indoorTarget = null;
+                // ★修正：40回積まれた予定もすべて消去する！
+                this.schedule = [];
+                if (typeof window.updateScheduleList === 'function') window.updateScheduleList();
+                if (typeof window.openDungeonUI === 'function') window.openDungeonUI(this.interactionTarget.type);
+                return;
+            }
+            if (typeof this._origProcessExploration === 'function') this._origProcessExploration();
+        };
+
+        aiPet._origExecuteEnterAction = aiPet.executeEnterAction;
+        aiPet.executeEnterAction = function() {
+            if (this.interactionTarget && (this.interactionTarget.type === 'skull' || this.interactionTarget.type === 'crystal')) {
+                this.actionState = 'idle'; this.isIndoors = false; this.indoorTarget = null;
+                // ★修正：40回積まれた予定もすべて消去する！
+                this.schedule = [];
+                if (typeof window.updateScheduleList === 'function') window.updateScheduleList();
+                if (typeof window.openDungeonUI === 'function') window.openDungeonUI(this.interactionTarget.type);
+                return;
+            }
+            if (typeof this._origExecuteEnterAction === 'function') this._origExecuteEnterAction();
+        };
+    }
+
+    // 3. タイマーが0になったら確実に完成処理を呼ぶフック
+    if (!window._ultimateUpdateHook) {
+        window._ultimateUpdateHook = true;
+        const origUpdate = window.AICharacter.prototype.update;
+        const newUpdate = function(dt) {
+            let task = this.schedule && this.schedule.length > 0 ? this.schedule[0] : null;
+            let wasBuild = task && task.type === 'build';
+            
+            if (typeof origUpdate === 'function') origUpdate.call(this, dt);
+            
+            if (wasBuild && task && task.duration <= 0 && !task.aborted && !task._hasBeenBuilt) {
+                if (typeof this.processBuildingFinish === 'function') {
+                    this.processBuildingFinish(task);
                 }
             }
         };
+        window.AICharacter.prototype.update = newUpdate;
+        if (window.aiPet) window.aiPet.update = newUpdate;
     }
-}
+
+    // 設計図にも反映（転生後用）
+    if (window.AICharacter && window.AICharacter.prototype) {
+        window.AICharacter.prototype.processBuildingFinish = aiPet.processBuildingFinish;
+        window.AICharacter.prototype.processExploration = aiPet.processExploration;
+        window.AICharacter.prototype.executeEnterAction = aiPet.executeEnterAction;
+    }
+})();
+
+// ==========================================
+// 🩹 ダンジョン完全修復 ＆ 天才AI化パッチ
+// ==========================================
+(function() {
+    if (typeof window.aiPet === 'undefined') return;
+
+    // 1. ダンジョン中は裏世界の時間を完全に止める（勝手に裏で探検してワープするのを防ぐ）
+    const _baseUpdate = window.aiPet.update;
+    const _safeUpdate = function(dt) {
+        // ダンジョンUIが開いている間は、メインループをフリーズさせる
+        if (window.DUNGEON_STATE && window.DUNGEON_STATE.active) return;
+        if (typeof _baseUpdate === 'function') _baseUpdate.call(this, dt);
+    };
+    window.aiPet.update = _safeUpdate;
+    if (window.AICharacter) window.AICharacter.prototype.update = _safeUpdate;
+
+    // 2. ダンジョンに入った瞬間、残りの予定（40回の探検など）をすべて消す
+    const _origExplore = window.aiPet.processExploration;
+    const _safeExplore = function() {
+        if (this.interactionTarget && (this.interactionTarget.type === 'skull' || this.interactionTarget.type === 'crystal')) {
+            this.actionState = 'idle'; this.isIndoors = false; this.indoorTarget = null;
+            this.schedule = []; // ★予定を全キャンセル！
+            if (typeof window.updateScheduleList === 'function') window.updateScheduleList();
+            if (typeof window.openDungeonUI === 'function') window.openDungeonUI(this.interactionTarget.type);
+            return;
+        }
+        if (typeof _origExplore === 'function') _origExplore.call(this);
+    };
+    window.aiPet.processExploration = _safeExplore;
+    if (window.AICharacter) window.AICharacter.prototype.processExploration = _safeExplore;
+
+    const _origEnter = window.aiPet.executeEnterAction;
+    const _safeEnter = function() {
+        if (this.interactionTarget && (this.interactionTarget.type === 'skull' || this.interactionTarget.type === 'crystal')) {
+            this.actionState = 'idle'; this.isIndoors = false; this.indoorTarget = null;
+            this.schedule = []; // ★予定を全キャンセル！
+            if (typeof window.updateScheduleList === 'function') window.updateScheduleList();
+            if (typeof window.openDungeonUI === 'function') window.openDungeonUI(this.interactionTarget.type);
+            return;
+        }
+        if (typeof _origEnter === 'function') _origEnter.call(this);
+    };
+    window.aiPet.executeEnterAction = _safeEnter;
+    if (window.AICharacter) window.AICharacter.prototype.executeEnterAction = _safeEnter;
+
+    // 3. 賢さに応じて「階段」や「未探索エリア」へ的確に向かう天才AIの頭脳
+    window.processDungeonTurn = function() {
+        const s = window.DUNGEON_STATE; const ai = window.aiPet; const aiName = ai.name || "AI"; 
+        
+        let tData = typeof charaTraits !== 'undefined' ? (charaTraits[s.player.skin] || charaTraits[s.player.type]) : null;
+        let consumption = tData ? (tData.consumption || 1.0) : 1.0;
+        s.player.hunger = Math.max(0, s.player.hunger - (1.0 * consumption));
+        
+        if (s.player.hunger <= 0) {
+            s.player.hp -= 2; window.addDungeonLog(`お腹が空いて倒れそうだ... (HP-2)`, '#ff5252');
+        }
+
+        if (s.player.type === 'seed' && s.floor % 5 === 0) {
+            s.player.hp = Math.min(s.player.maxHp, s.player.hp + 5); window.addDungeonLog(`光合成で少し回復した...`, '#4CAF50');
+        }
+
+        let enemyAdjacent = null; let enemyInSight = null; 
+        s.enemies.forEach(e => { 
+            if (e.hp <= 0) return;
+            let dist = Math.abs(e.x - s.player.x) + Math.abs(e.y - s.player.y);
+            if (dist === 1) enemyAdjacent = e; 
+            if (window.isTileVisible(s, e.x, e.y)) enemyInSight = e;
+            
+            if (s.player.type === 'magician' && dist <= 3 && (e.x === s.player.x || e.y === s.player.y)) {
+                if (window.isTileVisible(s, e.x, e.y)) {
+                    let clear = true;
+                    if (e.x === s.player.x) { for(let y=Math.min(s.player.y, e.y)+1; y<Math.max(s.player.y, e.y); y++) if(s.grid[y][s.player.x]===1) clear=false; }
+                    else { for(let x=Math.min(s.player.x, e.x)+1; x<Math.max(s.player.x, e.x); x++) if(s.grid[s.player.y][x]===1) clear=false; }
+                    if(clear) enemyAdjacent = e; 
+                }
+            }
+        });
+
+        if (enemyAdjacent && ai.stats && ai.stats.beauty > 20) {
+            if (enemyAdjacent.type !== 'robot' && enemyAdjacent.type !== 'machine' && enemyAdjacent.type !== 'stone') {
+                let charmChance = Math.min(0.5, ai.stats.beauty / 200); 
+                if (Math.random() < charmChance) {
+                    window.addDungeonLog(`敵は ${aiName} の美しさにみとれて動けない！`, '#E040FB');
+                    enemyAdjacent.charmed = true; 
+                }
+            }
+        }
+
+        let chosenCommand = null; 
+        let smartChance = Math.min(0.95, (ai.stats.intel || 10) / 100); 
+        
+        let myWords = (ai.apprentice && ai.apprentice.learnedWords) ? ai.apprentice.learnedWords : [];
+        let validCmdIds = [];
+        myWords.forEach(w => {
+            let cmd = window.DUNGEON_AVAILABLE_COMMANDS.find(c => c.name === w);
+            if (cmd && cmd.id) validCmdIds.push(cmd.id); 
+        });
+
+        let pType = typeof window.getPersonalityType === 'function' ? window.getPersonalityType(ai.stats) : 'average';
+        if (pType === 'lazy' && Math.random() < 0.2) {
+            window.addDungeonLog(`${aiName} は面倒くさがって立ち止まった...`, '#aaa'); chosenCommand = 'skip';
+        } else if (pType === 'gloom' && Math.random() < 0.2) {
+            window.addDungeonLog(`${aiName} は暗い気持ちになり、ため息をついた...`, '#aaa'); chosenCommand = 'skip';
+        } else if ((pType === 'idol' || pType === 'artist') && Math.random() < 0.15) {
+            window.addDungeonLog(`${aiName} は敵の前で優雅にポーズを決めた！`, '#FFD700'); chosenCommand = 'skip';
+        }
+
+        if (chosenCommand !== 'skip') {
+            if (validCmdIds.length === 0) {
+                window.addDungeonLog(`${aiName} は言葉を知らないため、勘で動いている...`, '#aaa');
+                let randomActions = ['move_up', 'move_down', 'move_left', 'move_right', 'attack'];
+                chosenCommand = randomActions[Math.floor(Math.random() * randomActions.length)];
+            } else {
+                if (Math.random() < smartChance) {
+                    if (s.player.hp < s.player.maxHp * 0.4 && validCmdIds.includes('heal')) chosenCommand = 'heal'; 
+                    else if (s.player.hunger < 40 && validCmdIds.includes('eat')) chosenCommand = 'eat'; 
+                    else if (s.player.hp < s.player.maxHp * 0.3 && enemyInSight && validCmdIds.includes('flee')) chosenCommand = 'flee';
+                    else if (!s.player.equipWeapon && s.player.tempInventory.some(i => window.getDungeonItemEffect(i).isWeapon) && validCmdIds.includes('equip')) chosenCommand = 'equip';
+                    else if (!s.player.equipShield && s.player.tempInventory.some(i => window.getDungeonItemEffect(i).isShield) && validCmdIds.includes('equip')) chosenCommand = 'equip';
+                    else if (enemyAdjacent && validCmdIds.includes('attack')) chosenCommand = 'attack'; 
+                    else {
+                        // ★天才AIの経路探索エンジン（ランダムではなく目的地へ向かう）
+                        let validMoves = [];
+                        let possibleDirs = [
+                            { cmd: 'move_up', dx: 0, dy: -1 }, { cmd: 'move_down', dx: 0, dy: 1 },
+                            { cmd: 'move_left', dx: -1, dy: 0 }, { cmd: 'move_right', dx: 1, dy: 0 }
+                        ];
+                        
+                        let targetPos = null;
+                        
+                        // 1. 階段を見つけていれば最優先で目指す
+                        for(let y=0; y<s.mapHeight; y++) {
+                            for(let x=0; x<s.mapWidth; x++) {
+                                if (s.visited[y][x] && s.grid[y][x] === 2) { 
+                                    targetPos = { x: x, y: y }; break; 
+                                }
+                            }
+                            if (targetPos) break;
+                        }
+                        
+                        // 2. 階段がなく、HPに余裕があれば視界内の敵を狩りに向かう
+                        if (!targetPos && s.player.hp > s.player.maxHp * 0.4 && enemyInSight) {
+                            targetPos = { x: enemyInSight.x, y: enemyInSight.y };
+                        }
+                        
+                        possibleDirs.forEach(dir => {
+                            if (validCmdIds.includes(dir.cmd)) {
+                                let nx = s.player.x + dir.dx; let ny = s.player.y + dir.dy;
+                                if (nx >= 0 && nx < s.mapWidth && ny >= 0 && ny < s.mapHeight && s.grid[ny][nx] !== 1) {
+                                    let score = 10;
+                                    
+                                    // 直前にいた場所に戻る動き（行ったり来たり）を減点
+                                    if (s.player.lastX === nx && s.player.lastY === ny) score -= 8;
+                                    
+                                    if (targetPos) {
+                                        let currentDist = Math.abs(s.player.x - targetPos.x) + Math.abs(s.player.y - targetPos.y);
+                                        let nextDist = Math.abs(nx - targetPos.x) + Math.abs(ny - targetPos.y);
+                                        if (nextDist < currentDist) score += 15; // 目標に近づくなら大加点
+                                        else score -= 5;
+                                    } else {
+                                        // 目標がない場合は、周囲の「まだ見ていない黒いマス」が多い方向へ進む
+                                        let unvisitedCount = 0;
+                                        for(let oy=-2; oy<=2; oy++) {
+                                            for(let ox=-2; ox<=2; ox++) {
+                                                let cx = nx+ox; let cy = ny+oy;
+                                                if(cx>=0 && cx<s.mapWidth && cy>=0 && cy<s.mapHeight && !s.visited[cy][cx]) unvisitedCount++;
+                                            }
+                                        }
+                                        score += unvisitedCount;
+                                    }
+                                    validMoves.push({ cmd: dir.cmd, score: score, nx: nx, ny: ny });
+                                }
+                            }
+                        });
+                        
+                        if (validMoves.length > 0) {
+                            // スコアが高い順に並び替え、一番良い動きを選ぶ
+                            validMoves.sort((a, b) => b.score - a.score);
+                            let topScore = validMoves[0].score;
+                            let bestMoves = validMoves.filter(m => m.score === topScore);
+                            chosenCommand = bestMoves[Math.floor(Math.random() * bestMoves.length)].cmd;
+                        }
+                    }
+                }
+                
+                if (!chosenCommand) {
+                    chosenCommand = validCmdIds[Math.floor(Math.random() * validCmdIds.length)];
+                }
+                if (typeof chosenCommand === 'object' && chosenCommand !== null) chosenCommand = chosenCommand.id;
+
+                const cmdInfo = window.DUNGEON_AVAILABLE_COMMANDS.find(c => c.id === chosenCommand); 
+                if (cmdInfo) window.addDungeonLog(`${aiName} は「${cmdInfo.name}」と考えた！`, '#FFF');
+                else { chosenCommand = 'attack'; window.addDungeonLog(`${aiName} はとっさに身構えた！`, '#ff9800'); }
+            }
+        }
+
+        let newX = s.player.x; let newY = s.player.y;
+
+        if (chosenCommand === 'move_up') { newY--; s.player.face = 'up'; } 
+        else if (chosenCommand === 'move_down') { newY++; s.player.face = 'down'; }
+        else if (chosenCommand === 'move_left') { newX--; s.player.face = 'left'; } 
+        else if (chosenCommand === 'move_right'){ newX++; s.player.face = 'right'; }
+        else if (chosenCommand === 'flee') {
+            if (enemyInSight) {
+                if (s.player.x < enemyInSight.x && s.grid[s.player.y][s.player.x - 1] !== 1) { newX--; s.player.face = 'left'; }
+                else if (s.player.x > enemyInSight.x && s.grid[s.player.y][s.player.x + 1] !== 1) { newX++; s.player.face = 'right'; }
+                else if (s.player.y < enemyInSight.y && s.grid[s.player.y - 1][s.player.x] !== 1) { newY--; s.player.face = 'up'; }
+                else if (s.player.y > enemyInSight.y && s.grid[s.player.y + 1][s.player.x] !== 1) { newY++; s.player.face = 'down'; }
+                window.addDungeonLog(`敵から遠ざかるように走った！`, '#00BCD4');
+            } else { window.addDungeonLog(`キョロキョロしている。（敵がいない）`, '#aaa'); }
+        }
+
+        if (newX !== s.player.x || newY !== s.player.y) {
+            if (newX >= 0 && newX < s.mapWidth && newY >= 0 && newY < s.mapHeight && s.grid[newY][newX] !== 1) {
+                let hitEnemy = s.enemies.find(e => e.x === newX && e.y === newY && e.hp > 0);
+                if (hitEnemy) { window.addDungeonLog(`ゴツン！ 敵にぶつかった！`, '#FF9800'); s.player.attackAnim = true; } 
+                else { 
+                    // ★移動した時に「直前の座標」を記憶する（行ったり来たり防止用）
+                    s.player.lastX = s.player.x; 
+                    s.player.lastY = s.player.y;
+                    s.player.x = newX; s.player.y = newY; 
+                }
+            } else {
+                window.addDungeonLog(`ガンッ！ 壁にぶつかった！`, '#aaa');
+            }
+        } else if (chosenCommand === 'attack') {
+            if (enemyAdjacent) {
+                if (enemyAdjacent.x < s.player.x) s.player.face = 'left'; else if (enemyAdjacent.x > s.player.x) s.player.face = 'right';
+                else if (enemyAdjacent.y < s.player.y) s.player.face = 'up'; else if (enemyAdjacent.y > s.player.y) s.player.face = 'down';
+                s.player.attackAnim = true;
+                window.dealDungeonDamage(s.player, enemyAdjacent);
+            } else { s.player.attackAnim = true; window.addDungeonLog(`空を切った...（近くに敵がいない）`, '#aaa'); }
+        } else if (chosenCommand === 'heal' || chosenCommand === 'eat') {
+            let consumed = false;
+            if (s.player.tempInventory && s.player.tempInventory.length > 0) {
+                for(let i=0; i<s.player.tempInventory.length; i++) {
+                    let itemId = s.player.tempInventory[i];
+                    let effect = window.getDungeonItemEffect(itemId);
+                    if (effect.isConsumable) {
+                        let isFull = (s.player.hp >= s.player.maxHp && s.player.hunger >= 100);
+                        if (isFull) {
+                            if (Math.random() < smartChance) {
+                                window.addDungeonLog(`${aiName} は「今は必要ない」と判断して手を止めた。`, '#aaa');
+                                consumed = true; break;
+                            } else {
+                                window.addDungeonLog(`満タンなのに ${effect.name} を食べてしまった...（無駄遣い！）`, '#ff9800');
+                            }
+                        } else {
+                            window.addDungeonLog(`${effect.name} を使い、HPが ${effect.hp}、満腹度が ${effect.hunger} 回復した！`, '#4CAF50');
+                        }
+                        s.player.tempInventory.splice(i, 1); 
+                        s.player.hp = Math.min(s.player.maxHp, s.player.hp + effect.hp); 
+                        s.player.hunger = Math.min(100, s.player.hunger + effect.hunger); 
+                        consumed = true; break;
+                    }
+                }
+            }
+            if (!consumed) { window.addDungeonLog(`しかし使えるアイテムを持っていなかった！`, '#ff5252'); }
+        } else if (chosenCommand === 'equip') {
+            let equippedSomething = false;
+            if (!s.player.equipWeapon) {
+                let wIdx = s.player.tempInventory.findIndex(i => window.getDungeonItemEffect(i).isWeapon);
+                if (wIdx !== -1) {
+                    s.player.equipWeapon = s.player.tempInventory[wIdx];
+                    s.player.tempInventory.splice(wIdx, 1);
+                    window.addDungeonLog(`武器（${window.getDungeonItemEffect(s.player.equipWeapon).name}）を装備した！`, '#FFD700');
+                    equippedSomething = true;
+                }
+            }
+            if (!s.player.equipShield && !equippedSomething) { 
+                let sIdx = s.player.tempInventory.findIndex(i => window.getDungeonItemEffect(i).isShield);
+                if (sIdx !== -1) {
+                    s.player.equipShield = s.player.tempInventory[sIdx];
+                    s.player.tempInventory.splice(sIdx, 1);
+                    window.addDungeonLog(`盾（${window.getDungeonItemEffect(s.player.equipShield).name}）を装備した！`, '#FFD700');
+                    equippedSomething = true;
+                }
+            }
+            if (!equippedSomething) window.addDungeonLog(`装備できるものを持っていなかった...`, '#aaa');
+        } else if (chosenCommand === 'unequip') {
+            if (s.player.equipWeapon) {
+                s.player.tempInventory.push(s.player.equipWeapon); window.addDungeonLog(`武器をはずして鞄にしまった。`, '#aaa'); s.player.equipWeapon = null;
+            } else if (s.player.equipShield) {
+                s.player.tempInventory.push(s.player.equipShield); window.addDungeonLog(`盾をはずして鞄にしまった。`, '#aaa'); s.player.equipShield = null;
+            } else { window.addDungeonLog(`はずす装備がなかった。`, '#aaa'); }
+        }
+
+        if (s.rescueTargets) {
+            let targetToRescue = s.rescueTargets.find(t => t.x === s.player.x && t.y === s.player.y && !t.rescued);
+            if (targetToRescue) {
+                targetToRescue.rescued = true;
+                window.addDungeonLog(`倒れていた ${targetToRescue.name} を救助した！！`, '#FFEB3B');
+                if (typeof window.completeRescue === 'function') window.completeRescue(targetToRescue.id);
+                s.player.hp = s.player.maxHp; s.player.hunger = 100;
+                window.addDungeonLog(`感謝の光に包まれ、体力と満腹度が全回復した！✨`, '#4CAF50');
+            }
+        }
+
+        if (s.grid[s.player.y][s.player.x] === 2) {
+            window.addDungeonLog(`階段を見つけた！ 次のフロアへ進む！`, '#00BCD4');
+            if (s.isAuto) window.toggleDungeonAuto(); 
+            s.floor++; 
+            (async () => { await window.generateDungeonFloor(); window.updateDungeonUI(); })();
+            return; 
+        }
+
+        s.enemies.forEach(e => {
+            if (e.hp <= 0) return;
+            if (e.charmed) { e.charmed = false; return; }
+            let actions = 1;
+            if (e.type === 'machine' && Math.random() < 0.2) actions = 2; 
+
+            for (let a = 0; a < actions; a++) {
+                if (e.hp <= 0) break;
+                let dist = Math.abs(e.x - s.player.x) + Math.abs(e.y - s.player.y);
+                let ex = e.x, ey = e.y, moveDir = '';
+
+                if (e.type === 'magician' && dist <= 3 && (e.x === s.player.x || e.y === s.player.y)) {
+                    if (s.player.x < e.x) e.face = 'left'; else if (s.player.x > e.x) e.face = 'right'; else if (s.player.y < e.y) e.face = 'up'; else if (s.player.y > e.y) e.face = 'down';
+                    e.attackAnim = true; window.dealDungeonDamage(e, s.player); return;
+                }
+
+                if (dist === 1) {
+                    if (s.player.x < e.x) e.face = 'left'; else if (s.player.x > e.x) e.face = 'right'; else if (s.player.y < e.y) e.face = 'up'; else if (s.player.y > e.y) e.face = 'down';
+                    e.attackAnim = true; window.dealDungeonDamage(e, s.player); return; 
+                } else if (dist < 6) {
+                    if (Math.abs(s.player.x - e.x) > Math.abs(s.player.y - e.y)) {
+                        if (e.x < s.player.x && s.grid[e.y][e.x+1] !== 1) { ex++; moveDir = 'right'; } else if (e.x > s.player.x && s.grid[e.y][e.x-1] !== 1) { ex--; moveDir = 'left'; }
+                    } else {
+                        if (e.y < s.player.y && s.grid[e.y+1][e.x] !== 1) { ey++; moveDir = 'down'; } else if (e.y > s.player.y && s.grid[e.y-1][e.x] !== 1) { ey--; moveDir = 'up'; }
+                    }
+                } else {
+                    if (Math.random() < 0.6) {
+                        const dirs = [];
+                        if (s.grid[e.y][e.x+1] !== 1) dirs.push({x: e.x+1, y: e.y, dir: 'right'});
+                        if (s.grid[e.y][e.x-1] !== 1) dirs.push({x: e.x-1, y: e.y, dir: 'left'});
+                        if (s.grid[e.y+1][e.x] !== 1) dirs.push({x: e.x, y: e.y+1, dir: 'down'});
+                        if (s.grid[e.y-1][e.x] !== 1) dirs.push({x: e.x, y: e.y-1, dir: 'up'});
+                        if (dirs.length > 0) { const rnd = dirs[Math.floor(Math.random() * dirs.length)]; ex = rnd.x; ey = rnd.y; moveDir = rnd.dir; }
+                    }
+                }
+                if (moveDir !== '') {
+                    let occupied = s.enemies.some(oe => oe !== e && oe.hp > 0 && oe.x === ex && oe.y === ey);
+                    let playerHit = (ex === s.player.x && ey === s.player.y);
+                    if (!occupied && !playerHit) { e.x = ex; e.y = ey; e.face = moveDir; }
+                }
+            }
+        });
+
+        window.updateDungeonUI();
+
+        if (s.player.hp <= 0) {
+            window.addDungeonLog(`${aiName} は倒れてしまった...`, '#ff5252');
+            if (s.isAuto) window.toggleDungeonAuto(); 
+            setTimeout(() => { 
+                if (typeof window.updateDungeonRanking === 'function') window.updateDungeonRanking(s.mapType, s.floor, s.player.level);
+                window.closeDungeonUI(true); 
+            }, 1500);
+        }
+    };
+})();

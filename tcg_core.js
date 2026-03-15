@@ -3722,11 +3722,12 @@ window.checkDeath = function(card, owner, htmlId, enemyOwner = null) {
 };
 
 // ==========================================
-// 3. 引退したAIからカードを生成する関数 (偽装対応)
+// 3. 引退したAIからカードを生成する関数 (偽装対応 ＆ コスト保証パッチ)
 // ==========================================
 window.generateCardFromAI = function(aiPet) {
     let rawRace = aiPet.currentSkin || aiPet.baseType || 'robot';
     let candidateKeys = Object.keys(window.TCG_MASTER).filter(key => window.TCG_MASTER[key].type === rawRace);
+    
     if (candidateKeys.length === 0) {
         let baseRace = rawRace.split('_')[0];
         candidateKeys = Object.keys(window.TCG_MASTER).filter(key => window.TCG_MASTER[key].type === baseRace);
@@ -3735,10 +3736,28 @@ window.generateCardFromAI = function(aiPet) {
         candidateKeys = Object.keys(window.TCG_MASTER).filter(key => window.TCG_MASTER[key].type === 'robot');
     }
 
-    const masterId = candidateKeys[Math.floor(Math.random() * candidateKeys.length)];
+    // ==========================================
+    // ★ 追加：ステータスに基づく「最低保証コスト」の計算
+    // ==========================================
+    const totalStats = (aiPet.stats.power || 0) + (aiPet.stats.intel || 0) + (aiPet.stats.beauty || 0);
+    // 合計ステータスが 50 上がるごとに、最低保証コストが 1 ずつ上がる（最大コスト8まで）
+    const minCost = Math.max(1, Math.min(8, Math.floor(totalStats / 50)));
+
+    // 候補の中から、最低保証コスト「以上」のカードだけに絞り込む
+    let validKeys = candidateKeys.filter(k => window.TCG_MASTER[k].baseCost >= minCost);
+    
+    // もし「その種族に該当する高コストカードが存在しない」場合は、
+    // その種族の中で『一番コストが高いカード』を確定でドロップさせる
+    if (validKeys.length === 0) {
+        candidateKeys.sort((a, b) => window.TCG_MASTER[b].baseCost - window.TCG_MASTER[a].baseCost);
+        validKeys = [candidateKeys[0]];
+    }
+
+    const masterId = validKeys[Math.floor(Math.random() * validKeys.length)];
     const masterData = window.TCG_MASTER[masterId];
     if (!masterData) return null;
 
+    // さらにステータスから微量のボーナス値を乗せる
     const hpBonus = Math.floor((aiPet.stats.power || 0) / 10);
     const dmgBonus = Math.floor((aiPet.stats.intel || 0) / 10);
 
@@ -3761,33 +3780,6 @@ window.generateCardFromAI = function(aiPet) {
     const msg = isUnlocked ? "🎉 AIの生涯がカードに刻まれた！ 🎉" : "✨ AIとの思い出がアルバムに追加された！ ✨";
     window.showCardUnlockPopup(newCard, msg);
     return newCard;
-};
-
-window.unlockSupportCard = function(masterId, currentGen, categoryName = "サポート") {
-    const masterData = window.TCG_MASTER[masterId];
-    if (!masterData) return;
-    if (!window.TCG.unlockedHistory[currentGen]) window.TCG.unlockedHistory[currentGen] = [];
-    if (window.TCG.unlockedHistory[currentGen].includes(masterId)) return;
-
-    window.TCG.unlockedHistory[currentGen].push(masterId);
-
-    const newCard = {
-        uid: 'card_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
-        masterId: masterId, name: masterData.name, type: masterData.type,
-        cost: masterData.baseCost, hp: masterData.baseHp,
-        skillName: masterData.skillName, skillCost: masterData.skillCost,
-        damage: masterData.baseDmg, ability: masterData.ability,
-        image: masterData.image, imageIndex: masterData.imageIndex,
-        sx: masterData.sx, sy: masterData.sy, sw: masterData.sw, sh: masterData.sh, scaleX: masterData.scaleX, scaleY: masterData.scaleY
-    };
-
-    window.TCG.myCollection.push(newCard);
-    window.saveTCGData();
-
-    // ★ 偽装処理
-    const isUnlocked = window.TCG.myCollection.length >= 60;
-    const msg = isUnlocked ? `✨ 新しい${categoryName}カードの記憶を獲得！ ✨` : `✨ 新しい思い出の景色を獲得！ ✨`;
-    window.showCardUnlockPopup(newCard, msg);
 };
 
 // ==========================================

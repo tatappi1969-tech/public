@@ -323,6 +323,9 @@ window.fetchOnlineDecks = async function() {
 // 🗡️ ダンジョン：オンラインランキング機能（エラー回避版）
 // ==========================================
 
+// ---------------------------------------------------------
+// 修正箇所①：スカルダンジョンの記録が更新されないバグの修正
+// ---------------------------------------------------------
 window.updateDungeonRanking = async function(mapType, reachedFloor, aiLevel = 1) {
     const user = auth.currentUser;
     if (!user) return; 
@@ -330,7 +333,6 @@ window.updateDungeonRanking = async function(mapType, reachedFloor, aiLevel = 1)
     const playerName = localStorage.getItem('my_player_name') || "名無し";
     const aiSkin = window.aiPet ? (window.aiPet.currentSkin || window.aiPet.baseType || 'robot') : 'robot';
     
-    // ★ 修正：mapTypeごとにコレクション（保存箱）を分けることでインデックスエラーを回避！
     const collectionName = `dungeon_rankings_${mapType}`;
 
     try {
@@ -338,26 +340,35 @@ window.updateDungeonRanking = async function(mapType, reachedFloor, aiLevel = 1)
         const docSnap = await getDoc(docRef);
         
         let shouldUpdate = true;
+        let parsedFloor = parseInt(reachedFloor, 10) || 1;
+
         if (docSnap.exists()) {
-            const currentRecord = docSnap.data().floor;
-            if (reachedFloor <= currentRecord) shouldUpdate = false;
+            const currentRecord = parseInt(docSnap.data().floor, 10) || 0;
+            // ★修正：同階層（タイ記録）でも、新しいAI情報で上書き更新できるように「<」に変更
+            if (parsedFloor < currentRecord) shouldUpdate = false;
         }
 
         if (shouldUpdate) {
+            // ★修正：スカルダンジョン等の特殊モードで player オブジェクトが無い場合のクラッシュ（保存失敗）を防止！
+            let eqWeapon = null; let eqShield = null;
+            if (typeof window.DUNGEON_STATE !== 'undefined' && window.DUNGEON_STATE && window.DUNGEON_STATE.player) {
+                eqWeapon = window.DUNGEON_STATE.player.equipWeapon || null;
+                eqShield = window.DUNGEON_STATE.player.equipShield || null;
+            }
+
             await setDoc(docRef, {
                 playerId: user.uid,
                 playerName: playerName,
                 mapType: mapType,
-                floor: reachedFloor,
+                floor: parsedFloor,
                 aiSkin: aiSkin,
                 aiLevel: mapType === 'crystal' ? aiLevel : null, 
                 updatedAt: Date.now(),
                 aiStats: window.aiPet ? window.aiPet.stats : null,
-                // ★追加：装備情報
-                equipWeapon: window.DUNGEON_STATE.player.equipWeapon || null,
-                equipShield: window.DUNGEON_STATE.player.equipShield || null
+                equipWeapon: eqWeapon,
+                equipShield: eqShield
             });
-            console.log(`☁️ [Ranking] ${mapType} B${reachedFloor}F の記録を更新しました！`);
+            console.log(`☁️ [Ranking] ${mapType} B${parsedFloor}F の記録を更新しました！`);
         }
     } catch (error) {
         console.error("ランキング登録エラー:", error);
@@ -385,15 +396,31 @@ window.fetchDungeonRanking = async function(mapType) {
 // 🏆 ダンジョン：ランキングUIの描画処理（総合UI統合版＆詳細表示UIパッチ）
 // ==========================================
 window.renderDungeonRankingList = async function(mapType) {
+    const tStatus = document.getElementById('main-tab-status'); 
+    const tDungeon = document.getElementById('main-tab-dungeon'); 
+    const tArena = document.getElementById('main-tab-arena');
+    
+    if (tStatus) { tStatus.style.background = '#222'; tStatus.style.color = '#aaa'; tStatus.style.borderBottom = '3px solid transparent'; }
+    if (tDungeon) { tDungeon.style.background = '#333'; tDungeon.style.color = '#FFF'; tDungeon.style.borderBottom = '3px solid #00BCD4'; tDungeon.style.borderRight = '1px solid #444'; } 
+    if (tArena) { tArena.style.background = '#222'; tArena.style.color = '#aaa'; tArena.style.borderBottom = '3px solid transparent'; tArena.style.borderLeft = '1px solid #444'; }
+
+    // ★修正：他のサブタブを完全に非表示
+    const subStatus = document.getElementById('sub-tabs-status');
+    const subArena = document.getElementById('sub-tabs-arena');
+    const subDungeon = document.getElementById('sub-tabs-dungeon');
+    if (subStatus) subStatus.style.display = 'none';
+    if (subArena) subArena.style.display = 'none';
+    if (subDungeon) subDungeon.style.display = 'flex';
+
     const tSkull = document.getElementById('rank-tab-skull');
     const tCrystal = document.getElementById('rank-tab-crystal');
     
     if (mapType === 'skull') {
-        tSkull.style.background = '#00BCD4'; tSkull.style.color = '#000'; tSkull.style.border = 'none';
-        tCrystal.style.background = '#222'; tCrystal.style.color = '#E040FB'; tCrystal.style.border = '1px solid #E040FB';
+        if (tSkull) { tSkull.style.background = '#00BCD4'; tSkull.style.color = '#000'; tSkull.style.border = 'none'; }
+        if (tCrystal) { tCrystal.style.background = '#222'; tCrystal.style.color = '#E040FB'; tCrystal.style.border = '1px solid #E040FB'; }
     } else {
-        tCrystal.style.background = '#E040FB'; tCrystal.style.color = '#000'; tCrystal.style.border = 'none';
-        tSkull.style.background = '#222'; tSkull.style.color = '#00BCD4'; tSkull.style.border = '1px solid #00BCD4';
+        if (tCrystal) { tCrystal.style.background = '#E040FB'; tCrystal.style.color = '#000'; tCrystal.style.border = 'none'; }
+        if (tSkull) { tSkull.style.background = '#222'; tSkull.style.color = '#00BCD4'; tSkull.style.border = '1px solid #00BCD4'; }
     }
 
     const list = document.getElementById('ranking-list-container');
@@ -410,10 +437,11 @@ window.renderDungeonRankingList = async function(mapType) {
 
         let html = '';
         rankList.forEach((data, index) => {
+            // (中略) 前回と同じ表示処理なのでそのまま
             let rankIcon = `<span style="color:#888; font-size:20px; font-weight:bold;">${index + 1}位</span>`;
             if (index === 0) rankIcon = "<span style='color:#FFD700; font-size:24px; font-weight:bold; text-shadow:0 0 5px #FFD700;'>🥇 1位</span>";
             if (index === 1) rankIcon = "<span style='color:#C0C0C0; font-size:22px; font-weight:bold;'>🥈 2位</span>";
-            if (index === 2) rankIcon = "<span style='color:#CD7F32; font-size:20px; font-weight:bold;'>🥉 3位</span>";
+            if (index === 2) rankIcon = "<span style='color:#CD7F32; font-weight:bold;'>🥉 3位</span>";
 
             let typeIcon = data.aiSkin ? (data.aiSkin.split('_')[0] === 'ghost' ? '👻' : '🤖') : '🤖'; 
             let petNameStr = (typeof monsterBookData !== 'undefined' && monsterBookData[data.aiSkin] ? monsterBookData[data.aiSkin].name : data.aiSkin);
@@ -423,8 +451,6 @@ window.renderDungeonRankingList = async function(mapType) {
             let pName = data.playerName || "名無しプレイヤー";
             if (isMe) pName = `✨ ${pName} (あなた)`;
 
-            // ★ 修正：alertの代わりに、専用の詳細表示UI（モーダル）を開く！
-            // 引数にプレイヤーのデータを丸ごと渡す
             html += `
                 <div style="background: ${isMe ? 'rgba(76, 175, 80, 0.15)' : '#222'}; border: 2px solid ${isMe ? '#4CAF50' : '#444'}; border-radius: 8px; padding: 15px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
                     <div style="display:flex; align-items:center; gap:20px;">
@@ -628,15 +654,17 @@ window.updateArenaRanking = async function(reachedWave, partyData) {
     if (!user) return; 
 
     const playerName = localStorage.getItem('my_player_name') || "名無し";
+    // ★修正：モードによって保存先のコレクションを分ける
+    const mode = window.ARENA_STATE.mode;
+    const collectionName = mode === 'boss' ? "arena_rankings_boss" : "arena_rankings";
 
     try {
-        const docRef = doc(db, "arena_rankings", user.uid);
+        const docRef = doc(db, collectionName, user.uid);
         const docSnap = await getDoc(docRef);
         
         let shouldUpdate = true;
         if (docSnap.exists()) {
             const currentRecord = docSnap.data().wave;
-            // 既存の記録よりウェーブ数が低い場合は更新しない
             if (reachedWave <= currentRecord) shouldUpdate = false;
         }
 
@@ -645,19 +673,21 @@ window.updateArenaRanking = async function(reachedWave, partyData) {
                 playerId: user.uid,
                 playerName: playerName,
                 wave: reachedWave,
-                party: partyData, // ★パーティ情報を丸ごと配列で保存！
+                party: partyData,
                 updatedAt: Date.now()
             });
-            console.log(`☁️ [Ranking] アリーナ 第${reachedWave}戦 の記録をクラウドに保存しました！`);
+            console.log(`☁️ [Ranking] ${mode === 'boss' ? 'ボスラッシュ' : 'アリーナ'} 第${reachedWave}戦 の記録を保存しました！`);
         }
     } catch (error) {
         console.error("アリーナランキング登録エラー:", error);
     }
 };
 
-window.fetchArenaRanking = async function() {
+window.fetchArenaRanking = async function(mode = 'normal') {
     try {
-        const q = query(collection(db, "arena_rankings"), orderBy("wave", "desc"), limit(50));
+        // ★修正：引数のモードで取得先のコレクションを切り替える
+        const collectionName = mode === 'boss' ? "arena_rankings_boss" : "arena_rankings";
+        const q = query(collection(db, collectionName), orderBy("wave", "desc"), limit(50));
         const querySnapshot = await getDocs(q);
         let rankList = [];
         querySnapshot.forEach((doc) => {
@@ -668,121 +698,6 @@ window.fetchArenaRanking = async function() {
         console.error("アリーナランキング取得エラー:", error);
         return [];
     }
-};
-
-// ==========================================
-// 🏆 アリーナ：ランキングUIの描画処理（ワールドランキング統合版）
-// ==========================================
-window.renderArenaRankingList = async function() {
-    // 既存のタブの色をリセット（IDは環境に合わせて調整してください）
-    const tSkull = document.getElementById('rank-tab-skull');
-    const tCrystal = document.getElementById('rank-tab-crystal');
-    const tArena = document.getElementById('rank-tab-arena'); // 後でHTMLに追加するアリーナ用タブ
-    
-    if (tSkull) { tSkull.style.background = '#222'; tSkull.style.color = '#00BCD4'; tSkull.style.border = '1px solid #00BCD4'; }
-    if (tCrystal) { tCrystal.style.background = '#222'; tCrystal.style.color = '#E040FB'; tCrystal.style.border = '1px solid #E040FB'; }
-    if (tArena) { tArena.style.background = '#FF9800'; tArena.style.color = '#000'; tArena.style.border = 'none'; }
-
-    const list = document.getElementById('ranking-list-container');
-    if(!list) return;
-    list.innerHTML = `<div style="text-align:center; color:#aaa; margin-top:50px; font-size:18px;">📡 クラウドから闘技場の記録を取得中...</div>`;
-
-    if (typeof window.fetchArenaRanking === 'function') {
-        const rankList = await window.fetchArenaRanking();
-        window.arenaRankDataCache = rankList; // 詳細表示用に一時保存
-        
-        if (rankList.length === 0) {
-            list.innerHTML = `<div style="text-align:center; color:#888; margin-top:50px; font-size:18px;">まだ記録がありません。<br>一番乗りを目指そう！</div>`;
-            return;
-        }
-
-        let html = '';
-        rankList.forEach((data, index) => {
-            let rankIcon = `<span style="color:#888; font-size:20px; font-weight:bold;">${index + 1}位</span>`;
-            if (index === 0) rankIcon = "<span style='color:#FFD700; font-size:24px; font-weight:bold; text-shadow:0 0 5px #FFD700;'>🥇 1位</span>";
-            if (index === 1) rankIcon = "<span style='color:#C0C0C0; font-size:22px; font-weight:bold;'>🥈 2位</span>";
-            if (index === 2) rankIcon = "<span style='color:#CD7F32; font-size:20px; font-weight:bold;'>🥉 3位</span>";
-
-            let isMe = (data.playerId === localStorage.getItem('my_player_id'));
-            let pName = data.playerName || "名無しプレイヤー";
-            if (isMe) pName = `✨ ${pName} (あなた)`;
-            
-            // リーダーのアイコンを取得
-            let leaderSkin = data.party && data.party.length > 0 ? data.party[0].skin : 'robot';
-            let typeIcon = leaderSkin.split('_')[0] === 'ghost' ? '👻' : '🤖'; 
-            let petNameStr = (typeof monsterBookData !== 'undefined' && monsterBookData[leaderSkin] ? monsterBookData[leaderSkin].name : leaderSkin);
-
-            html += `
-                <div style="background: ${isMe ? 'rgba(255, 152, 0, 0.15)' : '#222'}; border: 2px solid ${isMe ? '#FF9800' : '#444'}; border-radius: 8px; padding: 15px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
-                    <div style="display:flex; align-items:center; gap:20px;">
-                        <div style="width:80px; text-align:center;">${rankIcon}</div>
-                        <div>
-                            <div style="font-size:16px; font-weight:bold; cursor:pointer; color:#FF9800; text-decoration:underline; margin-bottom:4px;" 
-                                 onclick="window.openArenaPlayerDetail(${index})" title="クリックでパーティ詳細を見る">
-                                ${pName}
-                            </div>
-                            <div style="font-size:14px; color:#aaa;">リーダー: ${typeIcon} ${petNameStr}</div>
-                        </div>
-                    </div>
-                    <div style="font-size:32px; font-weight:bold; color:#FF9800; text-shadow:0 2px 4px rgba(0,0,0,0.5);">
-                        WAVE ${data.wave}
-                    </div>
-                </div>
-            `;
-        });
-        list.innerHTML = html;
-    }
-};
-
-// -------------------------------
-// ★ 詳細パネルを表示する関数（アリーナ用：フレンド＆訪問ボタン追加版）
-// -------------------------------
-window.openArenaPlayerDetail = function(index) {
-    const detailArea = document.getElementById('ranking-detail-area');
-    const content = document.getElementById('ranking-detail-content');
-    const title = document.getElementById('ranking-detail-title');
-    
-    if(!detailArea || !content) return;
-    
-    const data = window.arenaRankDataCache[index];
-    if (!data) return;
-
-    detailArea.style.display = 'flex';
-    title.innerHTML = `🏷️ ${data.playerName} のパーティ編成`;
-
-    let partyHtml = (data.party || []).map(p => {
-        let wordsHtml = (p.words || []).map(w => `<span style="display:inline-block; background:rgba(0,188,212,0.2); color:#00BCD4; border:1px solid #00BCD4; border-radius:4px; padding:2px 6px; margin:2px 4px 2px 0; font-size:11px; font-weight:bold;">${w}</span>`).join('');
-        let pNameStr = typeof monsterBookData !== 'undefined' && monsterBookData[p.skin] ? monsterBookData[p.skin].name : p.skin;
-
-        return `
-            <div style="background:#1a1a1a; border:1px solid #555; border-left:4px solid ${p.isMe ? '#4CAF50' : '#FFD700'}; border-radius:6px; padding:12px; margin-bottom:12px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                    <div style="font-size:14px; font-weight:bold; color:${p.isMe ? '#4CAF50' : '#FFD700'};">${p.name} <span style="font-size:11px; color:#888;">(${pNameStr})</span></div>
-                    <div style="font-size:11px; color:#76ff03; font-weight:bold;">HP: ${p.maxHp} / MP: ${p.maxMp}</div>
-                </div>
-                <div style="display:flex; gap:10px; font-size:11px; color:#aaa; margin-bottom:8px; background:#222; padding:6px; border-radius:4px;">
-                    <span>⚔️ 攻撃: <span style="color:#FFF;">${p.atk}</span></span>
-                    <span>🛡️ 防御: <span style="color:#FFF;">${p.def}</span></span>
-                    <span>🧠 賢さ: <span style="color:#FFF;">${p.intel}</span></span>
-                </div>
-                <div>
-                    <div style="font-size:10px; color:#888; margin-bottom:2px;">▼ 記憶している言葉</div>
-                    <div>${wordsHtml}</div>
-                </div>
-            </div>
-        `;
-    }).join('');
-
-    // ★追加：フレンド登録＆島訪問ボタン
-    content.innerHTML = `
-        <div style="font-size:18px; color:#FF9800; font-weight:bold; text-align:center; margin-bottom:15px; padding-bottom:10px; border-bottom:1px dashed #555;">到達記録: WAVE ${data.wave}</div>
-        ${partyHtml}
-        <hr style="border-color: #444; margin: 20px 0 15px 0;">
-        <div style="display:flex; flex-direction:column; gap:10px;">
-            <button onclick="window.visitPlayerIsland('${data.playerId}', '${data.playerName}')" style="padding:12px; background:#E040FB; color:white; border:2px solid #FFF; border-radius:8px; cursor:pointer; font-weight:bold; font-size:16px; transition:0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">✈️ この人の島へ遊びに行く</button>
-            <button onclick="window.addFriend('${data.playerId}', '${data.playerName}')" style="padding:10px; background:#4CAF50; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:14px; transition:0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">🤝 フレンドに追加する</button>
-        </div>
-    `;
 };
 
 // ==========================================
