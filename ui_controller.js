@@ -185,14 +185,16 @@ window.openStatusMenu = function() {
 
     document.getElementById('s-energy').innerText = Math.floor(aiPet.energy || 0);
     document.getElementById('s-hunger').innerText = Math.floor(aiPet.hunger || 0);
-    document.getElementById('s-intel').innerText = Math.floor(aiPet.stats.intel || 0);
-    document.getElementById('s-power').innerText = Math.floor(aiPet.stats.power || 0);
-    document.getElementById('s-mood').innerText = Math.floor(aiPet.stats.mood || 0);
+    
+    // ★修正：能力値とゴールドをフォーマット関数に通す
+    document.getElementById('s-intel').innerText = window.formatLargeNumber(aiPet.stats.intel);
+    document.getElementById('s-power').innerText = window.formatLargeNumber(aiPet.stats.power);
+    document.getElementById('s-mood').innerText = window.formatLargeNumber(aiPet.stats.mood);
     
     const beautyEl = document.getElementById('s-beauty');
-    if (beautyEl) beautyEl.innerText = Math.floor(aiPet.stats.beauty || 0);
+    if (beautyEl) beautyEl.innerText = window.formatLargeNumber(aiPet.stats.beauty);
 
-    document.getElementById('s-gold').innerText = (aiPet.gold || 0) + " G";
+    document.getElementById('s-gold').innerText = window.formatLargeNumber(aiPet.gold) + " G";
 
     const canvas = document.getElementById('statusIconCanvas');
     if (typeof drawStatusIconOnCanvas === 'function') drawStatusIconOnCanvas(canvas, skin);
@@ -207,6 +209,11 @@ window.openStatusMenu = function() {
         html += `<div style="background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #4CAF50; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">`;
         html += `<div style="color: #4CAF50; font-weight: bold; margin-bottom: 10px; font-size: 15px;">🎓 現在の専門家と課題</div>`;
         
+        // ★追加：皆伝済みの師匠の数をカウントする
+        let masteredCount = 0;
+        const jobKeys = ['explore', 'farming', 'fishing', 'cooking', 'smithing', 'building'];
+        jobKeys.forEach(j => { if (app.rank && app.rank[j] >= 10) masteredCount++; });
+
         if (app.currentMaster) {
             const masterNames = { 'explore': '冒険家', 'farming': '農家', 'fishing': '漁師', 'cooking': '料理人', 'smithing': '鍛冶師', 'building': '建築士' };
             const mName = masterNames[app.currentMaster] || "不明";
@@ -220,8 +227,9 @@ window.openStatusMenu = function() {
                     const desc = app.activeQuest.desc;
                     // ★大改修：能力値クエストか回数クエストかを判定して表示をHUDと統一
                     if (desc.includes("賢さ") || desc.includes("知性") || desc.includes("活力") || desc.includes("パワー")) {
-                        let currentVal = desc.includes("賢さ") || desc.includes("知性") ? Math.floor(aiPet.stats.intel) : Math.floor(aiPet.stats.power);
-                        let targetVal = Math.floor(app.qVal);
+                        // ★修正：クエストの目標値と現在値もフォーマットする
+                        let currentVal = desc.includes("賢さ") || desc.includes("知性") ? window.formatLargeNumber(aiPet.stats.intel) : window.formatLargeNumber(aiPet.stats.power);
+                        let targetVal = window.formatLargeNumber(app.qVal);
                         progressStr = `<span style="color:#FF9800;">現在の能力: ${currentVal} / 目標: ${targetVal}</span>`;
                     } else {
                         // 回数系クエストの場合（進捗: X回）
@@ -237,8 +245,12 @@ window.openStatusMenu = function() {
             }
         } else if (app.isExcommunicated) {
             html += `<div style="font-size: 13px; color: #ff5252; font-weight: bold; background: rgba(244,67,54,0.1); padding: 10px; border-radius: 4px;">現在、破門されています...<br><span style="font-size:11px; color:#aaa; font-weight:normal;">基礎トレーニングを繰り返して自分を見つめ直しましょう。</span></div>`;
-        } else if (app.isGraduated) {
-            html += `<div style="font-size: 13px; color: #FFD700; font-weight: bold; text-align: center; padding: 10px;">✨ 免許皆伝 ✨<br><span style="font-size:11px; color:#ccc; font-weight:normal;">すべての修行を終え、立派な達人になりました！</span></div>`;
+        } else if (masteredCount === 6) {
+            // ★追加：全ての職業を極めている場合の専用メッセージ
+            html += `<div style="font-size: 13px; color: #FFD700; font-weight: bold; text-align: center; padding: 10px;">👑 全知全能の達人 👑<br><span style="font-size:11px; color:#ccc; font-weight:normal;">この世界に存在するすべての道を極めました！<br>悠々自適な余生を満喫しましょう。</span></div>`;
+        } else if (app.isGraduated || masteredCount > 0) {
+            // ★修正：引継ぎでisGraduatedが消えていても、1つ以上皆伝していれば判定する
+            html += `<div style="font-size: 13px; color: #FFD700; font-weight: bold; text-align: center; padding: 10px;">✨ 免許皆伝 ✨<br><span style="font-size:11px; color:#ccc; font-weight:normal;">修行を終え、立派な達人になりました！<br>（フィールドを歩けば、まだ見ぬ他の師匠に出会えるかもしれません）</span></div>`;
         } else {
             html += `<div style="font-size: 12px; color: #888; text-align: center; padding: 10px;">現在入門している専門家はいません。<br>フィールドを歩いて出会いを探しましょう。</div>`;
         }
@@ -442,7 +454,8 @@ window.updateShopList = function() {
 function updateShopGold() {
     const shopGold = document.getElementById('shop-gold-display');
     if (shopGold && typeof aiPet !== 'undefined') {
-        shopGold.innerText = `所持金: ${aiPet.gold || 0} G`;
+        // ★修正: ショップ内のゴールド表示もフォーマット関数を通す
+        shopGold.innerText = `所持金: ${window.formatLargeNumber(aiPet.gold)} G`;
         shopGold.style.color = (aiPet.gold < 0) ? '#ff5252' : '#ffd700';
     }
 }
@@ -474,12 +487,14 @@ function updateStatUI() {
     setText('stat-age', aiPet.age || 0); 
     setText('stat-energy', Math.floor(aiPet.energy || 0) + "%");
     setText('stat-hunger', Math.floor(aiPet.hunger || 0) + "%");
-    setText('stat-intel', Math.floor(aiPet.stats.intel || 0));
-    setText('stat-power', Math.floor(aiPet.stats.power || 0));
-    setText('stat-mood', Math.floor(aiPet.stats.mood || 0));
+    
+    // ★修正: HUDのステータス表示もフォーマット関数を通す
+    setText('stat-intel', window.formatLargeNumber(aiPet.stats.intel));
+    setText('stat-power', window.formatLargeNumber(aiPet.stats.power));
+    setText('stat-mood', window.formatLargeNumber(aiPet.stats.mood));
 
     if (typeof aiPet.stats.beauty === 'undefined') aiPet.stats.beauty = 10;
-    setText('stat-beauty', Math.floor(aiPet.stats.beauty));
+    setText('stat-beauty', window.formatLargeNumber(aiPet.stats.beauty));
 
     // ★修正: 進化ボタンの表示制御を変数化して確実に見せる
     const btnEvolve = document.getElementById('btnEvolve');
@@ -535,7 +550,8 @@ function updateStatUI() {
     }
 
     const goldEl = document.getElementById('stat-gold');
-    if (goldEl) { goldEl.innerText = (aiPet.gold || 0) + " G"; goldEl.style.color = (aiPet.gold < 0) ? '#ff5252' : '#ffd700'; }
+    // ★修正: HUDのゴールド表示もフォーマット関数を通す
+    if (goldEl) { goldEl.innerText = window.formatLargeNumber(aiPet.gold) + " G"; goldEl.style.color = (aiPet.gold < 0) ? '#ff5252' : '#ffd700'; }
     updateShopGold(); 
     updateCommandHUD(); 
     updateAIStatusText();
@@ -820,10 +836,10 @@ window.sendChat = function() {
         "カジノ": { type: 'casino', bId: 'casino', name: 'カジノ', onEnter: () => { if(typeof window.openCasino === 'function') window.openCasino(); } },
         
         // ★修正：チャットで指示されたら「行ってくる！」と喋って歩き出すだけにします
-        "ショップ": { type: 'shop', bId: 'shop', name: 'ショップ', onEnter: null },
+        "ショップ": { type: 'shop', bId: 'shop', name: 'ショップ', onEnter: null }
         
-        "レストラン": { type: 'restaurant', bId: 'restaurant', name: 'レストラン', onEnter: null },
-        "鍛冶屋": { type: 'smith', bId: 'smith', name: '鍛冶屋', onEnter: null }
+        // "レストラン": { type: 'restaurant', bId: 'restaurant', name: 'レストラン', onEnter: null },
+        // "鍛冶屋": { type: 'smith', bId: 'smith', name: '鍛冶屋', onEnter: null }
     };
 
     if (Object.keys(uniqueFacilities).includes(interpretedWord)) {
@@ -848,10 +864,24 @@ window.sendChat = function() {
                 aiPet.schedule = []; aiPet.startBuildingInteraction(existingTarget);
                 aiPet.message = `${facInfo.name}に行ってくる！`; aiPet.messageTimer = 120;
                 let checkInterval = setInterval(() => {
-                    if (aiPet.actionState === 'inside' && aiPet.indoorTarget === existingTarget) {
-                        if (facInfo.onEnter) facInfo.onEnter();
-                        clearInterval(checkInterval);
-                    } else if (aiPet.actionState === 'idle') { clearInterval(checkInterval); }
+                    // ★カジノ等で entering のままフリーズするバグの修正
+                    if (aiPet.actionState === 'inside' || aiPet.actionState === 'entering' || aiPet.actionState === 'moving_to_enter') {
+                        let sc = existingTarget.scale !== undefined ? existingTarget.scale : 0.5;
+                        let tx = existingTarget.dx + (existingTarget.sw * sc) / 2;
+                        let ty = existingTarget.dy + (existingTarget.sh * sc) / 2;
+                        let dist = Math.abs(aiPet.x - tx) + Math.abs(aiPet.y - ty);
+                        
+                        // 距離が近ければ（ドアの前にいれば）強制的に入室させる
+                        if (dist < 40 || aiPet.actionState === 'inside') {
+                            aiPet.actionState = 'inside';
+                            aiPet.isIndoors = true;
+                            aiPet.indoorTarget = existingTarget; // nullを強制上書き
+                            if (facInfo.onEnter) facInfo.onEnter();
+                            clearInterval(checkInterval);
+                        }
+                    } else if (aiPet.actionState === 'idle') { 
+                        clearInterval(checkInterval); 
+                    }
                 }, 500);
             } else {
                 aiPet.message = `そこにあるのは分かるけど、言葉を知らないから行けないみたい...`; aiPet.messageTimer = 120;
@@ -968,9 +998,8 @@ window.sendChat = function() {
         if (canExplore) { aiPet.schedule.push({type:'explore', duration:60}); } 
         else { aiPet.message = "一人で探検するのは危ないかも...\nまずは冒険家を探して、やり方を教わりたいな！"; aiPet.messageTimer = 180; }
     }
-    else if (interpretedWord === "料理" && knows("料理")) {
+    else if ((interpretedWord === "料理" && knows("料理")) || (interpretedWord === "レストラン" && knows("レストラン"))) {
         actionTriggered = true;
-        
         let isMaster = aiPet.apprentice && (
             (aiPet.apprentice.retired && aiPet.apprentice.retired['cooking']) || 
             (aiPet.apprentice.currentMaster === 'cooking' && aiPet.apprentice.isGraduated) ||
@@ -978,56 +1007,48 @@ window.sendChat = function() {
         );
         let isApprentice = aiPet.apprentice && aiPet.apprentice.currentMaster === 'cooking';
 
-        if (isMaster) {
-            let myRestaurant = null;
-            for (let k in assets) {
-                if (assets[k].type === 'restaurant' && !assets[k].isMobile) {
-                    myRestaurant = assets[k]; break;
-                }
-            }
-            if (myRestaurant) {
-                // ★修正：上書きではなく push で追加
-                aiPet.schedule.push({type: 'cook', duration: 30});
-                // 最初の1件目なら移動を開始する
-                if (aiPet.schedule.length === 1) {
-                    aiPet.startBuildingInteraction(myRestaurant);
-                    aiPet.message = "レストランで料理を作ってくるね！";
-                } else {
-                    aiPet.message = "他にも料理の予約をしたよ！";
-                }
-            } else {
-                aiPet.message = "料理は得意だけど、自分のレストランがないと腕を振るえないや。";
-            }
-        } else if (isApprentice) {
-            let masterRest = null;
-            for (let k in assets) {
-                if (assets[k].type === 'restaurant' && assets[k].isMobile) {
-                    masterRest = assets[k]; break;
-                }
-            }
-            if (masterRest) {
-                // ★修正：上書きではなく push で追加
-                aiPet.schedule.push({type: 'cook', duration: 30, isTrial: true});
-                // 最初の1件目なら移動を開始する
-                if (aiPet.schedule.length === 1) {
-                    aiPet.startBuildingInteraction(masterRest);
-                    aiPet.message = "師匠のキッチンを借りて、お試し料理に挑戦だ！";
-                } else {
-                    aiPet.message = "修行の予約を詰め込んだよ！頑張るね！";
-                }
-            } else {
-                aiPet.message = "料理の練習をしたいけど、師匠の姿が見当たらないな...";
-            }
-        } else {
-            aiPet.message = "料理かぁ...。やり方はなんとなく分かるけど、ちゃんとした場所で教わりたいな。\n(料理人に弟子入りしよう！)";
+        let myRestaurant = null;
+        for (let k in assets) {
+            if (assets[k].type === 'restaurant' && !assets[k].isMobile) { myRestaurant = assets[k]; break; }
         }
-        aiPet.messageTimer = 180;
+
+        // ★レストラン建築分岐
+        if (interpretedWord === "レストラン" && !myRestaurant) {
+            let isMasterBuilder = aiPet.apprentice && ((aiPet.apprentice.retired && aiPet.apprentice.retired['building']) || (aiPet.apprentice.currentMaster === 'building' && aiPet.apprentice.isGraduated) || (aiPet.apprentice.rank && aiPet.apprentice.rank['building'] >= 10));
+            if (isMasterBuilder) {
+                aiPet.schedule.push({type: 'build', targetBuilding: 'restaurant', duration: 60});
+                aiPet.message = "レストランの建築を予定に追加したよ！";
+            } else {
+                aiPet.message = "まだ修行中の身だから、レストランは作れないよ...\n(まずは建築士の免許皆伝を目指そう！)";
+            }
+            aiPet.messageTimer = 180;
+        } else {
+            // ★既存の料理（経営）処理
+            if (isMaster) {
+                if (myRestaurant) {
+                    aiPet.schedule.push({type: 'cook', duration: 30});
+                    if (aiPet.schedule.length === 1) {
+                        aiPet.startBuildingInteraction(myRestaurant); aiPet.message = "レストランで料理を作ってくるね！";
+                    } else { aiPet.message = "他にも料理の予約をしたよ！"; }
+                } else { aiPet.message = "料理は得意だけど、自分のレストランがないと腕を振るえないや。\n(「レストラン」と指示して建築しよう！)"; }
+            } else if (isApprentice) {
+                let masterRest = null;
+                for (let k in assets) {
+                    if (assets[k].type === 'restaurant' && assets[k].isMobile) { masterRest = assets[k]; break; }
+                }
+                if (masterRest) {
+                    aiPet.schedule.push({type: 'cook', duration: 30, isTrial: true});
+                    if (aiPet.schedule.length === 1) {
+                        aiPet.startBuildingInteraction(masterRest); aiPet.message = "師匠のキッチンを借りて、お試し料理に挑戦だ！";
+                    } else { aiPet.message = "修行の予約を詰め込んだよ！頑張るね！"; }
+                } else { aiPet.message = "料理の練習をしたいけど、師匠の姿が見当たらないな..."; }
+            } else { aiPet.message = "料理かぁ...。やり方はなんとなく分かるけど、ちゃんとした場所で教わりたいな。\n(料理人に弟子入りしよう！)"; }
+            aiPet.messageTimer = 180;
+        }
         if (typeof window.updateScheduleList === 'function') window.updateScheduleList();
     }
-    else if (interpretedWord === "鍛冶" && knows("鍛冶")) {
+    else if ((interpretedWord === "鍛冶" && knows("鍛冶")) || (interpretedWord === "鍛冶屋" && knows("鍛冶屋"))) {
         actionTriggered = true;
-        
-        // 判定：免許皆伝（rank10以上 または 引退済み）
         let isMaster = aiPet.apprentice && (
             (aiPet.apprentice.retired && aiPet.apprentice.retired['smithing']) || 
             (aiPet.apprentice.currentMaster === 'smithing' && aiPet.apprentice.isGraduated) ||
@@ -1035,41 +1056,46 @@ window.sendChat = function() {
         );
         let isApprentice = aiPet.apprentice && aiPet.apprentice.currentMaster === 'smithing';
 
-        if (isMaster) {
-            // 【皆伝】自分の鍛冶屋（施設）を探す
-            let mySmith = null;
-            for (let k in assets) {
-                if (assets[k].type === 'smith' && !assets[k].isMobile) {
-                    mySmith = assets[k]; break;
-                }
-            }
-            if (mySmith) {
-                aiPet.schedule = [{type: 'smith', duration: 60}];
-                aiPet.startBuildingInteraction(mySmith);
-                aiPet.message = "自分の工房で腕を振るってくるよ！";
-            } else {
-                aiPet.message = "鍛冶の腕はあるけど、自分の「鍛冶屋」がないと何も打てないや。";
-            }
-        } else if (isApprentice) {
-            // 【修行中】師匠のキャンプ（鍛冶場）を探す
-            let masterCamp = null;
-            for (let k in assets) {
-                if (assets[k].type === 'blacksmith') { // 師匠のテントはblacksmithタイプ
-                    masterCamp = assets[k]; break;
-                }
-            }
-            if (masterCamp) {
-                aiPet.schedule = [{type: 'smith', duration: 60, isTrial: true}]; // 修行フラグ
-                aiPet.startBuildingInteraction(masterCamp);
-                aiPet.message = "師匠の金槌を借りて、お試し鍛冶に挑戦だ！";
-            } else {
-                aiPet.message = "鍛冶の練習をしたいけど、師匠がどこにもいないよ...";
-            }
-        } else {
-            // 【未経験】
-            aiPet.message = "鍛冶かぁ。火の扱いは危ないから、ちゃんと師匠に教わらないとね。\n(鍛冶師に弟子入りしよう！)";
+        let mySmith = null;
+        for (let k in assets) {
+            if ((assets[k].type === 'smith' || assets[k].type === 'blacksmith') && !assets[k].isMobile) { mySmith = assets[k]; break; }
         }
-        aiPet.messageTimer = 180;
+
+        // ★鍛冶屋建築分岐
+        if (interpretedWord === "鍛冶屋" && !mySmith) {
+            let isMasterBuilder = aiPet.apprentice && ((aiPet.apprentice.retired && aiPet.apprentice.retired['building']) || (aiPet.apprentice.currentMaster === 'building' && aiPet.apprentice.isGraduated) || (aiPet.apprentice.rank && aiPet.apprentice.rank['building'] >= 10));
+            if (isMasterBuilder) {
+                aiPet.schedule.push({type: 'build', targetBuilding: 'smith', duration: 60});
+                aiPet.message = "鍛冶屋の建築を予定に追加したよ！";
+            } else {
+                aiPet.message = "まだ修行中の身だから、鍛冶屋は作れないよ...\n(まずは建築士の免許皆伝を目指そう！)";
+            }
+            aiPet.messageTimer = 180;
+        } else {
+            // ★既存の鍛冶（経営）処理
+            if (isMaster) {
+                if (mySmith) {
+                    aiPet.schedule.push({type: 'smith', duration: 60});
+                    if (aiPet.schedule.length === 1) {
+                        aiPet.startBuildingInteraction(mySmith); aiPet.message = "自分の工房で腕を振るってくるよ！";
+                    } else { aiPet.message = "他にも鍛冶の予約をしたよ！"; }
+                } else { aiPet.message = "鍛冶の腕はあるけど、自分の「鍛冶屋」がないと何も打てないや。\n(「鍛冶屋」と指示して建築しよう！)"; }
+            } else if (isApprentice) {
+                let masterCamp = null;
+                for (let k in assets) {
+                    // ★修正：移動フラグ(isMobile)の条件を消し、確実に「師匠のキャンプ」を探し出す！
+                    if (k === 'blacksmith_master_camp' || (assets[k].type === 'blacksmith' && assets[k].name === '師匠のキャンプ')) { masterCamp = assets[k]; break; }
+                }
+                if (masterCamp) {
+                    aiPet.schedule.push({type: 'smith', duration: 60, isTrial: true}); 
+                    if (aiPet.schedule.length === 1) {
+                        aiPet.startBuildingInteraction(masterCamp); aiPet.message = "師匠の金槌を借りて、お試し鍛冶に挑戦だ！";
+                    } else { aiPet.message = "修行の予約を詰め込んだよ！頑張るね！"; }
+                } else { aiPet.message = "鍛冶の練習をしたいけど、師匠がどこにもいないよ..."; }
+            } else { aiPet.message = "鍛冶かぁ。火の扱いは危ないから、ちゃんと師匠に教わらないとね。\n(鍛冶師に弟子入りしよう！)"; }
+            aiPet.messageTimer = 180;
+        }
+        if (typeof window.updateScheduleList === 'function') window.updateScheduleList();
     }
     else if (interpretedWord === "釣り" && knows("釣り")) {
         actionTriggered = true;
@@ -1092,9 +1118,11 @@ window.sendChat = function() {
             else if (minEdgeDist === distToTop) ty = 25; else if (minEdgeDist === distToBottom) ty = 455;
             
             if (targetBridge && minDist < minEdgeDist * minEdgeDist) {
-                aiPet.schedule = [{type:'fish', duration: 300}]; aiPet.startBuildingInteraction(targetBridge); aiPet.message = "橋で釣りをするよ！";
+                // ★修正： _started: true を加えることで「キャンプ状態」への誤書き換えを防止
+                aiPet.schedule = [{type:'fish', duration: 300, _started: true}]; aiPet.startBuildingInteraction(targetBridge); aiPet.message = "橋で釣りをするよ！";
             } else {
-                aiPet.schedule = [{type:'fish', duration: 300}];
+                // ★修正： _started: true を加えることで「キャンプ状態」への誤書き換えを防止
+                aiPet.schedule = [{type:'fish', duration: 300, _started: true}];
                 let seaTarget = { type: 'sea', name: '海', dx: tx - 25, dy: ty - 25, sw: 50, sh: 50, scale: 1.0 };
                 aiPet.interactionTarget = seaTarget;
                 if (aiPet.setDestination(tx, ty)) { aiPet.actionState = 'moving_to_enter'; aiPet.message = "海へ釣りに行くよ！"; }
@@ -2515,38 +2543,49 @@ window.switchRankingCategory = function(category) {
 
     const tabStatus = document.getElementById('main-tab-status');
     const tabDungeon = document.getElementById('main-tab-dungeon');
-    const tabArena = document.getElementById('main-tab-arena'); // ★追加：闘技場メインタブ
+    const tabArena = document.getElementById('main-tab-arena'); 
+    const tabDefense = document.getElementById('main-tab-defense'); // ★追加：防衛タブ
 
     const subStatus = document.getElementById('sub-tabs-status');
     const subDungeon = document.getElementById('sub-tabs-dungeon');
-    const subArena = document.getElementById('sub-tabs-arena'); // ★追加：闘技場サブタブ
+    const subArena = document.getElementById('sub-tabs-arena'); 
+    const subDefense = document.getElementById('sub-tabs-defense'); // ★追加：防衛サブタブ
 
-    // ★修正：クラス名に頼らず、すべてのサブタブのIDを直接指定して確実に隠す
+    // すべてのサブタブを確実に隠す
     if (subStatus) subStatus.style.display = 'none';
     if (subDungeon) subDungeon.style.display = 'none';
     if (subArena) subArena.style.display = 'none';
+    if (subDefense) subDefense.style.display = 'none';
+
+    // メインタブの色を一旦リセット
+    [tabStatus, tabDungeon, tabArena, tabDefense].forEach(tab => {
+        if(tab) {
+            tab.style.background = '#222';
+            tab.style.color = '#aaa';
+            tab.style.borderBottom = '3px solid transparent';
+        }
+    });
 
     if (category === 'status') {
         if (tabStatus) { tabStatus.style.background = '#333'; tabStatus.style.color = '#FFF'; tabStatus.style.borderBottom = '3px solid #FFD700'; }
-        if (tabDungeon) { tabDungeon.style.background = '#222'; tabDungeon.style.color = '#aaa'; tabDungeon.style.borderBottom = '3px solid transparent'; tabDungeon.style.borderRight = '1px solid #444'; }
-        if (tabArena) { tabArena.style.background = '#222'; tabArena.style.color = '#aaa'; tabArena.style.borderBottom = '3px solid transparent'; tabArena.style.borderLeft = '1px solid #444'; }
-        
         if (subStatus) subStatus.style.display = 'flex';
         window.openRankingPanel('power'); 
+
     } else if (category === 'dungeon') {
-        if (tabDungeon) { tabDungeon.style.background = '#333'; tabDungeon.style.color = '#FFF'; tabDungeon.style.borderBottom = '3px solid #00BCD4'; tabDungeon.style.borderRight = '1px solid #444'; }
-        if (tabStatus) { tabStatus.style.background = '#222'; tabStatus.style.color = '#aaa'; tabStatus.style.borderBottom = '3px solid transparent'; }
-        if (tabArena) { tabArena.style.background = '#222'; tabArena.style.color = '#aaa'; tabArena.style.borderBottom = '3px solid transparent'; tabArena.style.borderLeft = '1px solid #444'; }
-        
+        if (tabDungeon) { tabDungeon.style.background = '#333'; tabDungeon.style.color = '#FFF'; tabDungeon.style.borderBottom = '3px solid #00BCD4'; }
         if (subDungeon) subDungeon.style.display = 'flex';
         window.renderDungeonRankingList('skull'); 
+
     } else if (category === 'arena') {
-        // ★追加：闘技場タブが押されたときの処理
-        if (tabArena) { tabArena.style.background = '#333'; tabArena.style.color = '#FFF'; tabArena.style.borderBottom = '3px solid #FF9800'; tabArena.style.borderLeft = '1px solid #444'; }
-        if (tabStatus) { tabStatus.style.background = '#222'; tabStatus.style.color = '#aaa'; tabStatus.style.borderBottom = '3px solid transparent'; }
-        if (tabDungeon) { tabDungeon.style.background = '#222'; tabDungeon.style.color = '#aaa'; tabDungeon.style.borderBottom = '3px solid transparent'; tabDungeon.style.borderRight = '1px solid #444'; }
-        
-        window.renderArenaRankingList('normal');
+        if (tabArena) { tabArena.style.background = '#333'; tabArena.style.color = '#FFF'; tabArena.style.borderBottom = '3px solid #FF9800'; }
+        if (subArena) subArena.style.display = 'flex';
+        if (typeof window.renderArenaRankingList === 'function') window.renderArenaRankingList('normal');
+
+    } else if (category === 'defense') {
+        // ★追加：防衛戦タブが押されたときの処理
+        if (tabDefense) { tabDefense.style.background = '#333'; tabDefense.style.color = '#FFF'; tabDefense.style.borderBottom = '3px solid #4CAF50'; }
+        if (subDefense) subDefense.style.display = 'flex';
+        if (typeof window.renderDefenseRankingList === 'function') window.renderDefenseRankingList('normal');
     }
 };
 
@@ -2970,7 +3009,10 @@ window.showLifePathEvent = function(hero, path) {
         window.showGameTutorial(`✨ ${title} ✨`, message, () => {
             hero.message = "これからもよろしくね！";
             hero.messageTimer = 180;
-            // TODO: ここでルートごとの専用アクション（次回実装）を解放する
+            // ★追加：AIに「余生の目標」をセットし、自動行動を解禁する
+            hero.lifePath = path;
+            hero.legacyProgress = {}; // 進捗を0%にリセット
+            if (hero.schedule) hero.schedule = []; // 今の予定を全てキャンセルして余生に集中
         });
     }
 };
@@ -3282,13 +3324,18 @@ window.openShopManagementUI = function(building) {
 
     for (let itemId in s.recipes) {
         if (!s.recipes[itemId].learned) continue;
+        
         let itemName = window.getDisplayShopItemName(itemId);
+        let isHidden = s.recipes[itemId].hidden;
         let invCount = currentStock[itemId] || 0;
         let price = s.prices[itemId] || 0;
         
         let baseValue = 50; 
         let isMarketKnown = false;
-        if (typeof itemCatalog !== 'undefined' && itemCatalog[itemId] && itemCatalog[itemId].value) {
+        if (window.aiPet && window.aiPet.customRecipes && window.aiPet.customRecipes[itemId]) {
+            baseValue = window.aiPet.customRecipes[itemId].value * 4;
+            isMarketKnown = true;
+        } else if (typeof itemCatalog !== 'undefined' && itemCatalog[itemId] && itemCatalog[itemId].value) {
             baseValue = itemCatalog[itemId].value * 4;
             isMarketKnown = true;
         }
@@ -3298,10 +3345,18 @@ window.openShopManagementUI = function(building) {
         if (price > baseValue * 1.2) priceColor = "#ff5252"; 
         else if (price < baseValue * 0.8) priceColor = "#4CAF50"; 
 
+        // ★修正：品切れで隠されている場合の表示切り替え（分かりやすいバッジ化）
+        let invCountDisplay = `<span id="inv-count-${itemId}" style="font-size:18px; font-weight:bold; color:${invCount > 0 ? '#4CAF50' : '#f44336'};">${invCount} 個</span>`;
+        
+        if (isHidden) {
+            itemName = `<span style="color:#777; text-decoration:line-through;">${itemName}</span>`;
+            invCountDisplay = `<span id="inv-count-${itemId}" style="font-size:13px; font-weight:bold; color:#f44336; background:rgba(244,67,54,0.1); padding:4px 8px; border-radius:4px; border:1px solid #f44336; display:inline-block;">品切・非表示</span>`;
+        }
+
         inventoryHtml += `
             <tr style="border-bottom: 1px solid #333;">
                 <td style="padding:10px; font-size:16px;">🎁 ${itemName}</td>
-                <td style="padding:10px; text-align:center;"><span id="inv-count-${itemId}" style="font-size:18px; font-weight:bold; color:${invCount > 0 ? '#4CAF50' : '#f44336'};">${invCount} 個</span></td>
+                <td style="padding:10px; text-align:center;">${invCountDisplay}</td>
                 <td style="padding:10px; text-align:center; color:#aaa;">${marketPriceDisplay}</td>
                 <td style="padding:10px; text-align:center;"><span id="inv-price-${itemId}" style="font-size:18px; font-weight:bold; color:${priceColor};">${price} G</span></td>
             </tr>
@@ -3313,7 +3368,10 @@ window.openShopManagementUI = function(building) {
             <h1 style="color:#FFC107; font-size:28px; margin:0;">${typeWord} <span style="font-size:16px; color:#aaa;">(内装Lv: ${s.interiorLevel})</span></h1>
             <div style="display:flex; gap:10px; align-items:center;">
                 <div style="color:#4fc3f7; font-weight:bold; font-size:12px; margin-right:10px;">※AIが自分で素材を消費し、考えて経営しています。</div>
-                <button onclick="window.closeShopUI()" style="padding:8px 15px; background:#444; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:13px;">UIを隠す(営業継続)</button>
+                ${!s.isOpen 
+                    ? `<button onclick="window.confirmForceOpenShop('${building.id}')" style="padding:8px 15px; background:#FF9800; color:black; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:13px; box-shadow:0 2px 4px rgba(0,0,0,0.5); transition:0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">⚡ 一瞬で仕込みを完了する</button>` 
+                    : `<button onclick="window.confirmForceSellAll('${building.id}')" style="padding:8px 15px; background:#00BCD4; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:13px; box-shadow:0 2px 4px rgba(0,0,0,0.5); transition:0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">⏩ 経営結果だけを見る</button>`
+                }
                 <button onclick="window.exitShopManagement()" style="padding:8px 15px; background:#f44336; color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold; font-size:13px; box-shadow:0 2px 4px rgba(0,0,0,0.5);">店を閉めて外に出る</button>
             </div>
         </div>
@@ -3361,6 +3419,454 @@ window.openShopManagementUI = function(building) {
     window.startShopSimulation(building);
 };
 
+// ==========================================
+// ★ 仕込み強制完了（超・賢いバランス管理AI搭載版）
+// ==========================================
+window.confirmForceOpenShop = function(bId) {
+    let modal = document.createElement('div');
+    modal.id = 'force-open-modal';
+    modal.style.cssText = `position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:90000; display:flex; justify-content:center; align-items:center;`;
+    modal.innerHTML = `
+        <div style="background:#222; border:3px solid #FF9800; border-radius:12px; padding:30px; width:80%; max-width:480px; text-align:center; color:white; font-family:sans-serif; box-shadow:0 10px 30px rgba(0,0,0,0.8);">
+            <h2 style="color:#FF9800; margin-top:0; margin-bottom:15px; font-size:24px;">⚡ 仕込みの一括完了</h2>
+            <div style="font-size:14px; color:#ccc; margin-bottom:25px; line-height:1.6; text-align:left; background:#111; padding:15px; border-radius:8px; border:1px solid #444;">
+                AIが「賢さ」と「店舗の規模」を計算し、最適なバランスで一気に仕込みます。<br><br>
+                <span style="color:#4CAF50;">✔</span> 各種素材は、いざという時の為に<span style="color:#FFF; font-weight:bold;">最低5個は温存</span>します。<br>
+                <span style="color:#4fc3f7;">✔</span> お店が特定の商品ばかりにならないよう<span style="color:#FFF; font-weight:bold;">バランス良く</span>作ります。<br>
+                <span style="color:#E040FB;">✔</span> 在庫が十分確保できたら、優先的に<span style="color:#FFF; font-weight:bold;">新メニュー開発</span>を行います。
+            </div>
+            <div style="display:flex; gap:15px; justify-content:center;">
+                <button onclick="window.executeForceOpenShop('${bId}')" style="flex:1; padding:12px; font-size:18px; font-weight:bold; background:#FF9800; color:black; border:none; border-radius:6px; cursor:pointer; box-shadow:0 4px 0 #E65100; transition:0.1s;" onmousedown="this.style.transform='translateY(4px)'; this.style.boxShadow='none';">一気に作る</button>
+                <button onclick="document.getElementById('force-open-modal').remove()" style="flex:1; padding:12px; font-size:18px; font-weight:bold; background:#555; color:white; border:none; border-radius:6px; cursor:pointer; box-shadow:0 4px 0 #333; transition:0.1s;" onmousedown="this.style.transform='translateY(4px)'; this.style.boxShadow='none';">やめる</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+};
+
+window.executeForceOpenShop = async function(bId) {
+    let modal = document.getElementById('force-open-modal');
+    if (modal) modal.remove();
+
+    let building = assets[bId];
+    if (!building || !building.shopData) return;
+    let s = building.shopData;
+    let ai = window.aiPet;
+
+    // ==========================================
+    // 🧠 賢いAIの計画（目標計算）
+    // ==========================================
+    // ①店舗の規模(Lv * 50) + ②賢さボーナス(最大+100) = 現実的な在庫上限(最大250程度)
+    let baseCap = (s.interiorLevel || 1) * 50;
+    let intelBonus = Math.min(100, Math.floor((ai.stats.intel || 10) / 10));
+    let loopLimit = baseCap + intelBonus;
+    
+    // 同じメニューばかり作らない制限（賢さに応じて20〜30個）
+    let maxPerItem = 20 + Math.min(10, Math.floor((ai.stats.intel || 10) / 100));
+
+    // アニメーション情報の取得
+    let actionName = building.type === 'restaurant' ? 'cook' : 'smith';
+    let skinName = ai.currentSkin || ai.baseType || 'robot';
+    let conf = typeof aiConfigs !== 'undefined' ? aiConfigs[skinName] || aiConfigs[skinName.split('_')[0]] : null;
+    
+    let frames = null;
+    let imgSrc = 'characters.png';
+    let animScale = 0.5;
+    let animHtml = `<div style="font-size:50px; animation: spin 1s linear infinite;">⚙️</div>`; 
+
+    if (conf) {
+        frames = (conf.actions && conf.actions[actionName]) ? conf.actions[actionName] : 
+                 (conf.actions && conf.actions.idle) ? conf.actions.idle : null;
+        
+        if (frames && frames.length > 0) {
+            let mFrame = frames[0];
+            let imgKey = skinName;
+            if (conf.img) imgKey = conf.img;
+            if (conf.actionImages && conf.actionImages[actionName]) imgKey = conf.actionImages[actionName]; 
+            else if (mFrame.img) imgKey = mFrame.img;
+            
+            if (typeof images !== 'undefined' && images[imgKey] && images[imgKey].src) imgSrc = images[imgKey].src; 
+            else if (typeof window.dynamicImageCatalog !== 'undefined' && window.dynamicImageCatalog[imgKey]) imgSrc = window.dynamicImageCatalog[imgKey]; 
+            
+            animScale = conf.scale || 0.25; 
+            animScale *= 1.8; 
+            if (['robot', 'magician', 'spirit'].some(k => skinName.includes(k))) animScale *= 1.8; 
+            
+            let sw = mFrame.sw || 300; let sh = mFrame.sh || 300; let sx = mFrame.sx || 0; let sy = mFrame.sy || 0;
+            let displayW = sw * animScale;
+            let displayH = sh * animScale;
+            
+            animHtml = `
+                <div style="width:${displayW}px; height:${displayH}px; position:relative; overflow:hidden; filter: drop-shadow(0 0 15px rgba(255,255,255,0.4)); margin-bottom:10px;">
+                    <div id="loading-sprite" style="position:absolute; left:0; top:0; width:${sw}px; height:${sh}px; background-image:url('${imgSrc}'); background-position:-${sx}px -${sy}px; background-repeat:no-repeat; transform:scale(${animScale}); transform-origin:top left;"></div>
+                </div>
+            `;
+        }
+    }
+
+    // --- ローディングUI表示 ---
+    let loadingModal = document.createElement('div');
+    loadingModal.id = 'shop-loading-modal';
+    loadingModal.style.cssText = `position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.95); z-index:95000; display:flex; flex-direction:column; justify-content:center; align-items:center; color:white; font-family:sans-serif;`;
+    loadingModal.innerHTML = `
+        ${animHtml}
+        <h2 style="color:#FF9800; margin-top:10px; text-shadow:0 2px 4px #000;">AIが計画的に仕込み中...</h2>
+        
+        <div style="width: 80%; max-width: 400px; background: #222; border-radius: 10px; margin-top: 15px; overflow: hidden; border: 2px solid #555; box-shadow: 0 0 15px rgba(255, 152, 0, 0.3);">
+            <div id="shop-loading-bar" style="width: 0%; height: 20px; background: linear-gradient(90deg, #FF9800, #FFC107); transition: width 0.1s;"></div>
+        </div>
+        <div id="shop-loading-text" style="color:#FFF; font-size:16px; font-weight:bold; margin-top:10px;">準備中... (0 / 最大 ${loopLimit} 個)</div>
+        <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
+    `;
+    document.body.appendChild(loadingModal);
+
+    let animTimer = null;
+    if (frames && frames.length > 0) {
+        let fIdx = 0;
+        animTimer = setInterval(() => {
+            fIdx = (fIdx + 1) % frames.length;
+            let f = frames[fIdx];
+            let sprite = document.getElementById('loading-sprite');
+            if (sprite) {
+                sprite.style.width = (f.sw || 300) + 'px';
+                sprite.style.height = (f.sh || 300) + 'px';
+                sprite.style.backgroundPosition = `-${f.sx || 0}px -${f.sy || 0}px`;
+            }
+        }, 120);
+    }
+
+    let startTime = Date.now();
+    await new Promise(r => setTimeout(r, 50));
+
+    let craftedCount = 0;
+    let researchCount = 0;
+    let upgradeCount = 0; 
+
+    // 内装アップグレード処理
+    while (s.interiorLevel < 3) {
+        let upgradeCost = s.interiorLevel * 1000;
+        if (ai.gold >= upgradeCost * 2) {
+            ai.gold -= upgradeCost;
+            s.interiorLevel++;
+            upgradeCount++;
+        } else {
+            break;
+        }
+    }
+    
+    if (ai.schedule && ai.schedule.length > 0 && (ai.schedule[0].type === 'shop_work' || ai.schedule[0].type === 'shop_research')) {
+        ai.schedule.shift();
+        if (typeof window.updateScheduleList === 'function') window.updateScheduleList();
+    }
+
+    let failsafe = 0;
+    let tempInventory = [...(ai.inventory || [])];
+    let newCraftedItems = [];
+
+    // ★ 追加機能：素材を最低「5個」残すためのチェック関数
+    const canAffordToConsume = (consumedIds) => {
+        let requiredCounts = {};
+        consumedIds.forEach(id => { requiredCounts[id] = (requiredCounts[id] || 0) + 1; });
+        
+        for (let id in requiredCounts) {
+            let currentTotal = tempInventory.filter(item => item === id).length;
+            // 消費後の残りが5個未満になってしまうなら「作成ストップ（温存）」と判断
+            if (currentTotal - requiredCounts[id] < 5) return false;
+        }
+        return true;
+    };
+
+    while ((craftedCount + researchCount) < loopLimit && failsafe < 3000) {
+        failsafe++;
+        
+        // 全体の数が減ったので、更新頻度を高くしてバーを滑らかに見せる
+        if (failsafe % 5 === 0) {
+            let current = craftedCount + researchCount;
+            let percent = Math.min(100, Math.floor((current / loopLimit) * 100));
+            
+            let progEl = document.getElementById('shop-loading-text');
+            let barEl = document.getElementById('shop-loading-bar');
+            
+            if (progEl) progEl.innerText = `作成＆研究：${current} / 目標 ${loopLimit} 個`;
+            if (barEl) barEl.style.width = percent + '%';
+            
+            await new Promise(r => setTimeout(r, 10)); 
+        }
+
+        let knownRecipes = Object.keys(s.recipes || {}).filter(k => s.recipes[k].learned);
+        let currentStockDict = window.getCurrentShopStock(s.recipes);
+        
+        // 仮で作った分も在庫として合算
+        newCraftedItems.forEach(i => {
+            if (knownRecipes.includes(i)) currentStockDict[i] = (currentStockDict[i] || 0) + 1;
+        });
+
+        // 🏆 賢いAIの判断：①作れるか ②上限を超えてないか ③素材を残せるか
+        let craftable = knownRecipes.filter(r => {
+            if ((currentStockDict[r] || 0) >= maxPerItem) return false; // 1メニューの偏り防止
+            let consumedIds = window.checkRecipeMaterials(tempInventory, r, building.type);
+            if (!consumedIds) return false; // 素材がない
+            if (!canAffordToConsume(consumedIds)) return false; // いざという時のために素材を温存！
+            return true;
+        });
+
+        let hasZeroStockMenu = knownRecipes.some(r => (currentStockDict[r] || 0) === 0);
+        let doResearch = false;
+        
+        if (craftable.length === 0) {
+            // 素材不足、または上限に達した場合は、研究に専念する
+            if (Math.random() < 0.4) doResearch = true;
+            else break; 
+        } else if (!hasZeroStockMenu) {
+            // 在庫が十分にある場合、賢さ＋進行度で新メニュー開発率をアップさせる
+            let researchChance = 0.15 + ((ai.stats.intel || 10) / 400);
+            if (researchChance > 0.6) researchChance = 0.6; 
+            
+            // 目標数の8割を超えたら研究のラストスパート
+            if ((craftedCount + researchCount) > loopLimit * 0.8) researchChance += 0.2;
+
+            if (Math.random() < researchChance) doResearch = true;
+        }
+
+        if (doResearch) {
+            if (typeof window.generateCustomRecipe === 'function') {
+                let oldKeys = Object.keys(s.recipes || {});
+                let newName = window.generateCustomRecipe(s);
+                if (newName) {
+                    researchCount++;
+                    let newKeys = Object.keys(s.recipes || {});
+                    let addedId = newKeys.find(k => !oldKeys.includes(k));
+                    if (addedId) newCraftedItems.push(addedId); 
+                }
+            }
+        } else if (craftable.length > 0) {
+            // 一番在庫が「少ない」メニューを優先して作る（均等化）
+            craftable.sort((a, b) => {
+                let stockA = currentStockDict[a] || 0;
+                let stockB = currentStockDict[b] || 0;
+                return stockA - stockB;
+            });
+            
+            let pick = craftable[0];
+            let consumedIds = window.checkRecipeMaterials(tempInventory, pick, building.type);
+            
+            if (consumedIds) {
+                consumedIds.forEach(cId => {
+                    let idx = tempInventory.indexOf(cId);
+                    if (idx !== -1) tempInventory[idx] = null;
+                });
+                newCraftedItems.push(pick);
+                craftedCount++;
+            } else {
+                break;
+            }
+        }
+    }
+
+    let finalCurrent = craftedCount + researchCount;
+    let finalPercent = Math.min(100, Math.floor((finalCurrent / loopLimit) * 100));
+    let barEl = document.getElementById('shop-loading-bar');
+    let progEl = document.getElementById('shop-loading-text');
+    if (barEl) barEl.style.width = finalPercent + '%';
+    if (progEl) progEl.innerText = `完了！ (${finalCurrent} / 目標 ${loopLimit} 個)`;
+    
+    // 演出のため最低1.5秒はアニメーションを維持する
+    let elapsed = Date.now() - startTime;
+    if (elapsed < 1500) {
+        await new Promise(r => setTimeout(r, 1500 - elapsed));
+    }
+
+    if (animTimer) clearInterval(animTimer);
+    if (loadingModal) loadingModal.remove();
+
+    ai.inventory = tempInventory.filter(item => item !== null).concat(newCraftedItems);
+
+    let finalStockDict = window.getCurrentShopStock(s.recipes);
+    let finalTotalStock = Object.values(finalStockDict).reduce((a, b) => a + b, 0);
+
+    // ==========================================
+    // ★案3（賢さ依存）：開店直前に、賢いAIは在庫0のメニューをメニュー表から隠す
+    // ==========================================
+    let isSmartMenuManager = (ai.stats.intel || 10) >= 50; // 賢さ50以上で発動
+    for (let r in s.recipes) {
+        if (s.recipes[r].learned) {
+            let count = finalStockDict[r] || 0;
+            // 賢い＆在庫0なら隠す。アホ、または在庫があるなら隠さない。
+            if (isSmartMenuManager && count === 0) s.recipes[r].hidden = true;
+            else s.recipes[r].hidden = false;
+        }
+    }
+
+    // ローディングUIを消す
+    if (loadingModal) loadingModal.remove();
+
+    if (finalTotalStock > 0) {
+        s.isOpen = true;
+        let logMsg = "⚡ 準備完了！直ちに営業を開始します！";
+        if (craftedCount > 0 || researchCount > 0 || upgradeCount > 0) {
+            logMsg = `⚡ AIが計画的に行動し、`;
+            if (upgradeCount > 0) logMsg += `内装をLv${s.interiorLevel}に改装し、`;
+            logMsg += `${craftedCount}個の仕込みと ${researchCount}個の新メニュー開発を行いました！(※不要な乱獲を防ぐため、各種素材は5個以上キープしています)`;
+        }
+        if (window.addShopLog) window.addShopLog(s, logMsg);
+        
+        if (typeof window.openShopManagementUI === 'function') window.openShopManagementUI(building);
+    } else {
+        let alertModal = document.createElement('div');
+        alertModal.style.cssText = `position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:90000; display:flex; justify-content:center; align-items:center;`;
+        alertModal.innerHTML = `
+            <div style="background:#222; border:3px solid #f44336; border-radius:12px; padding:30px; width:80%; max-width:400px; text-align:center; color:white; font-family:sans-serif; box-shadow:0 10px 30px rgba(0,0,0,0.8);">
+                <h2 style="color:#f44336; margin-top:0; margin-bottom:15px; font-size:24px;">❌ 素材が足りません</h2>
+                <p style="font-size:16px; color:#ccc; margin-bottom:25px; line-height:1.5;">在庫がなく、作れるだけの素材も持っていないため、お店を開けられません！<br>（AIはいざという時の為に各種素材を5つずつ手元に残します）</p>
+                <button onclick="this.parentElement.parentElement.remove()" style="padding:12px 30px; font-size:18px; font-weight:bold; background:#555; color:white; border:none; border-radius:6px; cursor:pointer;">閉じる</button>
+            </div>
+        `;
+        document.body.appendChild(alertModal);
+    }
+};
+
+// ==========================================
+// ★ 新規追加：営業強制完了（一括販売＆リザルト）
+// ==========================================
+window.confirmForceSellAll = function(bId) {
+    let modal = document.createElement('div');
+    modal.id = 'force-sell-modal';
+    modal.style.cssText = `position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:90000; display:flex; justify-content:center; align-items:center;`;
+    modal.innerHTML = `
+        <div style="background:#222; border:3px solid #00BCD4; border-radius:12px; padding:30px; width:80%; max-width:480px; text-align:center; color:white; font-family:sans-serif; box-shadow:0 10px 30px rgba(0,0,0,0.8);">
+            <h2 style="color:#00BCD4; margin-top:0; margin-bottom:15px; font-size:24px;">⏩ 経営結果だけを見る</h2>
+            <div style="font-size:14px; color:#ccc; margin-bottom:25px; line-height:1.6; text-align:left; background:#111; padding:15px; border-radius:8px; border:1px solid #444;">
+                営業時間を早送りし、現在の在庫を<span style="color:#FFF; font-weight:bold;">一気に販売</span>してリザルト（売上・評判）を確認します。<br><br>
+                <span style="color:#ff5252;">⚠️ 経営破綻リスク</span><br>
+                価格設定が「ぼったくり」のまま結果を見ると、断られたお客さんの悪い噂が一気に広まり、<span style="color:#ff5252; font-weight:bold;">即座に倒産</span>する危険があります。
+            </div>
+            <div style="display:flex; gap:15px; justify-content:center;">
+                <button onclick="window.executeForceSellAll('${bId}')" style="flex:1; padding:12px; font-size:18px; font-weight:bold; background:#00BCD4; color:black; border:none; border-radius:6px; cursor:pointer; box-shadow:0 4px 0 #00838F; transition:0.1s;" onmousedown="this.style.transform='translateY(4px)'; this.style.boxShadow='none';">結果を見る</button>
+                <button onclick="document.getElementById('force-sell-modal').remove()" style="flex:1; padding:12px; font-size:18px; font-weight:bold; background:#555; color:white; border:none; border-radius:6px; cursor:pointer; box-shadow:0 4px 0 #333; transition:0.1s;" onmousedown="this.style.transform='translateY(4px)'; this.style.boxShadow='none';">やめる</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+};
+
+window.executeForceSellAll = async function(bId) {
+    let modal = document.getElementById('force-sell-modal');
+    if (modal) modal.remove();
+
+    let building = assets[bId];
+    if (!building || !building.shopData) return;
+    let s = building.shopData;
+    let ai = window.aiPet;
+
+    let currentStock = window.getCurrentShopStock(s.recipes);
+    let remainingInv = [];
+    let sellCounts = {...currentStock};
+
+    let totalSalesGold = 0;
+    let totalRepChange = 0;
+    let itemsSold = 0;
+
+    // インベントリから販売する商品を取り除きつつ、売上と評判のシミュレーションを行う
+    for (let item of (ai.inventory || [])) {
+        if (sellCounts[item] > 0) {
+            sellCounts[item]--;
+            
+            let price = s.prices[item] || 50;
+            let baseValue = 50;
+            // ★ AIのオリジナルレシピなら、その価値を正しく評価する！
+            if (ai.customRecipes && ai.customRecipes[item]) baseValue = ai.customRecipes[item].value * 4;
+            else if (typeof itemCatalog !== 'undefined' && itemCatalog[item] && itemCatalog[item].value) baseValue = itemCatalog[item].value * 4;
+            
+            let ratio = price / baseValue;
+            let acceptableRatio = 1.0 + ((s.interiorLevel || 1) * 0.1); 
+
+            // 来客シミュレーション（1個売るのにどれくらい客に断られたか）
+            let tries = 0;
+            let sold = false;
+            while (!sold && tries < 10) {
+                tries++;
+                let buyChance = 1.0;
+                if (ratio > acceptableRatio) buyChance -= (ratio - acceptableRatio) * 1.5;
+                if (ratio < 0.8) buyChance += 0.5; 
+                if (s.reputation > 50) buyChance += 0.2; 
+                
+                if (Math.random() < buyChance) {
+                    totalSalesGold += price;
+                    totalRepChange += 1; // 売れたら評判が少し上がる
+                    itemsSold++;
+                    sold = true;
+                } else {
+                    let repPenalty = 4 - (s.interiorLevel || 1);
+                    if (s.reputation > 70 && ratio > 1.3) repPenalty += 3; 
+                    else if (s.reputation > 50 && ratio > 1.3) repPenalty += 2;
+                    totalRepChange -= repPenalty; // 買われずに帰られると評判が下がる
+                }
+            }
+            // 10回連続で断られても、一括販売なので無理やり売り切ったことにする（大赤字の評判低下を食らう）
+            if (!sold) {
+                totalSalesGold += price;
+                itemsSold++;
+            }
+        } else {
+            remainingInv.push(item); // メニューにない商品（素材など）は手元に残す
+        }
+    }
+
+    // 結果を反映
+    ai.inventory = remainingInv;
+    ai.gold += totalSalesGold;
+    s.totalSales += totalSalesGold;
+    
+    let oldRep = s.reputation;
+    s.reputation = Math.max(0, Math.min(100, s.reputation + Math.floor(totalRepChange)));
+    s.isOpen = false; // 完売したので店を閉める（仕込み中に戻る）
+    
+    if (window.addShopLog) window.addShopLog(s, `⏩ 営業を一気に終わらせました！(販売: ${itemsSold}個 / 売上: ${totalSalesGold}G)`);
+
+    // UIを背景で更新しておく
+    if (typeof window.openShopManagementUI === 'function') window.openShopManagementUI(building);
+
+    // ★ 修正：リザルトモーダル表示（確実に消去できるようにIDを付与）
+    let resultModal = document.createElement('div');
+    resultModal.id = 'shop-result-modal';
+    resultModal.style.cssText = `position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:95000; display:flex; justify-content:center; align-items:center;`;
+    
+    let repText = s.reputation > oldRep ? `<span style="color:#4CAF50;">+${s.reputation - oldRep} UP!</span>` : 
+                  s.reputation < oldRep ? `<span style="color:#f44336;">${oldRep - s.reputation} DOWN...</span>` : `<span style="color:#aaa;">変化なし</span>`;
+
+    // ★ ご要望の「経営継続」と「経営終了」ボタンを配置！
+    let buttonsHtml = '';
+    if (s.reputation <= 0) {
+        buttonsHtml = `<button onclick="document.getElementById('shop-result-modal').remove(); window.triggerBankrupt(assets['${bId}']);" style="padding:12px 40px; font-size:18px; font-weight:bold; background:#f44336; color:white; border:none; border-radius:6px; cursor:pointer; box-shadow:0 4px 0 #b71c1c; width:100%; transition:0.1s;" onmousedown="this.style.transform='translateY(4px)'; this.style.boxShadow='none';">倒産を確認する</button>`;
+    } else {
+        buttonsHtml = `
+            <div style="display:flex; gap:15px; justify-content:center;">
+                <button onclick="document.getElementById('shop-result-modal').remove();" style="flex:1; padding:12px; font-size:18px; font-weight:bold; background:#00BCD4; color:black; border:none; border-radius:6px; cursor:pointer; box-shadow:0 4px 0 #00838F; transition:0.1s;" onmousedown="this.style.transform='translateY(4px)'; this.style.boxShadow='none';">経営継続 (仕込みへ)</button>
+                <button onclick="document.getElementById('shop-result-modal').remove(); window.exitShopManagement();" style="flex:1; padding:12px; font-size:18px; font-weight:bold; background:#f44336; color:white; border:none; border-radius:6px; cursor:pointer; box-shadow:0 4px 0 #b71c1c; transition:0.1s;" onmousedown="this.style.transform='translateY(4px)'; this.style.boxShadow='none';">経営終了 (外に出る)</button>
+            </div>
+        `;
+    }
+
+    // ★ フリーズバグの元凶だった「透明になって消えるアニメーション」を削除し、専用のPopアニメーションに変更
+    resultModal.innerHTML = `
+        <style>@keyframes resultPop { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }</style>
+        <div style="background:#222; border:3px solid #00BCD4; border-radius:12px; padding:30px; width:80%; max-width:420px; text-align:center; color:white; font-family:sans-serif; box-shadow:0 10px 30px rgba(0,0,0,0.8); animation: resultPop 0.2s ease-out forwards;">
+            <h2 style="color:#00BCD4; margin-top:0; margin-bottom:20px; font-size:26px;">🎉 営業リザルト</h2>
+            <div style="font-size:18px; margin-bottom:12px; display:flex; justify-content:space-between; border-bottom:1px solid #444; padding-bottom:8px;">
+                <span style="color:#aaa;">販売数:</span> <span style="color:#FFF; font-weight:bold;">${itemsSold} 個</span>
+            </div>
+            <div style="font-size:18px; margin-bottom:12px; display:flex; justify-content:space-between; border-bottom:1px solid #444; padding-bottom:8px;">
+                <span style="color:#aaa;">総売上:</span> <span style="color:#FFD700; font-weight:bold;">💰 ${totalSalesGold} G</span>
+            </div>
+            <div style="font-size:18px; margin-bottom:25px; display:flex; justify-content:space-between;">
+                <span style="color:#aaa;">評判の変化:</span> <span>${repText} <span style="font-size:14px; color:#ccc;">(現在: ${s.reputation})</span></span>
+            </div>
+            ${buttonsHtml}
+        </div>
+    `;
+    document.body.appendChild(resultModal);
+};
+
 window.updateShopUIData = function(building) {
     if (!building || !building.shopData) return;
     const s = building.shopData;
@@ -3381,13 +3887,37 @@ window.updateShopUIData = function(building) {
         let countEl = document.getElementById(`inv-count-${itemId}`);
         if (countEl) {
             let invCount = currentStock[itemId] || 0;
-            countEl.innerText = invCount + " 個";
-            countEl.style.color = invCount > 0 ? '#4CAF50' : '#f44336';
+            let isHidden = s.recipes[itemId].hidden;
+            
+            // ★修正：リアルタイム更新時も、隠されていればバッジを表示する
+            if (isHidden) {
+                countEl.innerHTML = `品切・非表示`;
+                countEl.style.fontSize = "13px";
+                countEl.style.color = "#f44336";
+                countEl.style.background = "rgba(244,67,54,0.1)";
+                countEl.style.padding = "4px 8px";
+                countEl.style.borderRadius = "4px";
+                countEl.style.border = "1px solid #f44336";
+                countEl.style.display = "inline-block";
+            } else {
+                countEl.innerHTML = `${invCount} 個`;
+                countEl.style.fontSize = "18px";
+                countEl.style.color = invCount > 0 ? '#4CAF50' : '#f44336';
+                countEl.style.background = "none";
+                countEl.style.padding = "0";
+                countEl.style.border = "none";
+            }
         }
         let priceEl = document.getElementById(`inv-price-${itemId}`);
         if (priceEl) { 
             let price = s.prices[itemId] || 0;
-            let baseValue = (typeof itemCatalog !== 'undefined' && itemCatalog[itemId] && itemCatalog[itemId].value) ? itemCatalog[itemId].value * 4 : 50;
+            // ★修正：リアルタイム更新時も、オリジナルレシピの本来の価値を読み取る！
+            let baseValue = 50;
+            if (window.aiPet && window.aiPet.customRecipes && window.aiPet.customRecipes[itemId]) {
+                baseValue = window.aiPet.customRecipes[itemId].value * 4;
+            } else if (typeof itemCatalog !== 'undefined' && itemCatalog[itemId] && itemCatalog[itemId].value) {
+                baseValue = itemCatalog[itemId].value * 4;
+            }
             let priceColor = "#FFD700"; 
             if (price > baseValue * 1.2) priceColor = "#ff5252"; 
             else if (price < baseValue * 0.8) priceColor = "#4CAF50"; 
@@ -3559,7 +4089,8 @@ window.startShopSimulation = function(building) {
                 if (npc.timer > 30) {
                     npc.state = 'shopping'; npc.timer = 0;
                     
-                    let knownRecipes = Object.keys(s.recipes).filter(k => s.recipes[k].learned);
+                    // ★案3対応：learnedがtrueで、かつ「hidden（隠蔽）」されていないメニューだけを見る
+                    let knownRecipes = Object.keys(s.recipes).filter(k => s.recipes[k].learned && !s.recipes[k].hidden);
                     
                     if (knownRecipes.length > 0) {
                         let targetItemId = knownRecipes[Math.floor(Math.random() * knownRecipes.length)];
@@ -3569,7 +4100,15 @@ window.startShopSimulation = function(building) {
 
                         if (currentStock[targetItemId] > 0) {
                             let price = s.prices[targetItemId] || 50;
-                            let baseValue = (typeof itemCatalog !== 'undefined' && itemCatalog[targetItemId] && itemCatalog[targetItemId].value) ? itemCatalog[targetItemId].value * 4 : 50; 
+                            
+                            // ★修正：お客さん（NPC）も、AIのオリジナルレシピの「真の価値」を理解して評価する！
+                            let baseValue = 50;
+                            if (window.aiPet && window.aiPet.customRecipes && window.aiPet.customRecipes[targetItemId]) {
+                                baseValue = window.aiPet.customRecipes[targetItemId].value * 4;
+                            } else if (typeof itemCatalog !== 'undefined' && itemCatalog[targetItemId] && itemCatalog[targetItemId].value) {
+                                baseValue = itemCatalog[targetItemId].value * 4;
+                            }
+                            
                             let ratio = price / baseValue;
                             let buyChance = 1.0;
 
@@ -4861,29 +5400,42 @@ window.generateCustomRecipe = function(shopData) {
     let itemType = '';
     let reqs = [];
 
+    // ★案1：AIが「今持っている素材」を使って新レシピを開発する
+    let inv = ai.inventory || [];
+    let uniqueInv = [...new Set(inv)];
+    let validMats = [];
+
     // ★修正：店舗のタイプによって閃くジャンルを完全に分離！
     if (isRest) {
         itemType = 'dish';
         name = prefix + ["の炒め", "スープ", "焼き", "の刺身", "丼", "煮込み", "ポワレ", "カレー", "サラダ", "パイ"][Math.floor(Math.random()*10)];
-        reqs = Math.random() < 0.5 ? ['veg', 'water'] : ['meat', 'veg']; 
-        if (Math.random() < 0.2) reqs = ['fish', 'any_food'];
+        
+        // 食べ物系の素材だけを抽出
+        validMats = uniqueInv.filter(i => {
+            let c = typeof itemCatalog !== 'undefined' ? itemCatalog[i] : null;
+            return (c && (c.type === 'food' || c.type === 'ingredient')) || ['carrot','tomato','pepper','berry','fish','meat','water','七草','キノコ','野イチゴ'].some(k => i.includes(k));
+        });
+        if (validMats.length === 0) validMats = ['any_food']; // 空っぽなら保険
     } else {
         itemType = 'equipment';
         let r = Math.random();
         if (r < 0.4) {
-            // 武器
             name = prefix + ["ソード", "ブレード", "の剣", "ランス", "アックス", "ハンマー", "の塊"][Math.floor(Math.random()*7)];
-            reqs = ['iron', 'iron'];
         } else if (r < 0.8) {
-            // 防具
             name = prefix + ["シールド", "の盾", "メイル", "アーマー", "クローク", "の兜", "の鎧"][Math.floor(Math.random()*7)];
-            reqs = ['wood', 'iron'];
         } else {
-            // アクセサリー
             name = prefix + ["リング", "ネックレス", "の指輪", "のお守り", "ピアス", "の腕輪", "ブローチ"][Math.floor(Math.random()*7)];
-            reqs = ['iron', 'any_food']; // アクセの素材は謎な感じに
         }
+        
+        // 鉱石・木材系の素材だけを抽出
+        validMats = uniqueInv.filter(i => i.includes('iron') || i.includes('wood') || i.includes('stone') || i.includes('crystal') || i.includes('gold'));
+        if (validMats.length === 0) validMats = ['iron']; // 空っぽなら保険
     }
+
+    // 抽出した手持ちの素材から1〜2個をランダムに選んでレシピの材料にする
+    let mat1 = validMats[Math.floor(Math.random() * validMats.length)];
+    let mat2 = validMats[Math.floor(Math.random() * validMats.length)];
+    reqs = Math.random() < 0.5 ? [mat1] : [mat1, mat2];
     
     // 賢さ依存の性能生成（5%で神アイテム化！）
     let intel = ai.stats.intel || 10;
@@ -5136,3 +5688,241 @@ setInterval(() => {
         buildBtn.parentNode.insertBefore(recipeBtn, buildBtn.nextSibling);
     }
 }, 2000);
+
+// ==========================================
+// ★ 釣り処理（エラー回避＆クエスト進行 修正版）
+// ==========================================
+// if (typeof window.AICharacter !== 'undefined') {
+//     window.AICharacter.prototype.processFishingFrame = function() {
+//         if (!this.fishingData) {
+//             this.fishingData = { phase: 'idle', timer: 0, pos: 100, targetName: null, isSuccess: false, isBreak: false, bestIdx: -1, caughtItem: null };
+//         }
+//         const d = this.fishingData;
+
+//         if (d.phase === 'idle') {
+//             d.timer++;
+//             // 待たせすぎないよう、HIT確率を少しだけアップ
+//             if (d.timer > 60 && Math.random() < 0.02) {
+//                 let bestRod = null; let bestIdx = -1; let rodPriority = { 'rod_super': 3, 'rod_norm': 2, 'rod_old': 1 };
+//                 this.inventory.forEach((key, idx) => {
+//                     if (rodPriority[key]) {
+//                         if (!bestRod || rodPriority[key] > rodPriority[bestRod]) { bestRod = key; bestIdx = idx; }
+//                     }
+//                 });
+                
+//                 if (!bestRod) {
+//                     // 漁師の弟子なら、釣り竿が壊れてしまっても自動で予備を補充する
+//                     if (this.apprentice && this.apprentice.currentMaster === 'fishing') {
+//                         this.inventory.push('rod_old');
+//                         bestRod = 'rod_old';
+//                         bestIdx = this.inventory.length - 1;
+//                     } else {
+//                         this.message = "釣り竿がない！"; this.messageTimer = 120;
+//                         if (typeof window.clearSchedule === 'function') window.clearSchedule();
+//                         return;
+//                     }
+//                 }
+
+//                 d.bestIdx = bestIdx;
+                
+//                 let catchRate = 0.4 + ((this.stats.power || 10) * 0.002);
+//                 if (bestRod === 'rod_norm') catchRate += 0.2;
+//                 if (bestRod === 'rod_super') catchRate += 0.4;
+//                 d.isSuccess = (Math.random() < catchRate);
+                
+//                 let breakChance = 0.10;
+//                 if (bestRod === 'rod_norm') breakChance = 0.05;
+//                 if (bestRod === 'rod_super') breakChance = 0.01;
+//                 d.isBreak = (Math.random() < breakChance);
+
+//                 let isSea = (this.interactionTarget && this.interactionTarget.type === 'sea');
+                
+//                 // ★修正：魚のテーブルが無い場合でも絶対にエラーを起こさないフォールバックを追加
+//                 let fallbackSea = [ {id: 'fish_sardine', prob: 50, name: 'イワシ'}, {id: 'fish_salmon', prob: 30, name: 'サケ'}, {id: 'fish_tuna', prob: 20, name: 'マグロ'} ];
+//                 let fallbackRiver = [ {id: 'fish_medaka', prob: 50, name: 'メダカ'}, {id: 'fish_bass', prob: 30, name: 'バス'}, {id: 'fish_carp', prob: 20, name: 'コイ'} ];
+
+//                 let seasonTable = null;
+//                 if (isSea) {
+//                     seasonTable = (typeof seaFishingTable !== 'undefined') ? seaFishingTable[this.season || 'spring'] || seaFishingTable['spring'] : fallbackSea;
+//                 } else {
+//                     seasonTable = (typeof riverFishingTable !== 'undefined') ? riverFishingTable[this.season || 'spring'] || riverFishingTable['spring'] : fallbackRiver;
+//                 }
+//                 if (!seasonTable) seasonTable = isSea ? fallbackSea : fallbackRiver;
+                
+//                 let rand = Math.random() * 100;
+//                 let current = 0; let caughtItem = null;
+//                 for (let i=0; i<seasonTable.length; i++) {
+//                     current += seasonTable[i].prob;
+//                     if (rand < current) { caughtItem = seasonTable[i].id; break; }
+//                 }
+//                 if (!caughtItem) caughtItem = seasonTable[0].id;
+//                 d.caughtItem = caughtItem;
+                
+//                 // ★修正：アイテムカタログに載っていない魚が釣れてもエラーで落ちないように保護
+//                 d.targetName = (typeof itemCatalog !== 'undefined' && itemCatalog[caughtItem]) ? itemCatalog[caughtItem].name : 
+//                                (seasonTable.find(f => f.id === caughtItem)?.name || "魚");
+                
+//                 d.phase = 'hit';
+//                 d.timer = 0;
+//                 d.pos = 100; 
+//                 this.message = "きた！！";
+//                 this.messageTimer = 60;
+//             }
+//         } else if (d.phase === 'hit') {
+//             d.timer++;
+            
+//             if (d.isSuccess) {
+//                 d.pos -= (0.4 + Math.random() * 0.8);
+//                 if (Math.random() < 0.1) d.pos += (1.0 + Math.random() * 2.0);
+                
+//                 if (d.pos <= 0) { 
+//                     d.pos = 0;
+//                     d.phase = 'result';
+//                     d.timer = 0;
+//                     this.inventory.push(d.caughtItem);
+                    
+//                     let bMood = 1.0;
+//                     let tData = typeof this.getTraitData === 'function' ? this.getTraitData() : null;
+//                     if (tData && tData.statBonus && tData.statBonus.mood) bMood = tData.statBonus.mood;
+//                     if (this.stats && this.stats.mood) this.stats.mood += 2 * bMood;
+                    
+//                     if (!this.godMode) { 
+//                         let consumption = (tData && tData.consumption) ? tData.consumption : 1.0;
+//                         this.energy -= 1 * consumption; 
+//                         this.hunger -= 1 * consumption; 
+//                     }
+                    
+//                     this.fishingPopup = `✨ ${d.targetName} を釣った！ ✨`;
+//                     this.fishingPopupTimer = 90;
+                    
+//                     if (typeof window.unlockSupportCard === 'function') window.unlockSupportCard('support_2', this.generation || 1, 'アクション');
+                    
+//                     if (typeof openInventoryPanel === 'function') {
+//                         const invPanel = document.getElementById('panel-inventory');
+//                         if (invPanel && invPanel.classList.contains('active')) openInventoryPanel();
+//                     }
+                    
+//                     if (d.isBreak) {
+//                         this.inventory.splice(d.bestIdx, 1);
+//                         setTimeout(() => {
+//                             this.message = "あっ！釣り竿が壊れちゃった..."; this.messageTimer = 150;
+//                         }, 1000);
+//                     }
+
+//                     if (this.apprentice && this.apprentice.activeQuest && this.apprentice.activeQuest.desc.includes("釣り")) {
+//                         this.apprentice.qVal = (this.apprentice.qVal || 0) + 1;
+//                         if (typeof window.updateQuestHUD === 'function') window.updateQuestHUD();
+//                     }
+//                     if (typeof window.progressDailyQuest === 'function') window.progressDailyQuest('fish'); 
+//                 }
+//             } else {
+//                 d.pos += (0.2 + Math.random() * 0.5);
+//                 if (Math.random() < 0.3) d.pos -= 1.0; 
+                
+//                 if (d.timer > 180 || d.pos >= 120) {
+//                     d.phase = 'result';
+//                     d.timer = 0;
+//                     const failMsgs = ["逃げられた...", "糸が切れた..."];
+//                     this.message = failMsgs[Math.floor(Math.random()*failMsgs.length)];
+//                     this.messageTimer = 90;
+                    
+//                     if (d.isBreak) {
+//                         this.inventory.splice(d.bestIdx, 1);
+//                         setTimeout(() => {
+//                             this.message = "あっ！釣り竿が壊れちゃった..."; this.messageTimer = 150;
+//                         }, 1000);
+//                     }
+
+//                     // 失敗してもクエストの「釣りをした回数」にはカウント
+//                     if (this.apprentice && this.apprentice.activeQuest && this.apprentice.activeQuest.desc.includes("釣り")) {
+//                         this.apprentice.qVal = (this.apprentice.qVal || 0) + 1;
+//                         if (typeof window.updateQuestHUD === 'function') window.updateQuestHUD();
+//                     }
+//                     if (typeof window.progressDailyQuest === 'function') window.progressDailyQuest('fish'); 
+//                 }
+//             }
+//         } else if (d.phase === 'result') {
+//             d.timer++;
+//             if (d.timer > 100) { 
+//                 d.phase = 'idle';
+//                 d.timer = 0;
+//                 let hasRod = this.inventory.some(k => k.startsWith('rod_'));
+//                 // 竿が無くなった場合のみ釣りを強制終了
+//                 if (!hasRod && typeof window.clearSchedule === 'function') {
+//                     window.clearSchedule(); 
+//                 }
+//             }
+//         }
+//     };
+// }
+
+// // ==========================================
+// // ★ 釣りシステム復活 ＆ 爆速減算ストップパッチ
+// // ==========================================
+// if (typeof window.AICharacter !== 'undefined') {
+//     if (!window.AICharacter.prototype._originalAIUpdate_fishing_patched) {
+//         window.AICharacter.prototype._originalAIUpdate_fishing_patched = window.AICharacter.prototype.update;
+        
+//         window.AICharacter.prototype.update = function() {
+//             // 元の `duration` が猛スピードで減らされるのを防ぐための記録
+//             let oldDuration = -1;
+//             let isFishingTask = this.schedule && this.schedule.length > 0 && this.schedule[0].type === 'fish';
+//             if (isFishingTask) {
+//                 oldDuration = this.schedule[0].duration;
+//             }
+
+//             // 元のAIの思考・移動処理をそのまま実行
+//             if (typeof this._originalAIUpdate_fishing_patched === 'function') {
+//                 this._originalAIUpdate_fishing_patched.call(this);
+//             }
+            
+//             if (isFishingTask && this.schedule.length > 0 && this.schedule[0].type === 'fish') {
+//                 let task = this.schedule[0];
+                
+//                 // ★修正：元の処理で duration が勝手に減らされていたら元に戻す（1フレーム1削られるのを防ぐ）
+//                 if (task.duration < oldDuration) {
+//                     task.duration = oldDuration;
+//                 }
+
+//                 // 自前でゲーム内時間に合わせた減算処理（約1秒に1減らす程度にゆっくりにする）
+//                 if (!this._fishTick) this._fishTick = 0;
+//                 this._fishTick++;
+//                 if (this._fishTick >= 60) { 
+//                     this._fishTick = 0;
+//                     task.duration--;
+//                     if (task.duration <= 0) {
+//                         this.message = "釣りはこれくらいにしておこう！";
+//                         this.messageTimer = 120;
+//                         if (typeof window.clearSchedule === 'function') window.clearSchedule();
+//                         return;
+//                     }
+//                 }
+
+//                 // 目的地に到着したかの判定
+//                 if (this.actionState === 'idle' || this.actionState === 'inside') {
+//                     this.actionState = 'fishing';
+//                     this.visualAction = 'fish';
+//                 }
+                
+//                 // 釣りの処理（ミニゲームのゲージ等）
+//                 if (this.actionState === 'fishing') {
+//                     if (typeof this.processFishingFrame === 'function') {
+//                         this.processFishingFrame();
+//                     }
+//                 }
+//             }
+//         };
+//     }
+// }
+
+// ==========================================
+// ★ 追加：大数値を K, M, G でフォーマットする関数
+// ==========================================
+window.formatLargeNumber = function(num) {
+    if (num == null || isNaN(num)) return "0";
+    let n = Math.floor(num);
+    if (n >= 1000000000) return (n / 1000000000).toFixed(1) + 'G'; // 10億以上
+    if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';       // 100万以上
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'K';             // 1000以上
+    return n.toString();                                           // 1000未満
+};

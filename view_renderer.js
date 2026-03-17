@@ -10,14 +10,34 @@ if (typeof camera === 'undefined') {
 function render() {
     if (!ctx || imagesLoaded < totalImages) return;
     
-    // ★ここから修正：カメラのターゲットを分岐
+    let isDefense = (typeof window.DEFENSE_STATE !== 'undefined' && window.DEFENSE_STATE.isActive);
+    let isEmergency = (typeof window.DEFENSE_STATE !== 'undefined' && window.DEFENSE_STATE.isEmergency);
+
+    // ★修正：確実にassetsを取得する
+    let currentAssets = (typeof assets !== 'undefined') ? assets : (window.assets || {});
+
     let camBase = aiPet;
     if (currentMode === 'grazing' && typeof getGrazingCameraTarget === 'function') {
         camBase = getGrazingCameraTarget();
+    } 
+    else if (isDefense) {
+        if (window.DEFENSE_STATE.activeUnit) {
+            let u = window.DEFENSE_STATE.activeUnit;
+            let pos = window.getGridPixelPos ? window.getGridPixelPos(u.gridX, u.gridY) : {x:400, y:240};
+            camBase = { x: pos.x, y: pos.y };
+        } else {
+            let castle = Object.values(currentAssets).find(a => a && a.type === 'castle');
+            if (castle) {
+                let sc = castle.scale !== undefined ? castle.scale : 0.5;
+                camBase = { x: castle.dx + (castle.sw*sc)/2, y: castle.dy + (castle.sh*sc)/2 };
+            } else {
+                camBase = { x: 400, y: 240 };
+            }
+        }
     }
+
     let targetCamX = camBase.x - canvas.width / 2;
     let targetCamY = camBase.y - canvas.height / 2;
-    // ★ここまで修正
 
     camera.x += (targetCamX - camera.x) * 0.1;
     camera.y += (targetCamY - camera.y) * 0.1;
@@ -36,201 +56,185 @@ function render() {
     const groundAssets = [];
     const objectAssets = [];
 
-    for (let key in assets) {
-        const a = assets[key];
-        if (!a) continue;
-        
+    Object.keys(currentAssets).forEach(key => {
+        const a = currentAssets[key];
+        if (!a) return;
         if (a.type === 'ground' || a.type === 'water' || a.type === 'road') {
             groundAssets.push({key: key, data: a});
         } else {
             objectAssets.push({key: key, data: a});
         }
+    });
+
+    if (isDefense) {
+        let allUnits = [...window.DEFENSE_STATE.deployedParty, ...window.DEFENSE_STATE.enemies];
+        allUnits.forEach(unit => {
+            if (unit.hp <= 0) return;
+            let pos = window.getGridPixelPos ? window.getGridPixelPos(unit.gridX, unit.gridY) : {x:400, y:240};
+            unit.x = pos.x;
+            unit.y = pos.y;
+            objectAssets.push({
+                key: 'defense_unit_' + unit.id,
+                data: { dy: pos.y, isDefenseUnit: true, unit: unit }
+            });
+        });
     }
 
     groundAssets.sort((a, b) => a.data.dy - b.data.dy);
     groundAssets.forEach(item => drawAsset(item.data, item.key));
 
-    objectAssets.sort((a, b) => a.data.dy - b.data.dy);
-    objectAssets.forEach(item => {
-        drawAsset(item.data, item.key);
-    });
+    if (isDefense) {
+        const drawGridHighlight = (gx, gy, color) => {
+            let pos = window.getGridPixelPos ? window.getGridPixelPos(gx, gy) : null;
+            if (!pos) return;
+            ctx.save(); ctx.translate(pos.x, pos.y); ctx.beginPath();
+            ctx.moveTo(0, -12.5); ctx.lineTo(25, 0); ctx.lineTo(0, 12.5); ctx.lineTo(-25, 0);
+            ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+            ctx.strokeStyle = "rgba(255,255,255,0.6)"; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.restore();
+        };
 
-    if (currentMode === 'play' || currentMode === 'grazing') {
-        for (let key in assets) {
-            const a = assets[key];
-            if (a.type === 'farm') drawFarmStatus(a);
-        }
+        if (window.DEFENSE_STATE.moveHighlights) window.DEFENSE_STATE.moveHighlights.forEach(g => drawGridHighlight(g.x, g.y, "rgba(33, 150, 243, 0.5)"));
+        if (window.DEFENSE_STATE.attackHighlights) window.DEFENSE_STATE.attackHighlights.forEach(g => drawGridHighlight(g.x, g.y, "rgba(244, 67, 54, 0.5)"));
     }
 
-    // ★ここから修正：複数体の描画ループ
+    objectAssets.sort((a, b) => a.data.dy - b.data.dy);
+    
+    objectAssets.forEach(item => {
+        if (item.data.isDefenseUnit) {
+            let mainPetBackup = window.aiPet;
+            window.aiPet = item.data.unit; window.aiPet.currentSkin = item.data.unit.skin; 
+            drawAICharacter();
+            
+            let unit = item.data.unit;
+            ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(unit.x - 20, unit.y - 50, 40, 8);
+            ctx.fillStyle = unit.team === 'player' ? "#4CAF50" : "#ff5252";
+            ctx.fillRect(unit.x - 20, unit.y - 50, 40 * Math.max(0, unit.hp / unit.maxHp), 8);
+            ctx.strokeStyle = "#fff"; ctx.lineWidth = 1; ctx.strokeRect(unit.x - 20, unit.y - 50, 40, 8);
+            
+            window.aiPet = mainPetBackup;
+        } else {
+            drawAsset(item.data, item.key);
+        }
+    });
+
+    // ==========================================
+    // ★施設のHPバーと襲撃アラート（正確な座標取得）
+    // ==========================================
+    if ((isDefense || isEmergency) && window.DEFENSE_STATE.facilities) {
+        window.DEFENSE_STATE.facilities.forEach(fac => {
+            if (fac.hp > 0) {
+                let px = 0, py = 0;
+                let asset = currentAssets[fac.id];
+                
+                if (asset) {
+                    let sc = asset.scale !== undefined ? asset.scale : 0.5;
+                    px = asset.dx + (asset.sw * sc) / 2;
+                    py = asset.dy + 15; 
+                } else {
+                    let pos = window.getGridPixelPos ? window.getGridPixelPos(fac.gridX, fac.gridY) : {x:0, y:0};
+                    px = pos.x; py = pos.y - 60;
+                }
+
+                ctx.save();
+                ctx.translate(px, py);
+                
+                if (!isDefense && isEmergency && fac.hp < fac.maxHp) {
+                    ctx.fillStyle = "#ff5252"; ctx.font = "bold 16px sans-serif"; ctx.textAlign = "center";
+                    ctx.fillText("🔥 襲撃中！", 0, -25);
+                    ctx.translate(Math.random() * 4 - 2, Math.random() * 4 - 2);
+                }
+
+                ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(-30, -15, 60, 14);
+                ctx.fillStyle = "#FF9800"; ctx.fillRect(-30, -15, 60 * Math.max(0, fac.hp / fac.maxHp), 14);
+                ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5; ctx.strokeRect(-30, -15, 60, 14);
+                ctx.fillStyle = "#fff"; ctx.font = "bold 11px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                ctx.fillText(`HP ${Math.floor(fac.hp)}`, 0, -8);
+                ctx.restore();
+            }
+        });
+    }
+
+    if (currentMode === 'play' || currentMode === 'grazing') {
+        Object.keys(currentAssets).forEach(key => {
+            const a = currentAssets[key];
+            if (a && a.type === 'farm') drawFarmStatus(a);
+        });
+    }
+
     const isShowingActionWindow = (aiPet.isIndoors || aiPet.actionState === 'camping' || aiPet.actionState === 'studying' || aiPet.actionState === 'training' || aiPet.actionState === 'sleeping' || aiPet.actionState === 'farming_work' || aiPet.actionState === 'eating' || aiPet.actionState === 'fishing' || aiPet.actionState === 'smithing' || aiPet.actionState === 'building');
     
     if (currentMode === 'grazing') {
         let mainPetBackup = aiPet; 
         const activeMap = typeof grazingData !== 'undefined' ? grazingData.maps[currentGrazingMapId] : null;
-        
         if (activeMap && activeMap.pets) {
             activeMap.pets.forEach(pet => {
                 try {
                     aiPet = pet; window.aiPet = pet; 
-                    
-                    // ★修正: 施設内（探索、睡眠など）の場合はマップ上の立ち絵を隠す
                     const isHiddenOnMap = pet.isIndoors || ['sleeping', 'camping', 'inside', 'explore'].includes(pet.actionState);
-                    
-                    if (!isHiddenOnMap) {
-                        drawAICharacter();
-                    }
-                    
-                    // 吹き出しは現在地（施設の上など）に表示
-                    if (aiPet.messageTimer > 0) {
-                        drawSpeechBubble(aiPet.message, aiPet.x, aiPet.y - (30 * aiPet.visualScale));
-                    }
-                } finally {
-                    aiPet = mainPetBackup; window.aiPet = mainPetBackup; 
-                }
+                    if (!isHiddenOnMap) drawAICharacter();
+                    if (aiPet.messageTimer > 0) drawSpeechBubble(aiPet.message, aiPet.x, aiPet.y - (30 * aiPet.visualScale));
+                } finally { aiPet = mainPetBackup; window.aiPet = mainPetBackup; }
             });
         }
     } 
-    else {
+    else if (!isDefense) { 
         if (currentMode === 'ai_adjust') {
             drawAICharacter();
         } else {
-            // ★変更：プレイモード時はパーティ全員を描画する
-            let mainPetBackup = aiPet; // 操作中のキャラを一時保存
-            
+            let mainPetBackup = aiPet; 
             if (typeof party !== 'undefined' && party.length > 0) {
                 party.forEach(pet => {
-                    aiPet = pet; window.aiPet = pet; // 一時的に描画対象をすり替える
-                    
-                    // 施設内や別画面で作業中のキャラはマップ上に描画しない
+                    aiPet = pet; window.aiPet = pet; 
                     const isHiddenOnMap = pet.isIndoors || ['camping', 'studying', 'training', 'sleeping', 'farming_work', 'eating', 'fishing', 'smithing', 'building'].includes(pet.actionState);
-                    
-                    if (!isHiddenOnMap) {
-                        drawAICharacter();
-                    }
-                    if (aiPet.messageTimer > 0 && !isHiddenOnMap) {
-                        drawSpeechBubble(aiPet.message, aiPet.x, aiPet.y - (30 * aiPet.visualScale));
-                    }
+                    if (!isHiddenOnMap) drawAICharacter();
+                    if (aiPet.messageTimer > 0 && !isHiddenOnMap) drawSpeechBubble(aiPet.message, aiPet.x, aiPet.y - (30 * aiPet.visualScale));
                 });
             } else {
                 if (!isShowingActionWindow) drawAICharacter();
                 if (aiPet.messageTimer > 0 && !isShowingActionWindow) drawSpeechBubble(aiPet.message, aiPet.x, aiPet.y - (30 * aiPet.visualScale));
             }
-            
-            // 操作対象をリーダーに戻す（カメラ追従を戻すため）
             aiPet = mainPetBackup; window.aiPet = mainPetBackup;
         }
     }
-    // ★ここまで修正
+    
     ctx.restore();
 
-    if (currentMode === 'play' || currentMode === 'grazing') {
-        // ★修正：関数が存在しない場合はエラーを出さずにデフォルトの時間を返す（最強の安全装置）
+    if (currentMode === 'play' || currentMode === 'grazing' || isDefense) {
         const time = typeof aiPet.getTimePhase === 'function' ? aiPet.getTimePhase() : { id: 'day', name: '昼', color: 'rgba(0, 0, 0, 0)' };
-        if (time.color !== 'rgba(0, 0, 0, 0)') {
-            ctx.fillStyle = time.color;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-        
-        let seasonColor = 'rgba(0, 0, 0, 0)';
-        if (aiPet.season === 'spring') seasonColor = 'rgba(255, 182, 193, 0.05)'; 
-        else if (aiPet.season === 'summer') seasonColor = 'rgba(255, 255, 0, 0.05)'; 
-        else if (aiPet.season === 'autumn') seasonColor = 'rgba(255, 140, 0, 0.05)'; 
-        else if (aiPet.season === 'winter') seasonColor = 'rgba(255, 255, 255, 0.15)'; 
-        
-        if (seasonColor !== 'rgba(0, 0, 0, 0)') {
-            ctx.fillStyle = seasonColor;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
+        if (time.color !== 'rgba(0, 0, 0, 0)') { ctx.fillStyle = time.color; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+        if (isDefense) { ctx.fillStyle = "rgba(100, 0, 0, 0.2)"; ctx.fillRect(0, 0, canvas.width, canvas.height); }
     }
 
-    if (currentMode === 'play') {
+    if (!isDefense && currentMode === 'play') { 
         let defaultAnim = 'idle';
         if (aiPet.schedule && aiPet.schedule.length > 0) {
             const t = aiPet.schedule[0].type;
-            if (t === 'study') defaultAnim = 'study';
-            else if (t === 'train') defaultAnim = 'train';
-            else if (t === 'rest' || t === 'sleep') defaultAnim = 'sleep';
-            else if (t === 'eat') defaultAnim = 'eat_raw'; 
-            else if (t === 'explore') defaultAnim = 'move'; 
-            else if (t === 'fish') defaultAnim = 'fish'; 
-            else if (t === 'cook') defaultAnim = 'cook'; 
-            else if (t === 'smith') defaultAnim = 'smith'; 
+            if (t === 'study') defaultAnim = 'study'; else if (t === 'train') defaultAnim = 'train'; else if (t === 'rest' || t === 'sleep') defaultAnim = 'sleep'; else if (t === 'eat') defaultAnim = 'eat_raw'; else if (t === 'explore') defaultAnim = 'move'; else if (t === 'fish') defaultAnim = 'fish'; else if (t === 'cook') defaultAnim = 'cook'; else if (t === 'smith') defaultAnim = 'smith'; 
         }
 
-        // ★追加: パーティが2人以上（マルチプレイ状態）か判定
         const isMultiplayer = (typeof party !== 'undefined' && party.length > 1);
 
         if (!isMultiplayer) {
-            // ★1人の時は今まで通り中央に大きなアクション画面を出す
-            if (aiPet.isIndoors) {
-                let anim = aiPet.visualAction || defaultAnim;
-                drawActionWindow(anim, "inside");
-            }
-            else if (aiPet.actionState === 'camping' || aiPet.actionState === 'studying' || aiPet.actionState === 'training' || aiPet.actionState === 'sleeping' || aiPet.actionState === 'smithing' || aiPet.actionState === 'apprentice_training') {
-                let anim = aiPet.visualAction || defaultAnim;
-                drawActionWindow(anim, "camping");
-            } 
-            else if (aiPet.actionState === 'farming_work') {
-                let anim = aiPet.visualAction || 'farm_plow';
-                drawActionWindow(anim, "farm"); 
-            } 
-            else if (aiPet.actionState === 'eating') {
-                let anim = aiPet.visualAction || 'eat_raw';
-                // ★修正："eating" ではなく "camping" を渡すことで、筋トレ等と同じ草原背景を使う！
-                drawActionWindow(anim, "camping"); 
-            }
-            else if (aiPet.actionState === 'fishing') {
-                let anim = aiPet.visualAction || 'fish';
-                drawActionWindow(anim, "fishing");
-            }
-            else if (aiPet.actionState === 'building') {
-                let anim = aiPet.visualAction || 'smith';
-                drawActionWindow(anim, "camping"); // ★修正: 存在しない"building"ではなく、草原背景の"camping"を指定！
-            }
+            if (aiPet.isIndoors) { drawActionWindow(aiPet.visualAction || defaultAnim, "inside"); }
+            else if (['camping', 'studying', 'training', 'sleeping', 'smithing', 'apprentice_training'].includes(aiPet.actionState)) { drawActionWindow(aiPet.visualAction || defaultAnim, "camping"); } 
+            else if (aiPet.actionState === 'farming_work') { drawActionWindow(aiPet.visualAction || 'farm_plow', "farm"); } 
+            else if (aiPet.actionState === 'eating') { drawActionWindow(aiPet.visualAction || 'eat_raw', "camping"); }
+            else if (aiPet.actionState === 'fishing') { drawActionWindow(aiPet.visualAction || 'fish', "fishing"); }
+            else if (aiPet.actionState === 'building') { drawActionWindow(aiPet.visualAction || 'smith', "camping"); }
             
-            // 吹き出しだけは中央に出す
-            if (isShowingActionWindow && aiPet.messageTimer > 0) {
-                drawSpeechBubble(aiPet.message, canvas.width/2, canvas.height/2 - 80);
-            }
+            if (isShowingActionWindow && aiPet.messageTimer > 0) drawSpeechBubble(aiPet.message, canvas.width/2, canvas.height/2 - 80);
         }
     }
 
     drawFloatingTexts();
 
-    if ((currentMode === 'ai_adjust' || currentMode === 'editor') && editingTarget === 'map' && selectedMapKey) {
-        drawMapPreview();
-    }
-    
-    // ★追加: カードのプレビュー描画
-    if (currentMode === 'ai_adjust' && editingTarget === 'card' && selectedCardKey) {
-        drawCardPreview();
-    }
-
-    // ==========================================
-    // ★追加: ダンジョン素材のプレビュー描画
-    // ==========================================
-    if (currentMode === 'ai_adjust' && (editingTarget === 'dmap' || editingTarget === 'dchr' || editingTarget === 'achr' || editingTarget === 'afld')) {
-        drawDungeonPreview();
-    }
-
-    // ==========================================
-    // ★追加: 家具（R-ASSET / S-ASSET）のプレビュー描画
-    // ==========================================
-    if (currentMode === 'ai_adjust' && (editingTarget === 'rasset' || editingTarget === 'sasset')) {
-        if (typeof window.drawFurniturePreview === 'function') {
-            window.drawFurniturePreview();
-        }
-    }
-
-    if (currentMode === 'ai_adjust') {
-        drawAdjustUI();
-    }
-
-    // ★修正: プレイモードでは、2人以上いる時だけワイプ（PIP）を表示する
-    if (currentMode === 'grazing' || (currentMode === 'play' && typeof party !== 'undefined' && party.length > 1)) {
-        drawPartyPIPs();
-    }
+    if ((currentMode === 'ai_adjust' || currentMode === 'editor') && editingTarget === 'map' && selectedMapKey) drawMapPreview();
+    if (currentMode === 'ai_adjust' && editingTarget === 'card' && selectedCardKey) drawCardPreview();
+    if (currentMode === 'ai_adjust' && (editingTarget === 'dmap' || editingTarget === 'dchr' || editingTarget === 'achr' || editingTarget === 'afld')) drawDungeonPreview();
+    if (currentMode === 'ai_adjust' && (editingTarget === 'rasset' || editingTarget === 'sasset')) if (typeof window.drawFurniturePreview === 'function') window.drawFurniturePreview();
+    if (currentMode === 'ai_adjust') drawAdjustUI();
+    if (currentMode === 'grazing' || (currentMode === 'play' && typeof party !== 'undefined' && party.length > 1)) drawPartyPIPs();
 }
 
 function drawFloatingTexts() {
@@ -240,7 +244,7 @@ function drawFloatingTexts() {
         let screenX = ft.x; let screenY = ft.y;
         if (currentMode !== 'ai_adjust') { screenX = ft.x - camera.x; screenY = ft.y - camera.y; }
         ctx.save(); ctx.globalAlpha = Math.max(0, ft.life / 30); 
-        ctx.fillStyle = ft.color; ctx.font = "bold 14px sans-serif"; ctx.textAlign = "center"; 
+        ctx.fillStyle = ft.color; ctx.font = "bold 18px sans-serif"; ctx.textAlign = "center"; 
         ctx.strokeStyle = "black"; ctx.lineWidth = 3;
         ctx.strokeText(ft.text, screenX, screenY); ctx.fillText(ft.text, screenX, screenY);
         ctx.restore();
@@ -306,7 +310,6 @@ function drawAICharacter() {
     } else {
         typeToDraw = targetPet.currentSkin || targetPet.baseType || 'robot';
     }
-
     if (!typeToDraw) typeToDraw = 'robot'; 
 
     let conf = typeof aiConfigs !== 'undefined' ? aiConfigs[typeToDraw] : null; 
@@ -332,21 +335,13 @@ function drawAICharacter() {
     let safeType = String(typeToDraw);
     let fallbackBase = safeType.includes('_') ? safeType.split('_')[0] : safeType;
 
-    // ★魔法のシステム：画像がまだ読み込まれていなかったら、その場でロード開始！
     if (!img) { 
         if (typeof window.dynamicImageCatalog !== 'undefined' && window.dynamicImageCatalog[imgKey]) {
-            // ロードが完了するまでの間、重複ロードを防ぐために空のImage箱をセット
             images[imgKey] = new Image(); 
-            images[imgKey].onerror = () => { 
-                console.warn(`❌ 動的ロード失敗: [ ${window.dynamicImageCatalog[imgKey]} ]`);
-                images[imgKey].src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="; 
-            };
-            images[imgKey].src = window.dynamicImageCatalog[imgKey]; // ここで裏側でダウンロード開始！
-            
-            // ダウンロード中の約0.1秒間は、チラつきを防ぐために基本種族（robot等）の姿を仮表示！
+            images[imgKey].onerror = () => { images[imgKey].src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="; };
+            images[imgKey].src = window.dynamicImageCatalog[imgKey]; 
             img = images[fallbackBase] || images['robot']; 
         } else {
-            // カタログにも無い場合は完全なフォールバック
             img = images[fallbackBase] || images['robot']; 
         }
     }
@@ -354,42 +349,30 @@ function drawAICharacter() {
     let actionFrames = (conf.actions && conf.actions[currentAction]) ? conf.actions[currentAction] : null;
     if (!actionFrames || actionFrames.length === 0) actionFrames = [{sx:0, sy:0, sw:300, sh:300}];
 
-    let frameIdx = targetPet.frameIndex;
+    let frameIdx = targetPet.frameIndex || 0;
     if (typeof currentMode !== 'undefined' && currentMode === 'ai_adjust') {
         frameIdx = (typeof isTestPlaying !== 'undefined' && isTestPlaying) ? targetPet.frameIndex : (typeof editingFrameIndex !== 'undefined' ? editingFrameIndex : 0); 
     }
-    
-    if (typeof frameIdx !== 'number' || isNaN(frameIdx) || frameIdx >= actionFrames.length) {
-        frameIdx = 0;
-    }
+    if (typeof frameIdx !== 'number' || isNaN(frameIdx) || frameIdx >= actionFrames.length) frameIdx = 0;
     let f = actionFrames[frameIdx] || actionFrames[0];
 
     let sc = (conf.scale || 0.25) * (targetPet.visualScale || 1.0);
-    
-    let px = targetPet.x || 400;
-    let py = targetPet.y || 240;
+    let px = targetPet.x || 400; let py = targetPet.y || 240;
 
-    if (typeof currentMode !== 'undefined' && currentMode === 'ai_adjust') { 
-        px = canvas.width/2; 
-        py = canvas.height/2; 
-    }
+    if (typeof currentMode !== 'undefined' && currentMode === 'ai_adjust') { px = canvas.width/2; py = canvas.height/2; }
 
     const sw = f.sw || 300; const sh = f.sh || 300;
     const drawW = sw * sc; const drawH = sh * sc;
 
     if (img && img.complete && img.naturalWidth !== 0) {
         ctx.save(); ctx.translate(px, py); if (targetPet.flip) ctx.scale(-1, 1);
-        ctx.drawImage(img, f.sx || 0, f.sy || 0, sw, sh, -drawW/2, -drawH/2, drawW, drawH); ctx.restore();
-    } else {
-        if (typeof currentMode !== 'undefined' && currentMode === 'ai_adjust') {
-            ctx.fillStyle = "rgba(100, 0, 0, 0.5)"; ctx.fillRect(px - drawW/2, py - drawH/2, drawW, drawH);
-            ctx.fillStyle = "white"; ctx.font = "12px sans-serif"; ctx.fillText("Loading...", px-25, py);
+        
+        // 防衛戦の敵の場合は赤黒いフィルターをかける
+        if (currentMode === 'defense' && targetPet.team === 'enemy') {
+            ctx.filter = 'brightness(0.6) sepia(1) hue-rotate(-50deg) saturate(3)';
         }
-    }
-
-    if (typeof currentMode !== 'undefined' && currentMode === 'ai_adjust' && typeof editingTarget !== 'undefined' && editingTarget === 'ai') {
-        ctx.strokeStyle = 'red'; ctx.lineWidth = 2; ctx.strokeRect(px - drawW/2, py - drawH/2, drawW, drawH);
-        ctx.beginPath(); ctx.moveTo(px - 100, py + drawH/2); ctx.lineTo(px + 100, py + drawH/2); ctx.strokeStyle = "lime"; ctx.stroke();
+        
+        ctx.drawImage(img, f.sx || 0, f.sy || 0, sw, sh, -drawW/2, -drawH/2, drawW, drawH); ctx.restore();
     }
 }
 

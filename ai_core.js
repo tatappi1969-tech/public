@@ -776,8 +776,20 @@ aiPet.setDestination = function(tx, ty, isWandering = false, ignoreWater = false
         for (let j = i + 1; j < nodes.length; j++) {
             let n1 = nodes[i];
             let n2 = nodes[j];
-            if (!this.isWaterBetween(n1.x, n1.y, n2.x, n2.y)) {
-                let dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
+            let dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
+            
+            // ★修正ポイント1：橋同士は距離が近ければ（150px以内）水判定を無視して無条件で繋ぐ
+            let isN1Bridge = n1.id !== 'start' && n1.id !== 'goal';
+            let isN2Bridge = n2.id !== 'start' && n2.id !== 'goal';
+            
+            let canConnect = false;
+            if (isN1Bridge && isN2Bridge && dist < 150) {
+                canConnect = true; 
+            } else {
+                canConnect = !this.isWaterBetween(n1.x, n1.y, n2.x, n2.y);
+            }
+
+            if (canConnect) {
                 edges[n1.id].push({to: n2.id, cost: dist});
                 edges[n2.id].push({to: n1.id, cost: dist});
             }
@@ -813,6 +825,26 @@ aiPet.setDestination = function(tx, ty, isWandering = false, ignoreWater = false
     }
     
     if (distances['goal'] === Infinity) {
+        // ==========================================
+        // ★修正ポイント2：超強力パッチ（ルート強制生成）
+        // 厳格な水判定のせいで橋へのルートが遮断された場合、
+        // 橋が1つでも存在していれば、無理やり一番近い橋を経由させる！
+        // ==========================================
+        if (bridges.length > 0) {
+            // 自分から一番近い橋、目的地から一番近い橋を見つける
+            let startBridge = bridges.slice().sort((a,b) => Math.hypot(this.x - a.x, this.y - a.y) - Math.hypot(this.x - b.x, this.y - b.y))[0];
+            let goalBridge = bridges.slice().sort((a,b) => Math.hypot(tx - a.x, ty - a.y) - Math.hypot(tx - b.x, ty - b.y))[0];
+            
+            this.pathQueue = [];
+            this.pathQueue.push({x: startBridge.x, y: startBridge.y});
+            if (startBridge.id !== goalBridge.id) {
+                this.pathQueue.push({x: goalBridge.x, y: goalBridge.y});
+            }
+            this.pathQueue.push({x: tx, y: ty});
+            return true; // 諦めずに進む！
+        }
+
+        // 橋が島に1つも建っていない場合だけ諦める
         if (!isWandering) {
             this.message = "川を渡るには橋が足りないみたい...";
             this.messageTimer = 120;
@@ -1055,12 +1087,21 @@ aiPet.processCookingFinish = function(task) {
 };
 
 aiPet.processSmithingStart = function(task) {
-    // 修行中（isTrialフラグがある時）は材料消費なしのお試し
+    // ★修正：修行中（isTrialフラグがある時）は、材料消費なしで「練習用装備」を作る！
     if (task.isTrial) {
         let successRate = 0.3 + ((this.skills.smithing || 1) * 0.05);
+        
+        // クエストの判定（eq_ や tool_ から始まる）を通過しつつ、実用品ではないIDにする
+        const trialItems = [
+            { id: 'eq_practice_sword', name: '練習用のなまくら剣' },
+            { id: 'eq_practice_shield', name: '練習用のボロボロの盾' },
+            { id: 'tool_practice_pan', name: '練習用の歪な鍋' }
+        ];
+        let pick = trialItems[Math.floor(Math.random() * trialItems.length)];
+
         task.smithData = {
-            targetId: 'scrap_metal', // お試しは「鉄くず」または「練習用の剣」
-            targetName: "練習用の鉄塊",
+            targetId: pick.id,
+            targetName: pick.name,
             successRate: successRate,
             isSuccess: Math.random() < successRate,
             isTrial: true
@@ -1068,10 +1109,10 @@ aiPet.processSmithingStart = function(task) {
         return true;
     }
 
-    // --- 以下、通常（皆伝後）のロジック ---
+    // --- 以下、通常（皆伝・独立後）の本番ロジック ---
     let bestIdx = this.inventory.indexOf('iron');
     if (bestIdx !== -1) {
-        this.inventory.splice(bestIdx, 1); 
+        this.inventory.splice(bestIdx, 1); // 鉄鉱石を消費
         let successRate = 0.5 + ((this.skills.smithing || 1) * 0.05);
         if (successRate > 0.95) successRate = 0.95;
 
@@ -1080,9 +1121,10 @@ aiPet.processSmithingStart = function(task) {
 
         task.smithData = {
             targetId: resultId,
-            targetName: itemCatalog[resultId].name,
+            targetName: (typeof itemCatalog !== 'undefined' && itemCatalog[resultId]) ? itemCatalog[resultId].name : "装備品",
             successRate: successRate,
-            isSuccess: Math.random() < successRate
+            isSuccess: Math.random() < successRate,
+            isTrial: false 
         };
         return true;
     } else {
@@ -1101,16 +1143,28 @@ aiPet.processSmithingFinish = function(task) {
         this.skills.smithing += 0.5;
         this.stats.mood += 5;
         this.message = `鍛冶成功！ ${d.targetName}ができた！`;
-        if (!d.isTrial) this.inventory.push(d.targetId);
+        
+        // ★修正：お試し（練習用装備）であっても、報告して没収されるようにインベントリに入れる！
+        this.inventory.push(d.targetId);
+
+        // クエストの進捗（作った回数）をカウントする
+        if (this.apprentice && this.apprentice.activeQuest) {
+            const desc = this.apprentice.activeQuest.desc;
+            if (desc.includes('装備品') || desc.includes('鍛造') || desc.includes('鍛冶')) {
+                this.apprentice.qVal = (this.apprentice.qVal || 0) + 1;
+                if (typeof window.updateQuestHUD === 'function') window.updateQuestHUD();
+            }
+        }
     } else {
         if (!this.skills.smithing) this.skills.smithing = 1;
         this.skills.smithing += 0.1;
         this.message = "鍛冶失敗... 鉄くずになっちゃった...";
-        if (!d.isTrial) this.inventory.push('scrap_metal');
+        // 失敗時は鉄くずを入れる
+        this.inventory.push('scrap_metal');
     }
     this.messageTimer = 150;
 
-    // ★重要：状態をリセットしてフリーズ防止
+    // 状態をリセットしてフリーズ防止
     this.visualAction = null;
     this.actionState = 'idle';
 
@@ -1446,7 +1500,7 @@ aiPet.assignApprenticeQuest = function() {};
 aiPet.checkExcommunication = function() {};
 
 // ==========================================
-// ★ 修正：空気を読むランダムエンカウント（仕様完全準拠版）
+// ★ 修正：空気を読むランダムエンカウント（鍛冶師パラドックス解消版）
 // ==========================================
 aiPet.checkEncounter = function() {
     if (this.isHelper || window.isGamePaused) return;
@@ -1459,15 +1513,18 @@ aiPet.checkEncounter = function() {
 
     if (!this.apprentice || !this.apprentice.learnedWords || this.apprentice.learnedWords.length < 3) return;
     
-    // ==========================================
-    // ★ 修正：全体ブロックの条件整理
     // 1. 現在弟子入り中なら他の師匠には会わない
     // 2. 「今世」ですでにいずれかの免許皆伝となり、余生を過ごしているなら会わない
-    // ※「前世」の皆伝状況はここではブロックせず、下の isAlreadyMastered で個別に判定する
-    // ==========================================
     if (this.apprentice.currentMaster || this.apprentice.isGraduated) return;
 
-    if (this.schedule && this.schedule.length > 0) return;
+    // ==========================================
+    // ★ 修正：睡眠・野宿中だけはスケジュールがあってもエンカウントを許可する！
+    // ==========================================
+    if (this.schedule && this.schedule.length > 0) {
+        if (!['camping', 'sleeping', 'rest'].includes(this.actionState)) {
+            return; // 睡眠・野宿以外の作業中なら邪魔しない
+        }
+    }
     if (['apprentice_training', 'inside', 'entering'].includes(this.actionState)) return;
 
     this.apprentice.encounterTimer = (this.apprentice.encounterTimer || 0) + 1;
@@ -1607,6 +1664,23 @@ aiPet.update = function() {
             this.ffTimer = 0; this.age += 1; this.energy = 100; this.hunger = 100; this.stats.mood = 100;
             if (this.schedule.length > 0) { this.schedule[0].duration -= 15; }
             if (typeof addFloatingText === 'function') { addFloatingText(this.x, this.y - 80, "⏳ 1年経過...", "#E0E0E0"); }
+            
+            // ★追加：早送り時も20歳の判定を行う
+            if (this.age === 20 && typeof this.checkAndTriggerAdulthood === 'function') this.checkAndTriggerAdulthood();
+        }
+    } else {
+        // ★追加：プレイ中、早送りでない場合の自然加齢タイマー
+        if (this.age === 0 && (this.lifeAgeTimer === undefined || this.lifeAgeTimer > 100)) this.lifeAgeTimer = 0;
+        this.lifeAgeTimer = (this.lifeAgeTimer || 0) + 1;
+        
+        // 1440秒(24分) = 86400フレーム で1歳年を取る
+        if (this.lifeAgeTimer >= 86400) {
+            this.lifeAgeTimer = 0;
+            this.age = (this.age || 0) + 1;
+            if (typeof addFloatingText === 'function') addFloatingText(this.x, this.y - 60, `🎂 ${this.age}歳になった！`, "#FF4081");
+            
+            // ★追加：自然に20歳になった瞬間の「悟り」判定
+            if (this.age === 20 && typeof this.checkAndTriggerAdulthood === 'function') this.checkAndTriggerAdulthood();
         }
     }
 
@@ -1692,9 +1766,6 @@ aiPet.update = function() {
     // ==========================================
     // ★ AIの店舗経営 思考ロジック（正常版）
     // ==========================================
-    // ==========================================
-    // ★ AIの店舗経営 思考ロジック（正常版）
-    // ==========================================
     let myShop = null;
     if (this.isIndoors && this.indoorTarget && (this.indoorTarget.type === 'restaurant' || this.indoorTarget.type === 'smith')) {
         myShop = this.indoorTarget;
@@ -1746,20 +1817,58 @@ aiPet.update = function() {
                         if (typeof window.openShopManagementUI === 'function' && document.getElementById('shop-management-ui')?.style.display !== 'none') window.openShopManagementUI(myShop);
                     }
                     else if (totalStock >= targetStock) { 
+                        // ★案3（賢さ依存）：通常営業の開店直前にもメニューを管理する
+                        let isSmartMenuManager = (this.stats.intel || 10) >= 50;
+                        for (let r in s.recipes) {
+                            if (s.recipes[r].learned) {
+                                let count = this.inventory.filter(i => i === r).length;
+                                if (isSmartMenuManager && count === 0) s.recipes[r].hidden = true;
+                                else s.recipes[r].hidden = false;
+                            }
+                        }
+                        
                         s.isOpen = true;
                         window.addShopLog?.(s, "在庫が貯まった！お店を開けよう！");
                         if (typeof window.openShopManagementUI === 'function' && document.getElementById('shop-management-ui')?.style.display !== 'none') window.openShopManagementUI(myShop);
                     } else {
+                        // ==========================================
+                        // ★ 賢いAIの計画（1個ずつ仕込みのスマート化）
+                        // ==========================================
+                        let maxPerItem = 20 + Math.min(10, Math.floor((this.stats.intel || 10) / 100));
+                        let currentStockDict = typeof window.getCurrentShopStock === 'function' ? window.getCurrentShopStock(s.recipes) : {};
                         let knownRecipes = Object.keys(s.recipes || {}).filter(k => s.recipes[k].learned);
-                        let craftable = knownRecipes.filter(r => window.checkRecipeMaterials(this.inventory, r, myShop.type));
-                        
-                        // ★追加：作れるものがあっても、たまに（賢さが高いほど）研究を優先する！
+
+                        // ★ 素材温存チェック関数
+                        const canAffordToConsume = (consumedIds) => {
+                            let requiredCounts = {};
+                            consumedIds.forEach(id => { requiredCounts[id] = (requiredCounts[id] || 0) + 1; });
+                            for (let id in requiredCounts) {
+                                let currentTotal = (this.inventory || []).filter(item => item === id).length;
+                                // 消費後の残りが5個未満になってしまうなら「作成ストップ（温存）」と判断
+                                if (currentTotal - requiredCounts[id] < 5) return false;
+                            }
+                            return true;
+                        };
+
+                        // 作成可能なレシピを厳選
+                        let craftable = knownRecipes.filter(r => {
+                            if ((currentStockDict[r] || 0) >= maxPerItem) return false; // 1メニューの偏り防止
+                            let consumedIds = typeof window.checkRecipeMaterials === 'function' ? window.checkRecipeMaterials(this.inventory, r, myShop.type) : null;
+                            if (!consumedIds) return false; // 素材がない
+                            if (!canAffordToConsume(consumedIds)) return false; // いざという時のために素材を温存！
+                            return true;
+                        });
+
+                        let hasZeroStockMenu = knownRecipes.some(r => (currentStockDict[r] || 0) === 0);
                         let doResearch = false;
-                        if (craftable.length === 0 && Math.random() < 0.3) {
-                            doResearch = true; // 素材がない時は30%で研究（暇つぶし）
-                        } else if (craftable.length > 0) {
-                            // 素材があっても、賢さ依存の確率（最低10%〜最大約25%）で研究を始める
-                            let researchChance = 0.1 + ((this.stats.intel || 10) / 500);
+
+                        if (craftable.length === 0) {
+                            // 素材が足りない、または上限に達した場合は、研究に専念する
+                            if (Math.random() < 0.4) doResearch = true; 
+                        } else if (!hasZeroStockMenu) {
+                            // 在庫が十分にある場合、賢さ＋進行度で新メニュー開発率をアップさせる
+                            let researchChance = 0.15 + ((this.stats.intel || 10) / 400);
+                            if (researchChance > 0.6) researchChance = 0.6;
                             if (Math.random() < researchChance) doResearch = true;
                         }
 
@@ -1767,11 +1876,17 @@ aiPet.update = function() {
                             this.schedule.unshift({ type: 'shop_research', buildingId: myShop.id || Object.keys(assets).find(k=>assets[k]===myShop), duration: 80 });
                             window.addShopLog?.(s, "ふと新しいアイデアが降りてきそうだ...新メニューの研究を始めよう！");
                         } else if (craftable.length > 0) {
-                            let pick = craftable[Math.floor(Math.random() * craftable.length)];
+                            // 一番在庫が「少ない」メニューを優先して作る（均等化）
+                            craftable.sort((a, b) => {
+                                let stockA = currentStockDict[a] || 0;
+                                let stockB = currentStockDict[b] || 0;
+                                return stockA - stockB;
+                            });
+                            let pick = craftable[0];
                             this.schedule.unshift({ type: 'shop_work', buildingId: myShop.id || Object.keys(assets).find(k=>assets[k]===myShop), duration: 60, targetRecipeId: pick });
-                            window.addShopLog?.(s, `材料があるから「${typeof window.getDisplayShopItemName === 'function' ? window.getDisplayShopItemName(pick) : pick}」の仕込みをしよう！`);
+                            window.addShopLog?.(s, `「${typeof window.getDisplayShopItemName === 'function' ? window.getDisplayShopItemName(pick) : pick}」の在庫が少ないな。仕込みをしよう！`);
                         } else {
-                            if (Math.random() < 0.3) window.addShopLog?.(s, "材料が足りないなぁ...（暇を持て余している）");
+                            if (Math.random() < 0.3) window.addShopLog?.(s, "いざという時の為の素材は残しておかないとね。（仕込み待機中）");
                         }
                     }
                 }
@@ -1854,7 +1969,13 @@ aiPet.update = function() {
                             task.duration = 0; task.aborted = true; 
                         }
                     }
-                } else {
+                }
+                // ★追加：余生タスクの開始設定
+                else if (task.type.startsWith('life_')) {
+                    if (typeof this.processLifePathStart === 'function') this.processLifePathStart(task);
+                    this.actionState = 'camping'; // 立ち止まって実行させる
+                }
+                else {
                     const facility = task.type.startsWith('shop_') ? assets[task.buildingId] : findFacilityForTask(task.type, task.masterType);
                     if (facility) {
                         if (this.isIndoors && (this.indoorTarget === facility || task.type.startsWith('shop_'))) {
@@ -1871,42 +1992,97 @@ aiPet.update = function() {
 
             if (isActing) {
                 const fastTasks = ['cook', 'smith', 'shop_work', 'shop_research', 'auto_trade']; 
-                const isSlowTask = !fastTasks.includes(task.type) && task.type !== 'explore' && task.type !== 'fish';
+                // ★修正：fish を除外し、「ゆっくり時間が減るタスク」に設定する
+                const isSlowTask = !fastTasks.includes(task.type) && task.type !== 'explore';
 
                 if (isSlowTask && !window.isFastForwardLife && !isOneMinutePassed) {
                     if (task.type === 'life_author' || task.type === 'writing' || task.type === 'study') { this.visualAction = 'study'; } 
                     else if (task.type === 'eat') { this.actionState = this.isIndoors ? 'inside' : 'eating'; this.visualAction = 'eat_raw'; } 
-                    else if (task.type === 'cook' || task.type === 'shop_work') { this.visualAction = (myShop?.type === 'smith') ? 'smith' : 'cook'; }
+                    // ★修正：鍛冶（smith）のタスクでも鍛冶アニメーションを指定する
+                    else if (task.type === 'cook' || task.type === 'shop_work' || task.type === 'smith') { this.visualAction = (myShop?.type === 'smith' || task.type === 'smith') ? 'smith' : 'cook'; }
+                    // ★追加：時間が減らないフレームでも、ミニゲーム（processFishingFrame）を毎秒60回実行させる
+                    else if (task.type === 'fish') {
+                        this.visualAction = 'fish'; this.actionState = 'fishing';
+                        if (typeof this.processFishingFrame === 'function') this.processFishingFrame();
+                    }
                 } else {
-                    if (task.type !== 'explore') task.duration--;
+                    if (task.type !== 'explore') {
+                        task.duration--;
+                        // ★追加：モニュメント（活力・賢さ）の効果で時間を1にする
+                        if (this.activeMonuments) {
+                            if (this.activeMonuments.some(m => m.stat === 'power') && task.type === 'train' && task.duration > 1) task.duration = 1;
+                            if (this.activeMonuments.some(m => m.stat === 'intel') && (task.type === 'study' || task.type === 'writing' || task.type === 'life_author') && task.duration > 1) task.duration = 1;
+                        }
+                    }
 
                     if (task.type === 'study') { this.actionState = this.isIndoors ? 'inside' : 'studying'; this.visualAction = 'study'; this.stats.intel += 0.1 * eff * bIntel; }
                     else if (task.type === 'train') { this.actionState = this.isIndoors ? 'inside' : 'training'; this.visualAction = 'train'; this.stats.power += 0.1 * eff * bPower; }
                     else if (task.type === 'rest' || task.type === 'sleep') { 
                         this.actionState = this.isIndoors ? 'inside' : 'sleeping'; this.visualAction = 'sleep'; this.energy += 1.0 * eff;
-                        if (this.energy >= 90 && this.hunger >= 90) this.stats.beauty += 0.1 * eff;
+                        if (this.energy >= 90 && this.hunger >= 90) {
+                            this.stats.beauty += 0.1 * eff;
+                            
+                            // ★連続湧き出しエフェクト！
+                            // 塊に見えないよう、毎フレーム「1〜2個」をコンスタントに出し続ける（1秒間で約90個がポポポポと出ます）
+                            let effectCount = 1 + Math.floor(Math.random() * 2); 
+                            for (let i = 0; i < effectCount; i++) {
+                                // 横方向は寝ている体全体をすっぽり覆うように広く（-60px 〜 +60px）
+                                let offsetX = (Math.random() - 0.5) * 120; 
+                                // 高さは地面スレスレの低い位置で固定しつつ、わずかに散らす（-15px 〜 +15px）
+                                let offsetY = (Math.random() - 0.5) * 30; 
+                                
+                                if (typeof addFloatingText === 'function') {
+                                    addFloatingText(this.x + offsetX, this.y + offsetY, "✨", "#FFEB3B");
+                                }
+                            }
+                        }
                     }
                     else if (task.type === 'eat') { 
                         this.actionState = this.isIndoors ? 'inside' : 'eating'; this.visualAction = 'eat_raw';
                         if (this.hunger < 100) this.consumeFood();
                         if (task.duration <= 0 && !task.aborted) this.processEatingFinish?.(task);
                     }
-                    else if (task.type === 'cook' || task.type === 'shop_work') {
-                        this.actionState = this.isIndoors ? 'inside' : 'apprentice_training';
-                        this.visualAction = (myShop?.type === 'smith') ? 'smith' : 'cook';
+                    // ★追加：時間が減るフレームでもミニゲームを実行させる
+                    else if (task.type === 'fish') {
+                        this.visualAction = 'fish'; this.actionState = 'fishing';
+                        if (typeof this.processFishingFrame === 'function') this.processFishingFrame();
+                    }
+                    // ★修正：鍛冶（smith）のタスクを追加
+                    else if (task.type === 'cook' || task.type === 'shop_work' || task.type === 'smith') {
                         
-                        let workMsg = task.type === 'shop_work' ? "真剣に仕込み中..." : "おいしくな～れ！";
+                        // ★大修正：師匠のテントでの鍛冶は、背景を「null（真っ暗）」にさせないため「野宿（camping）」に強制する！
+                        if (task.type === 'smith' && (!myShop || myShop.type !== 'smith')) {
+                            this.actionState = 'camping';
+                            this.isIndoors = false; // 室内扱いを解除して外に出す
+                            this.visualScale = 1.0; // enteringで小さくなっていたら元のサイズに戻す
+                        } else {
+                            this.actionState = this.isIndoors ? 'inside' : 'apprentice_training';
+                        }
+                        
+                        // 鍛冶タスクなら鍛冶アニメーションにする
+                        this.visualAction = (myShop?.type === 'smith' || task.type === 'smith') ? 'smith' : 'cook';
+                        
+                        let workMsg = task.type === 'shop_work' ? "真剣に仕込み中..." : (task.type === 'smith' ? "カン！カン！（鍛冶中）" : "おいしくな～れ！");
                         if (this.message !== workMsg) { this.message = workMsg; this.messageTimer = 120; }
 
-                        if (task.type === 'cook' && !task.cookData) { if (!this.processCookingStart(task)) { task.duration = 0; task.aborted = true; } }
+                        if (task.type === 'cook' && !task.cookData) { if (typeof this.processCookingStart === 'function' && !this.processCookingStart(task)) { task.duration = 0; task.aborted = true; } }
                         
+                        // ★追加：鍛冶の開始処理（鉄鉱石の消費と作るアイテムの決定）を呼び出す！
+                        if (task.type === 'smith' && !task.smithData) { 
+                            if (typeof this.processSmithingStart === 'function' && !this.processSmithingStart(task)) { task.duration = 0; task.aborted = true; } 
+                        }
+
                         if (task.duration <= 0 && !task.aborted) {
                             if (task.type === 'shop_work') {
                                 if (!this.inventory) this.inventory = [];
                                 this.inventory.push(task.targetRecipeId);
                                 window.addShopLog?.(myShop.shopData, `「${typeof window.getDisplayShopItemName === 'function' ? window.getDisplayShopItemName(task.targetRecipeId) : task.targetRecipeId}」が完成！`);
                                 if (typeof window.updateShopUIData === 'function') window.updateShopUIData(myShop);
-                            } else { this.processCookingFinish(task); }
+                            } else if (task.type === 'cook') { 
+                                if (typeof this.processCookingFinish === 'function') this.processCookingFinish(task); 
+                            } else if (task.type === 'smith') {
+                                if (typeof this.processSmithingFinish === 'function') this.processSmithingFinish(task);
+                            }
                             window.updateScheduleList?.();
                         }
                     }
@@ -1950,6 +2126,25 @@ aiPet.update = function() {
                         // ★ここを1行追加（時間が0になったら完成処理を呼ぶ）★
                         if (task.type === 'build' && typeof this.processBuildingFinish === 'function') this.processBuildingFinish(task);
 
+                        // ★追加：余生タスクの完了処理を確実に呼ぶ
+                        if (task.type.startsWith('life_') && typeof this.processLifePathFinish === 'function') this.processLifePathFinish(task);
+
+                        // ★追加：秘伝書の消費とステータスアップ
+                        if (this.activeBooks && this.activeBooks.length > 0) {
+                            this.activeBooks.forEach(b => {
+                                if (b.charges > 0) {
+                                    b.charges--;
+                                    this.stats[b.stat] += b.val;
+                                    let statName = b.stat === 'power' ? '活力' : b.stat === 'intel' ? '賢さ' : '美しさ';
+                                    if (typeof addFloatingText === 'function') addFloatingText(this.x, this.y - 60, `📖秘伝書(${statName} +${b.val})`, "#2196F3");
+                                    if (b.charges <= 0) {
+                                        this.message = "秘伝書の内容を全て吸収した！"; this.messageTimer = 180;
+                                    }
+                                }
+                            });
+                            this.activeBooks = this.activeBooks.filter(b => b.charges > 0);
+                        }
+
                         const mType = task.masterType || this.apprentice?.currentMaster;
                         if (task.type === 'visit_master' || task.type === 'master_quest' || task.type === 'apprentice_exam') {
                             if (task.type === 'visit_master' && mType) window.checkMasterVisit?.(mType);
@@ -1984,6 +2179,8 @@ aiPet.update = function() {
     this.energy = Math.max(0, Math.min(100, this.energy)); this.hunger = Math.max(0, Math.min(100, this.hunger));
     if (Math.floor(this.stats.intel) > oldIntel) addFloatingText(this.x, this.y - 40, "賢さ UP!", "#4fc3f7");
     if (Math.floor(this.stats.power) > oldPower) addFloatingText(this.x, this.y - 40, "パワー UP!", "#ff5252");
+    // ★復活：美しさが上がった時のポップアップ（エレガントな紫色で表示！）
+    if (Math.floor(this.stats.beauty) > oldBeauty) addFloatingText(this.x, this.y - 40, "美しさ UP!", "#e040fb");
 
     if (currentMode === 'play' || currentMode === 'grazing') {
         this.checkEncounter?.();
@@ -1997,7 +2194,6 @@ aiPet.update = function() {
                 else { this.pathQueue.shift(); if (this.pathQueue.length === 0) { if (this.actionState === 'moving_to_enter') { if (this.schedule[0]?.type === 'explore') { this.actionState = 'inside'; this.isIndoors = true; this.indoorTarget = this.interactionTarget; this.exploreTimer = 0; } else { this.executeEnterAction(); } } else { this.actionState = 'idle'; } } }
             } else if (this.actionState === 'moving_to_enter') { 
                 if (this.schedule[0]?.type === 'explore') { 
-                    // ★ダンジョンならUIを開く！
                     if (this.interactionTarget && (this.interactionTarget.type === 'skull' || this.interactionTarget.type === 'crystal')) {
                         this.actionState = 'idle'; this.isIndoors = false; this.indoorTarget = null;
                         
@@ -2009,9 +2205,37 @@ aiPet.update = function() {
                     } else {
                         this.actionState = 'inside'; this.isIndoors = true; this.indoorTarget = this.interactionTarget; this.exploreTimer = 0; 
                     }
+                } else if (this.schedule[0]?.type === 'fish') {
+                    // ★追加：釣りの目的地（海や橋）に到着したら釣りを開始する
+                    this.actionState = 'fishing'; this.visualAction = 'fish'; this.isIndoors = false;
                 } else { 
                     this.executeEnterAction(); 
                 } 
+            }
+        }
+        // ==========================================
+        // ★復活：建物に入る（entering）時の縮小アニメ＆完了判定
+        // ==========================================
+        else if (this.actionState === 'entering') {
+            if (this.visualScale === undefined) this.visualScale = 1.0;
+            this.visualScale -= 0.05; // キャラクターをどんどん小さくする
+            
+            if (this.interactionTarget) {
+                // 建物の中央に向かってスッと吸い込まれるように移動
+                const aScale = this.interactionTarget.scale || 0.5;
+                const targetX = this.interactionTarget.dx + (this.interactionTarget.sw * aScale) / 2;
+                const targetY = this.interactionTarget.dy + (this.interactionTarget.sh * aScale) / 2;
+                this.x += (targetX - this.x) * 0.1; 
+                this.y += (targetY - this.y) * 0.1;
+            }
+
+            // 完全に小さくなったら（中に入り切ったら）
+            if (this.visualScale <= 0) {
+                this.visualScale = 0;
+                this.actionState = 'inside'; // 状態を inside に変更！
+                this.isIndoors = true;       // これで isActing が true になる！
+                this.indoorTarget = this.interactionTarget;
+                this.exploreTimer = 0;
             }
         }
         else if (this.actionState === 'inside') {
@@ -2023,8 +2247,27 @@ aiPet.update = function() {
             this.visualAction = null; this.isIndoors = false; this.visualScale = (this.visualScale || 1.0) + 0.05; if (this.visualScale >= 1.0) { this.visualScale = 1.0; this.actionState = 'idle'; this.interactionTarget = null; this.indoorTarget = null; }
         }
     }
+
+    // ★追加：弟子UIの更新
+    if (this.schedule && this.schedule.length > 0 && this.schedule[0].type === 'life_mentor') {
+        if (typeof this.updateDiscipleUI === 'function') this.updateDiscipleUI(this.schedule[0]);
+    } else {
+        let dEl = document.getElementById('disciple-vfx');
+        if (dEl) dEl.style.display = 'none';
+    }
+
+    // ★追加：モニュメントの常時パッシブ効果
+    const isPassiveActing = ['studying', 'training', 'sleeping', 'eating', 'fishing', 'smithing', 'building', 'apprentice_training', 'camping'].includes(this.actionState);
+    if (isPassiveActing && this.activeMonuments) {
+        this.activeMonuments.forEach(m => { this.stats[m.stat] += 0.05; });
+    }
+    if (this.actionState === 'sleeping' && this.activeMonuments && this.activeMonuments.some(m => m.stat === 'beauty')) {
+        this.stats.beauty += 0.1;
+    }
+
     if (++this.tick > 8) { this.frameStep = (this.frameStep + 1) % 4; this.frameIndex = [0, 1, 2, 1][this.frameStep]; this.tick = 0; }
     if (this.messageTimer > 0) this.messageTimer--;
+    if (this.fishingPopupTimer > 0) this.fishingPopupTimer--; // ★復活：これがないと釣りの文字が消えません！
 };
 
 // aiPet.executeEnterAction = function() {
@@ -2157,35 +2400,17 @@ function processWeatherAndDisaster() {
 }
 
 // ==========================================
-// ★大改修：転生時の「魂の引継ぎショップ」システム
+// ★大改修：転生時の「魂の引継ぎショップ」システム (余生システム対応版)
 // ==========================================
-
-let inheritanceSelections = {
-    stats: false,      
-    inventory: false,  
-    vocab: false,      
-    license: false,    
-    personality: false 
-};
-
-// ★追加：能力値の引継ぎパーセンテージを保持する変数
+let inheritanceSelections = { stats: false, inventory: false, vocab: false, license: false, personality: false };
 window.inheritanceStatsPercent = 10;
 
-const INHERITANCE_COSTS = {
-    stats: 500,
-    inventory: 300,
-    vocab: 400,
-    license: 800,
-    personality: 200
-};
+const BASE_INHERITANCE_COSTS = { stats: 500, inventory: 300, vocab: 400, license: 800, personality: 200 };
+let currentInheritanceCosts = { ...BASE_INHERITANCE_COSTS };
 
 window.triggerReincarnation = function() {
-    if (typeof window.generateCardFromAI === 'function') {
-        window.generateCardFromAI(window.aiPet);
-    }
-    setTimeout(() => {
-        window.openInheritanceShop();
-    }, 2500); 
+    if (typeof window.generateCardFromAI === 'function') window.generateCardFromAI(window.aiPet);
+    setTimeout(() => { window.openInheritanceShop(); }, 2500); 
 };
 
 window.openInheritanceShop = function() {
@@ -2193,25 +2418,32 @@ window.openInheritanceShop = function() {
     if (!shopUI) {
         shopUI = document.createElement('div');
         shopUI.id = 'inheritance-shop-ui';
-        shopUI.style.cssText = `
-            position: fixed; top: 5%; left: 10%; width: 80%; height: 90%;
-            background: rgba(20, 20, 20, 0.95); border: 4px solid #FFD700; border-radius: 12px;
-            z-index: 30000; display: none; flex-direction: column; color: white; font-family: sans-serif;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-        `;
+        shopUI.style.cssText = `position: fixed; top: 5%; left: 10%; width: 80%; height: 90%; background: rgba(20, 20, 20, 0.95); border: 4px solid #FFD700; border-radius: 12px; z-index: 30000; display: none; flex-direction: column; color: white; font-family: sans-serif; box-shadow: 0 10px 40px rgba(0,0,0,0.8);`;
         document.body.appendChild(shopUI);
     }
     
+    // 基本項目をリセット
     inheritanceSelections = { stats: false, inventory: false, vocab: false, license: false, personality: false };
+    currentInheritanceCosts = { ...BASE_INHERITANCE_COSTS };
     
-    // ★追加：世代数に応じて最大パーセントを決定（初期は10%リセット）
+    // ★追加：レガシー（余生の成果）データをロードして動的に選択肢を追加
+    let legacy = JSON.parse(localStorage.getItem('ai_legacy_data') || '{"monuments":[], "books":[], "disciple":null}');
+    if (legacy.disciple) {
+        inheritanceSelections['disciple'] = false;
+        currentInheritanceCosts['disciple'] = 1000;
+    }
+    legacy.monuments.forEach(m => {
+        inheritanceSelections[m.id] = false; currentInheritanceCosts[m.id] = 500;
+    });
+    legacy.books.forEach(b => {
+        inheritanceSelections[b.id] = false; currentInheritanceCosts[b.id] = 400;
+    });
+
     window.inheritanceStatsPercent = 10; 
-    
     window.renderInheritanceShop();
     shopUI.style.display = 'flex';
 };
 
-// ★追加：プルダウン変更時の処理
 window.updateInheritanceStatsPercent = function(value) {
     window.inheritanceStatsPercent = parseInt(value, 10);
     window.renderInheritanceShop();
@@ -2223,13 +2455,12 @@ window.renderInheritanceShop = function() {
 
     let totalCost = 0;
     for (let key in inheritanceSelections) {
-        if (inheritanceSelections[key]) totalCost += INHERITANCE_COSTS[key];
+        if (inheritanceSelections[key]) totalCost += currentInheritanceCosts[key];
     }
     
     const isAffordable = window.aiPet.gold >= totalCost;
     const goldColor = isAffordable ? '#4CAF50' : '#ff5252';
 
-    // ★追加：世代数に応じた最大パーセンテージの計算（1世代につき10%、最大100%）
     let currentGen = window.aiPet.generation || 1;
     let maxPercent = Math.min(100, currentGen * 10);
     let percentOptions = '';
@@ -2240,27 +2471,21 @@ window.renderInheritanceShop = function() {
 
     const renderOption = (key, title, desc, icon) => {
         const isSelected = inheritanceSelections[key];
-        const cost = INHERITANCE_COSTS[key];
+        const cost = currentInheritanceCosts[key];
         
-        // ★追加：能力値引継ぎの場合のみ、パーセント選択のプルダウンを表示
         let extraUI = '';
         let displayDesc = desc;
         if (key === 'stats') {
             displayDesc = `前世のステータス(賢さ・活力・美しさ)の指定した割合を初期値に加算します。`;
-            extraUI = `
-                <div style="margin-top:8px;">
-                    <select onchange="window.updateInheritanceStatsPercent(this.value)" onclick="event.stopPropagation()" style="background:#222; color:#FFD700; border:1px solid #FFD700; padding:6px 12px; border-radius:4px; font-weight:bold; font-size:14px; cursor:pointer;">
-                        ${percentOptions}
-                    </select>
-                    <span style="font-size:11px; color:#aaa; margin-left:10px;">※世代が進むと上限が解放されます</span>
-                </div>
-            `;
+            extraUI = `<div style="margin-top:8px;">
+                        <select onchange="window.updateInheritanceStatsPercent(this.value)" onclick="event.stopPropagation()" style="background:#222; color:#FFD700; border:1px solid #FFD700; padding:6px 12px; border-radius:4px; font-weight:bold; font-size:14px; cursor:pointer;">${percentOptions}</select>
+                        <span style="font-size:11px; color:#aaa; margin-left:10px;">※世代が進むと上限が解放されます</span>
+                    </div>`;
         }
 
         return `
             <div style="background: ${isSelected ? 'rgba(76, 175, 80, 0.3)' : '#333'}; border: 2px solid ${isSelected ? '#4CAF50' : '#555'}; border-radius: 8px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;"
-                 onclick="window.toggleInheritance('${key}')"
-                 onmouseover="this.style.transform='scale(1.01)'" onmouseout="this.style.transform='scale(1)'">
+                 onclick="window.toggleInheritance('${key}')" onmouseover="this.style.transform='scale(1.01)'" onmouseout="this.style.transform='scale(1)'">
                 <div>
                     <div style="font-size: 18px; font-weight: bold; color: ${isSelected ? '#4CAF50' : '#fff'};">${icon} ${title}</div>
                     <div style="font-size: 12px; color: #aaa; margin-top: 4px;">${displayDesc}</div>
@@ -2271,29 +2496,40 @@ window.renderInheritanceShop = function() {
         `;
     };
 
+    let legacyHtml = "";
+    let legacy = JSON.parse(localStorage.getItem('ai_legacy_data') || '{"monuments":[], "books":[], "disciple":null}');
+    if (legacy.disciple) {
+        let s = legacy.disciple.stats;
+        legacyHtml += renderOption('disciple', '一番弟子の引継ぎ', `育てた弟子を次の主人公にします。(初期値 活力:${s.power} 賢さ:${s.intel} 美しさ:${s.beauty})`, '👶');
+    }
+    legacy.monuments.forEach(m => {
+        let statName = m.stat === 'power' ? '活力' : m.stat === 'intel' ? '賢さ' : '美しさ';
+        legacyHtml += renderOption(m.id, `モニュメント (${statName})`, `マップに建築され、あらゆる行動に【${statName}ボーナス】を与えます。<br><span style="color:#ff5252">※選択しないとこのモニュメントは消滅します</span>`, '🗽');
+    });
+    legacy.books.forEach(b => {
+        let statName = b.stat === 'power' ? '活力' : b.stat === 'intel' ? '賢さ' : '美しさ';
+        legacyHtml += renderOption(b.id, `秘伝書の伝授 (${statName})`, `次世代の最初の10アクション時に、毎回【${statName} +${b.val}】のボーナスを付与します。<br><span style="color:#ff5252">※選択しないとこの秘伝書は消滅します</span>`, '📖');
+    });
+
     shopUI.innerHTML = `
         <div style="background: #111; padding: 20px; border-bottom: 2px solid #FFD700; text-align: center;">
             <h2 style="margin: 0; color: #FFD700;">👼 魂の引継ぎ（強くてニューゲーム）</h2>
             <div style="color: #ccc; font-size: 14px; margin-top: 5px;">稼いだゴールドを使って、次の世代に記憶や能力を引き継がせることができます。</div>
         </div>
-        
         <div style="flex: 1; padding: 20px; overflow-y: auto; background: #222;">
             ${renderOption('stats', '能力値の引継ぎ', '', '💪')}
             ${renderOption('inventory', '持ち物の引継ぎ', '前世で集めたインベントリのアイテムをそのまま持ち越します。', '🎒')}
             ${renderOption('vocab', '語彙・記憶領域の引継ぎ', '前世で教えた言葉と、拡張された記憶容量を最初から持った状態で始まります。', '🗣️')}
             ${renderOption('license', '職業ライセンスの引継ぎ', '師匠から受けたランクや皆伝の証をそのまま持ち越します。', '📜')}
             ${renderOption('personality', '姿と性格の引継ぎ (診断スキップ)', '性格診断をスキップし、前世と全く同じ姿と性格で生まれ変わります。', '🧬')}
+            ${legacyHtml !== "" ? `<div style="margin: 20px 0 10px 0; font-size: 16px; font-weight: bold; color: #00BCD4; border-bottom: 1px solid #00BCD4; padding-bottom: 5px;">🏆 余生の遺産 (選択必須)</div>` + legacyHtml : ""}
         </div>
-        
         <div style="background: #111; padding: 20px; border-top: 2px solid #555; display: flex; justify-content: space-between; align-items: center;">
             <div style="font-size: 22px; font-weight: bold;">
                 所持金: <span style="color: #FFD700;">${window.aiPet.gold} G</span><br>
                 <span style="font-size: 16px; color: #aaa;">消費: <span style="color: ${goldColor};">-${totalCost} G</span></span>
             </div>
-            <button onclick="window.executeReincarnation()" 
-                    style="padding: 15px 40px; font-size: 20px; font-weight: bold; background: ${isAffordable ? '#FF9800' : '#666'}; color: white; border: none; border-radius: 8px; cursor: ${isAffordable ? 'pointer' : 'not-allowed'}; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
-                次の人生へ ➔
-            </button>
+            <button onclick="window.executeReincarnation()" style="padding: 15px 40px; font-size: 20px; font-weight: bold; background: ${isAffordable ? '#FF9800' : '#666'}; color: white; border: none; border-radius: 8px; cursor: ${isAffordable ? 'pointer' : 'not-allowed'}; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">次の人生へ ➔</button>
         </div>
     `;
 };
@@ -2306,19 +2542,13 @@ window.toggleInheritance = function(key) {
 window.executeReincarnation = function() {
     let totalCost = 0;
     for (let key in inheritanceSelections) {
-        if (inheritanceSelections[key]) totalCost += INHERITANCE_COSTS[key];
+        if (inheritanceSelections[key]) totalCost += currentInheritanceCosts[key];
     }
-    
-    if (window.aiPet.gold < totalCost) {
-        alert("ゴールドが足りません！");
-        return;
-    }
-
+    if (window.aiPet.gold < totalCost) { alert("ゴールドが足りません！"); return; }
     window.aiPet.gold -= totalCost;
 
     const inheritedData = {};
     if (inheritanceSelections.stats) {
-        // ★修正：選択されたパーセンテージを適用
         let multiplier = window.inheritanceStatsPercent / 100;
         inheritedData.stats = {
             intel: Math.floor(window.aiPet.stats.intel * multiplier),
@@ -2326,11 +2556,8 @@ window.executeReincarnation = function() {
             beauty: Math.floor(window.aiPet.stats.beauty * multiplier)
         };
     }
-    if (inheritanceSelections.inventory) {
-        inheritedData.inventory = [...window.aiPet.inventory];
-    }
+    if (inheritanceSelections.inventory) inheritedData.inventory = [...window.aiPet.inventory];
     if (inheritanceSelections.vocab && window.aiPet.apprentice) {
-        // ★追加：前世の「最終的な記憶枠」を保存して持ち越す！
         inheritedData.apprentice = { 
             learnedWords: [...window.aiPet.apprentice.learnedWords],
             baseVocab: typeof window.aiPet.getMaxVocabulary === 'function' ? window.aiPet.getMaxVocabulary() : 3
@@ -2349,13 +2576,27 @@ window.executeReincarnation = function() {
         inheritedData.baseType = window.aiPet.baseType;
     }
 
+    // ★追加：レガシーの精算（選ばれなかったものは消滅）
+    let oldLegacy = JSON.parse(localStorage.getItem('ai_legacy_data') || '{"monuments":[], "books":[], "disciple":null}');
+    let newLegacy = { monuments: [], books: [], disciple: null };
+    
+    if (inheritanceSelections['disciple'] && oldLegacy.disciple) {
+        inheritedData.discipleSkin = oldLegacy.disciple.skin;
+        inheritedData.discipleStats = oldLegacy.disciple.stats;
+    }
+    oldLegacy.monuments.forEach(m => { if (inheritanceSelections[m.id]) newLegacy.monuments.push(m); });
+    oldLegacy.books.forEach(b => {
+        if (inheritanceSelections[b.id]) { b.charges = 10; newLegacy.books.push(b); } // 10回チャージ付与
+    });
+    localStorage.setItem('ai_legacy_data', JSON.stringify(newLegacy));
+
     window.aiPet.generation++;
     document.getElementById('inheritance-shop-ui').style.display = 'none';
     window.pendingInheritanceData = inheritedData;
     if (typeof window.clearSchedule === 'function') window.clearSchedule();
 
-    if (inheritanceSelections.personality) {
-        window.applyInheritedPet(inheritedData.skin, inheritedData);
+    if (inheritanceSelections.personality || inheritanceSelections['disciple']) {
+        window.applyInheritedPet(inheritedData.discipleSkin || inheritedData.skin || 'robot', inheritedData);
     } else {
         if (typeof startPersonalityTest === 'function') startPersonalityTest();
     }
@@ -2370,32 +2611,46 @@ window.applyInheritedPet = function(skinKey, data) {
     window.aiPet.messageTimer = 180;
 };
 
-const originalApplyInitialPet = window.applyInitialPet;
-
+// 既存のユーザーラッパー関数を上書き
+const _legacy_originalApplyInitialPet = typeof originalApplyInitialPet !== 'undefined' ? originalApplyInitialPet : window.applyInitialPet;
 window.applyInitialPet = function(skinKey) {
-    originalApplyInitialPet(skinKey);
+    _legacy_originalApplyInitialPet(skinKey);
     
-    // ★追加：新しい人生が始まったので、前世の「余生アクションの進捗」をリセット！
     window.aiPet.legacyProgress = {}; 
-    window.aiPet.originalLifespan = null; // 寿命計算の基準もリセット
+    window.aiPet.lifePath = null; // 余生ルートリセット
+    window.aiPet.originalLifespan = null; 
     window.aiPet.isReincarnating = false;
+    
+    // ★追加：引き継いだレガシーデータ（モニュメント・秘伝書）をAIに装備
+    let activeLegacy = JSON.parse(localStorage.getItem('ai_legacy_data') || '{"monuments":[], "books":[]}');
+    window.aiPet.activeMonuments = activeLegacy.monuments;
+    window.aiPet.activeBooks = activeLegacy.books;
+    
+    // モニュメントをマップに出現させる
+    activeLegacy.monuments.forEach(m => {
+        if (typeof assets !== 'undefined') {
+            assets[m.id] = { type: 'stone', name: '英雄のモニュメント', dx: m.x, dy: m.y, sw: 100, sh: 100, scale: 0.6 };
+        }
+    });
     
     if (window.pendingInheritanceData) {
         const data = window.pendingInheritanceData;
         
-        if (data.stats) {
+        // 弟子引継ぎによる上書き
+        if (data.discipleStats) {
+            window.aiPet.stats.intel = data.discipleStats.intel;
+            window.aiPet.stats.power = data.discipleStats.power;
+            window.aiPet.stats.beauty = data.discipleStats.beauty;
+        } else if (data.stats) {
             window.aiPet.stats.intel += data.stats.intel;
             window.aiPet.stats.power += data.stats.power;
             window.aiPet.stats.beauty += data.stats.beauty;
         }
-        if (data.inventory) {
-            window.aiPet.inventory = data.inventory;
-        }
+        
+        if (data.inventory) window.aiPet.inventory = data.inventory;
         if (data.apprentice) {
             if (data.apprentice.learnedWords) window.aiPet.apprentice.learnedWords = data.apprentice.learnedWords;
-            // ★追加：前世の記憶枠を新しい基本枠として適用
             if (data.apprentice.baseVocab) window.aiPet.apprentice.baseVocab = data.apprentice.baseVocab; 
-            
             if (data.apprentice.rank) window.aiPet.apprentice.rank = data.apprentice.rank;
             if (data.apprentice.retired) window.aiPet.apprentice.retired = data.apprentice.retired;
         }
@@ -2405,6 +2660,122 @@ window.applyInitialPet = function(skinKey) {
     saveGameData();
     if(typeof updateStatUI === 'function') updateStatUI();
     if(typeof updateCommandHUD === 'function') updateCommandHUD();
+};
+
+// ==========================================
+// ★ 余生システムの補助関数群
+// ==========================================
+aiPet.processLifePathStart = function(task) {
+    const ls = this.lifespan || 100;
+    let ageRate = 0.1; 
+    if (task.type === 'life_monument' || task.type === 'life_author') ageRate = 0.25;
+    else if (task.type === 'life_guardian' || task.type === 'life_slowlife') ageRate = 0.05;
+    
+    this.age += ls * ageRate; 
+    if (typeof addFloatingText === 'function') addFloatingText(this.x, this.y-80, `年齢 +${Math.floor(ls*ageRate)}歳`, "#aaa");
+
+    if (task.type === 'life_mentor') { this.visualAction = 'train'; this.actionState = 'training'; }
+    else if (task.type === 'life_monument') { this.visualAction = 'smith'; this.actionState = 'smithing'; }
+    else if (task.type === 'life_seeker') {
+        let acts = ['train', 'study', 'walk'];
+        this.visualAction = acts[Math.floor(Math.random()*acts.length)];
+        this.actionState = this.visualAction === 'train' ? 'training' : (this.visualAction === 'study' ? 'studying' : 'moving');
+    }
+    else if (task.type === 'life_guardian') { this.actionState = 'building'; this.visualAction = 'cook'; }
+    else if (task.type === 'life_author') { this.visualAction = 'study'; this.actionState = 'studying'; }
+    else if (task.type === 'life_slowlife') { this.visualAction = 'sleep'; this.actionState = 'sleeping'; }
+};
+
+aiPet.processLifePathFinish = function(task) {
+    let maxStat = 'power'; let maxVal = this.stats.power;
+    if (this.stats.intel > maxVal) { maxStat = 'intel'; maxVal = this.stats.intel; }
+    if (this.stats.beauty > maxVal) { maxStat = 'beauty'; maxVal = this.stats.beauty; }
+
+    if (task.type === 'life_mentor') {
+        this.message = "弟子が育ってきたぞ！"; this.messageTimer = 120;
+        let legacy = JSON.parse(localStorage.getItem('ai_legacy_data') || '{"monuments":[], "books":[], "disciple":null}');
+        let intelFactor = (this.stats.intel || 10) / 100;
+        legacy.disciple = {
+            skin: this.currentSkin,
+            stats: {
+                intel: Math.floor(this.stats.intel * intelFactor),
+                power: Math.floor(this.stats.power * intelFactor),
+                beauty: Math.floor(this.stats.beauty * intelFactor)
+            }
+        };
+        localStorage.setItem('ai_legacy_data', JSON.stringify(legacy));
+    }
+    else if (task.type === 'life_monument') {
+        this.legacyProgress = this.legacyProgress || {};
+        this.legacyProgress['monument'] = (this.legacyProgress['monument'] || 0) + 25;
+        if (this.legacyProgress['monument'] >= 100) {
+            this.message = "モニュメント完成！"; this.messageTimer = 120;
+            let legacy = JSON.parse(localStorage.getItem('ai_legacy_data') || '{"monuments":[], "books":[], "disciple":null}');
+            legacy.monuments.push({ id: 'mon_'+Date.now(), stat: maxStat, val: maxVal, x: this.x, y: this.y });
+            localStorage.setItem('ai_legacy_data', JSON.stringify(legacy));
+        } else {
+            this.message = `モニュメント建造中... (${this.legacyProgress['monument']}%)`; this.messageTimer = 120;
+        }
+    }
+    else if (task.type === 'life_seeker') {
+        let mult = 10 + ((this.generation || 1) * 10);
+        if (this.visualAction === 'train') this.stats.power += 10 * mult;
+        else if (this.visualAction === 'study') this.stats.intel += 10 * mult;
+        else this.stats.power += 5 * mult; 
+        this.message = `限界突破！(効果 ${mult}倍)`; this.messageTimer = 120;
+    }
+    else if (task.type === 'life_guardian') {
+        for(let k in assets) {
+            if (assets[k].type === 'farm') assets[k].growth = 100;
+            if (assets[k].durability !== undefined) assets[k].durability = 100;
+        }
+        this.message = "村の平和を守った！"; this.messageTimer = 120;
+    }
+    else if (task.type === 'life_author') {
+        this.legacyProgress = this.legacyProgress || {};
+        this.legacyProgress['author'] = (this.legacyProgress['author'] || 0) + 25;
+        if (this.legacyProgress['author'] >= 100) {
+            this.message = "秘伝書完成！"; this.messageTimer = 120;
+            let legacy = JSON.parse(localStorage.getItem('ai_legacy_data') || '{"monuments":[], "books":[], "disciple":null}');
+            legacy.books.push({ id: 'book_'+Date.now(), stat: maxStat, val: Math.floor(maxVal) });
+            localStorage.setItem('ai_legacy_data', JSON.stringify(legacy));
+        } else {
+            this.message = `執筆中... (${this.legacyProgress['author']}%)`; this.messageTimer = 120;
+        }
+    }
+    else if (task.type === 'life_slowlife') {
+        this.energy = 100; this.hunger = 100;
+        this.message = "のんびり最高〜"; this.messageTimer = 120;
+    }
+};
+
+aiPet.updateDiscipleUI = function(task) {
+    let dEl = document.getElementById('disciple-vfx');
+    if (!dEl) {
+        dEl = document.createElement('div');
+        dEl.id = 'disciple-vfx';
+        dEl.style.cssText = `position:absolute; pointer-events:none; z-index:90; display:flex; justify-content:center; align-items:center;`;
+        let wrapper = document.getElementById('canvas-wrapper') || document.body;
+        wrapper.appendChild(dEl);
+    }
+    dEl.style.display = 'flex';
+
+    if (!task._discipleAct || Math.random() < 0.05) {
+        task._discipleAct = ['study', 'train', 'walk'][Math.floor(Math.random()*3)];
+    }
+
+    let skin = this.currentSkin || 'robot';
+    let imgUrl = typeof dynamicImageCatalog !== 'undefined' && dynamicImageCatalog[skin] ? dynamicImageCatalog[skin] : 'characters.png';
+    let conf = typeof aiConfigs !== 'undefined' ? aiConfigs[skin] : null;
+
+    if (conf) {
+        let frame = (conf.actions[task._discipleAct] && conf.actions[task._discipleAct][0]) ? conf.actions[task._discipleAct][0] : {sx:0, sy:0, sw:300, sh:300};
+        let scale = (conf.scale || 0.25) * 0.5; 
+
+        dEl.style.left = `${this.x + 80}px`;
+        dEl.style.top = `${this.y + (frame.sh * scale)}px`;
+        dEl.innerHTML = `<div style="width:${frame.sw}px; height:${frame.sh}px; background:url('${imgUrl}') -${frame.sx}px -${frame.sy}px; transform:scaleX(-1) scale(${scale}); transform-origin:center bottom; animation: bounce 0.5s infinite alternate;"></div>`;
+    }
 };
 
 // ★究極改修: 多段階・クロス進化・分岐進化に完全対応した進化判定
@@ -5379,3 +5750,35 @@ if (typeof window.AICharacter !== 'undefined') {
         }
     };
 })();
+
+// ==========================================
+// ★ 追加：強くてニューゲーム専用「成人（悟り）イベント」の本体
+// ==========================================
+aiPet.checkAndTriggerAdulthood = function() {
+    let masteredCount = 0;
+    const jobKeys = ['explore', 'farming', 'fishing', 'cooking', 'smithing', 'building'];
+    if (this.apprentice && this.apprentice.rank) {
+        jobKeys.forEach(j => { if (this.apprentice.rank[j] >= 10) masteredCount++; });
+    }
+    
+    // 6種すべてを極めている（引継ぎで最初から全知全能）の場合のみ発動
+    if (masteredCount >= 6 && typeof this.determineLifePath === 'function') {
+        const chosenPath = this.determineLifePath();
+        this.lifePath = chosenPath; 
+        this.apprentice.lifePath = chosenPath; 
+        
+        this.schedule = []; // 現在の行動をキャンセルして立ち止まる
+        if (typeof window.updateScheduleList === 'function') window.updateScheduleList();
+        
+        this.message = "全てを極めた今、自分の夢のために生きよう！";
+        this.messageTimer = 300;
+        
+        if (typeof window.showGameTutorial === 'function') {
+            let taskNameStr = typeof getTaskName === 'function' ? getTaskName('life_' + chosenPath) : chosenPath;
+            window.showGameTutorial(
+                "👑 全知全能の悟り（成人）", 
+                `20歳を迎えたAIは、前世からの記憶によりすでにこの世界の全ての道を極めていました。<br><br>これまでの育て方から、AIは自らの意思で残りの人生を<span style="color:#FFD700; font-weight:bold;">「${taskNameStr}」</span>に捧げることを決意したようです！`
+            );
+        }
+    }
+};

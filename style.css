@@ -1,4 +1,4 @@
-/* style.css : �C���� (Weather Effects Restored) */
+/* style.css : 気象 (Weather Effects Restored) */
 
 body { 
     background-color: #222; 
@@ -29,7 +29,8 @@ body {
     justify-content: center; align-items: flex-start;
 }
 
-#game-column { display: flex; flex-direction: column; gap: 10px; align-items: center; width: auto; }
+/* ★修正：スマホで幅を100%に追従させるための下準備 */
+#game-column { display: flex; flex-direction: column; gap: 10px; align-items: center; width: auto; max-width: 100%; }
 
 #info-column {
     width: 340px; height: 600px; max-height: 95vh;
@@ -38,7 +39,7 @@ body {
     overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
-/* ���C��: gap��padding�Afont-size�����������1�s�Ɏ��߂� */
+/* ステータス: gapやpadding、font-sizeを調整して1行に収める */
 #aiStatus {
     background: rgba(0,0,0,0.6); padding: 8px 5px; border-radius: 8px; 
     display: flex; gap: 2px; font-size: 12px; font-weight: bold; border: 1px solid #444;
@@ -61,7 +62,7 @@ canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
     border-radius: 4px; transition: 0.2s; font-weight: bold; height: 100%; display: flex; align-items: center; justify-content: center;
 }
 .quiz-btn:hover { background: #4CAF50; border-color: #4CAF50; }
-#chatInput { flex: 1; padding: 0 10px; border-radius: 4px; border: 1px solid #555; background: #333; color: white; font-size: 14px; }
+#chatInput { flex: 1; padding: 0 10px; border-radius: 4px; border: 1px solid #555; background: #333; color: white; font-size: 14px; min-width: 0; } /* min-width指定ではみ出し防止 */
 
 .panel-view {
     display: none; width: 100%; height: 100%;
@@ -96,7 +97,7 @@ canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
     border: 1px solid #555; box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
 }
 
-/* �}�ӃX�^�C�� */
+/* 図鑑スタイル */
 #pokedexOverlay .quiz-card {
     width: 800px; height: 550px; padding: 0; background: #222;
     display: grid; grid-template-rows: 50px 1fr 100px; overflow: hidden;
@@ -107,25 +108,18 @@ canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
 .dex-info-box { flex: 1; display: flex; flex-direction: column; text-align: left; min-width: 0; }
 .dex-footer { background: #333; padding: 10px 20px; border-top: 2px solid #444; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-/* ���Ɏ��߂�A�X�N���[���o�[�Ȃ� */
 .dex-list-scroll { 
-    display: flex; 
-    gap: 8px; 
-    width: 100%; 
-    height: 100%;
-    flex-wrap: nowrap; 
-    justify-content: center; 
-    align-items: center;
+    display: flex; gap: 8px; width: 100%; height: 100%;
+    flex-wrap: nowrap; justify-content: center; align-items: center;
     overflow: hidden; 
 }
 
 #weatherOverlay, #disasterOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
 
 /* =========================================
-   ���ǉ�: ���V�C�G�t�F�N�g�i�A�j���[�V�����j
+   環境エフェクト (アニメーション)
    ========================================= */
 
-/* �J�G�t�F�N�g */
 .weather-rain {
     background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
     background-size: 15px 150px;
@@ -137,7 +131,6 @@ canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
     100% { background-position: 20px 100vh; }
 }
 
-/* ��G�t�F�N�g */
 .weather-snow {
     background-image: 
         radial-gradient(white, rgba(255,255,255,.3) 2px, transparent 4px),
@@ -153,7 +146,6 @@ canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
     100% { background-position: 120px 1000px, 300px 1070px, 490px 1280px; }
 }
 
-/* ���J�G�t�F�N�g */
 .weather-thunder {
     background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.5) 50%, rgba(255,255,255,0) 100%);
     background-size: 20px 200px;
@@ -165,7 +157,6 @@ canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
     95%, 99% { background-color: rgba(255, 255, 255, 0.6); }
 }
 
-/* �����G�t�F�N�g */
 .weather-hail {
     background-image: radial-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.7) 3px, transparent 5px);
     background-size: 150px 150px;
@@ -177,37 +168,37 @@ canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
     100% { background-position: 50px 100vh; }
 }
 
-/* ★追加：性格診断が終わるまで、ゲーム画面全体の要素を透明にして隠す */
+/* 性格診断が終わるまで、ゲーム画面全体の要素を透明にして隠す */
 #aiStatus, #canvas-wrapper, #gameControls, #info-column {
     opacity: 0;
-    pointer-events: none; /* 透明な間に誤ってクリックされるのを防ぐ */
+    pointer-events: none; 
     transition: opacity 1.5s ease-in-out;
 }
 
-/* ★闘技場用エフェクト */
-        @keyframes shake-battle {
-            0% { transform: translate(3px, 2px) rotate(0deg); }
-            10% { transform: translate(-2px, -3px) rotate(-1deg); }
-            20% { transform: translate(-4px, 0px) rotate(1deg); }
-            30% { transform: translate(0px, 3px) rotate(0deg); }
-            40% { transform: translate(2px, -2px) rotate(1deg); }
-            50% { transform: translate(-2px, 3px) rotate(-1deg); }
-            60% { transform: translate(-4px, 2px) rotate(0deg); }
-            70% { transform: translate(3px, 2px) rotate(-1deg); }
-            80% { transform: translate(-2px, -2px) rotate(1deg); }
-            90% { transform: translate(3px, 3px) rotate(0deg); }
-            100% { transform: translate(1px, -3px) rotate(-1deg); }
-        }
-        .arena-shake {
-            animation: shake-battle 0.5s;
-        }
-        .arena-damage-red {
-            box-shadow: inset 0 0 100px 30px rgba(255, 0, 0, 0.7) !important;
-            transition: box-shadow 0.1s;
-        }
-        .enemy-flash {
-            filter: brightness(2) contrast(1.5) sepia(1) hue-rotate(-50deg) saturate(5);
-        }
+/* 闘技場用エフェクト */
+@keyframes shake-battle {
+    0% { transform: translate(3px, 2px) rotate(0deg); }
+    10% { transform: translate(-2px, -3px) rotate(-1deg); }
+    20% { transform: translate(-4px, 0px) rotate(1deg); }
+    30% { transform: translate(0px, 3px) rotate(0deg); }
+    40% { transform: translate(2px, -2px) rotate(1deg); }
+    50% { transform: translate(-2px, 3px) rotate(-1deg); }
+    60% { transform: translate(-4px, 2px) rotate(0deg); }
+    70% { transform: translate(3px, 2px) rotate(-1deg); }
+    80% { transform: translate(-2px, -2px) rotate(1deg); }
+    90% { transform: translate(3px, 3px) rotate(0deg); }
+    100% { transform: translate(1px, -3px) rotate(-1deg); }
+}
+.arena-shake {
+    animation: shake-battle 0.5s;
+}
+.arena-damage-red {
+    box-shadow: inset 0 0 100px 30px rgba(255, 0, 0, 0.7) !important;
+    transition: box-shadow 0.1s;
+}
+.enemy-flash {
+    filter: brightness(2) contrast(1.5) sepia(1) hue-rotate(-50deg) saturate(5);
+}
 
 /* =========================================
    📱 レスポンシブUI ＆ モダン操作パネル
@@ -226,7 +217,6 @@ canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
     background-color: #4CAF50; border-radius: 50%;
     box-shadow: 0 0 5px #4CAF50; animation: blink 2s infinite;
 }
-@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
 /* コントロールパネルの大枠（2段構え化） */
 #gameControls {
@@ -241,10 +231,10 @@ canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
 
 /* 下段：チャット入力群 */
 #chat-input-row {
-    display: flex; gap: 8px; width: 100%; height: 45px; /* 少し高さを出して打ちやすく */
+    display: flex; gap: 8px; width: 100%; height: 45px; 
 }
 #chat-input-row #chatInput {
-    flex: 1; font-size: 15px; padding: 0 15px;
+    flex: 1; font-size: 15px; padding: 0 15px; min-width: 0;
 }
 
 /* スマホ用メニューボタン（PCでは隠す） */
@@ -253,14 +243,25 @@ canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
 
 /* 📱 スマホ向けレイアウト（画面幅が850px以下の場合に自動発動） */
 @media (max-width: 850px) {
-    #main-container { flex-direction: column; align-items: center; }
+    #main-container { 
+        flex-direction: column; 
+        align-items: center; 
+        /* ★修正：スマホでは縦スクロールを許可し、コマンドセンターまで見に行けるようにする！ */
+        overflow-y: auto !important; 
+        overflow-x: hidden !important; 
+        padding: 10px 5px; /* 左右の余白を少し詰める */
+    }
+    
     #canvas-wrapper, #aiStatus, #gameControls, #info-column {
-        width: 100% !important; max-width: 100vw; box-sizing: border-box;
+        /* ★修正：100vwだと親のpadding分はみ出すため、100%に変更して画面内に収める！ */
+        width: 100% !important; 
+        max-width: 100% !important; 
+        box-sizing: border-box;
     }
     
     /* 上段ボタンをポップアップメニューに変化させる */
     #action-buttons-row {
-        display: none; /* デフォルトは隠す */
+        display: none; 
         position: absolute; bottom: 70px; left: 10px; right: 10px;
         background: rgba(20, 20, 25, 0.95); border: 2px solid #555;
         border-radius: 8px; padding: 15px; z-index: 10000;
@@ -269,9 +270,16 @@ canvas { display: block; width: 100%; height: 100%; object-fit: contain; }
     #action-buttons-row.menu-open {
         display: flex; animation: slideUp 0.2s ease-out;
     }
-    @keyframes slideUp { from { transform:translateY(10px); opacity:0; } to { transform:translateY(0); opacity:1; } }
-
+    
     /* スマホ用ボタンの表示 */
     #mobile-menu-toggle { display: flex; }
     .mobile-only-btn { display: flex; font-size: 18px; padding: 0 10px; }
+
+    /* ★追加：ステータスバーがスマホ幅で文字潰れしないように横スクロール対応 */
+    #aiStatus {
+        overflow-x: auto;
+        justify-content: flex-start;
+        gap: 15px;
+        padding-bottom: 5px;
+    }
 }
