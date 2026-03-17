@@ -730,11 +730,15 @@ window.sendChat = function() {
     const rawText = input.value.trim();
     if (!rawText) return;
     
-    if (window.chatHistory.length === 0 || window.chatHistory[window.chatHistory.length - 1] !== rawText) {
-        window.chatHistory.push(rawText);
-        if (window.chatHistory.length > 50) window.chatHistory.shift();
-        localStorage.setItem('ai_pet_chat_history', JSON.stringify(window.chatHistory));
+    // ★修正：チャット履歴に同じ単語があれば古いものを消し、常に最新のものとして末尾に移動させる（重複防止）
+    const existingIndex = window.chatHistory.indexOf(rawText);
+    if (existingIndex !== -1) {
+        window.chatHistory.splice(existingIndex, 1);
     }
+    window.chatHistory.push(rawText);
+    if (window.chatHistory.length > 50) window.chatHistory.shift();
+    localStorage.setItem('ai_pet_chat_history', JSON.stringify(window.chatHistory));
+    
     window.chatHistoryIndex = -1;
 
     if (rawText === "やめる" || rawText === "中止" || rawText === "キャンセル" || rawText.toLowerCase() === "stop" || rawText.toLowerCase() === "cancel") {
@@ -3013,6 +3017,15 @@ window.showLifePathEvent = function(hero, path) {
             hero.lifePath = path;
             hero.legacyProgress = {}; // 進捗を0%にリセット
             if (hero.schedule) hero.schedule = []; // 今の予定を全てキャンセルして余生に集中
+            
+            // ★追加：ダイアログの裏で動いていた行動を確実にリセットし、姿勢を初期化する！
+            hero.actionState = 'idle';
+            hero.visualAction = null;
+            hero.isIndoors = false;
+            hero.indoorTarget = null;
+            hero.idleTimer = 0;
+            if (typeof window.updateScheduleList === 'function') window.updateScheduleList();
+            if (typeof updateAIStatusText === 'function') updateAIStatusText();
         });
     }
 };

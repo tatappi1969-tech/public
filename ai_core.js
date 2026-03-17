@@ -924,7 +924,8 @@ aiPet.performIdleAction = function() {
     // ==========================================
     // ★大追加：免許皆伝後、自分の「余生ルート（夢）」に向かって自動で行動を始める！
     // ==========================================
-    if (currentMode === 'play' && this.schedule.length === 0 && this.apprentice && this.apprentice.isGraduated && this.apprentice.lifePath) {
+    // ★修正：引継ぎプレイ時は isGraduated が undefined になるため、lifePath の有無だけで判定する！
+    if (currentMode === 'play' && this.schedule.length === 0 && this.apprentice && this.apprentice.lifePath) {
         let autoTask = 'life_' + this.apprentice.lifePath;
         let actMsgs = {
             'monument': "生きた証を遺すため、モニュメントの建造に取り掛かった！",
@@ -1936,9 +1937,11 @@ aiPet.update = function() {
                     task.duration = 60; task.maxDuration = 60;
                     let targets = Object.values(assets).filter(a => a.type === 'nature' || a.type === 'building' || a.type === 'skull' || a.type === 'crystal');
                     
-                    // ★修正：ダンジョンがマップにあれば、70%の確率で優先的に向かう！
-                    let dungeons = targets.filter(a => a.type === 'skull' || a.type === 'crystal');
-                    let others = targets.filter(a => a.type !== 'skull' && a.type !== 'crystal');
+                    // ★修正：typeが'building'になっていても、名前でダンジョンだと見抜くようにする！
+                    let isDungeon = (a) => a.type === 'skull' || a.type === 'crystal' || (a.name && (a.name.includes('スカル') || a.name.includes('クリスタル') || a.name.includes('迷宮') || a.name.includes('ダンジョン')));
+                    
+                    let dungeons = targets.filter(isDungeon);
+                    let others = targets.filter(a => !isDungeon(a));
                     let finalTarget = null;
                     
                     if (dungeons.length > 0 && Math.random() < 0.7) {
@@ -2110,11 +2113,10 @@ aiPet.update = function() {
                 }
             }
 
-            // ==========================================
-            // ★ 元凶のタスク完了判定（正常化）
-            // ==========================================
-            const isEnergyOut = !this.godMode && this.energy <= 0 && task.type !== 'rest';
-            const isHungerOut = !this.godMode && this.hunger <= 0 && task.type !== 'eat';
+            // ★修正：回復系のアクション（食事、睡眠、休憩）は、体力が0でも満腹度が0でも絶対に強制キャンセルしない！
+            const isRecoveryTask = ['rest', 'sleep', 'eat'].includes(task.type);
+            const isEnergyOut = !this.godMode && this.energy <= 0 && !isRecoveryTask;
+            const isHungerOut = !this.godMode && this.hunger <= 0 && !isRecoveryTask;
 
             if (task.duration <= 0 || isEnergyOut || isHungerOut) {
                 const isShopTask = (task.type === 'shop_work' || task.type === 'shop_research');
@@ -2131,6 +2133,7 @@ aiPet.update = function() {
 
                         // ★追加：秘伝書の消費とステータスアップ
                         if (this.activeBooks && this.activeBooks.length > 0) {
+                            let consumedIds = []; // ★追加：使い切った秘伝書のIDを記録
                             this.activeBooks.forEach(b => {
                                 if (b.charges > 0) {
                                     b.charges--;
@@ -2139,10 +2142,18 @@ aiPet.update = function() {
                                     if (typeof addFloatingText === 'function') addFloatingText(this.x, this.y - 60, `📖秘伝書(${statName} +${b.val})`, "#2196F3");
                                     if (b.charges <= 0) {
                                         this.message = "秘伝書の内容を全て吸収した！"; this.messageTimer = 180;
+                                        consumedIds.push(b.id); // ★追加
                                     }
                                 }
                             });
                             this.activeBooks = this.activeBooks.filter(b => b.charges > 0);
+                            
+                            // ★追加：使い切った秘伝書は「遺産倉庫（localStorage）」からも完全に消去する！
+                            if (consumedIds.length > 0) {
+                                let legacy = JSON.parse(localStorage.getItem('ai_legacy_data') || '{"monuments":[], "books":[], "disciple":null}');
+                                legacy.books = legacy.books.filter(b => !consumedIds.includes(b.id));
+                                localStorage.setItem('ai_legacy_data', JSON.stringify(legacy));
+                            }
                         }
 
                         const mType = task.masterType || this.apprentice?.currentMaster;
@@ -2169,17 +2180,40 @@ aiPet.update = function() {
                     this.actionState = 'exiting'; this.isIndoors = false; 
                 }
             }
+
+            // ★追加：タスク実行中（動いている最中）の体力・満腹度の消費！
+            if (currentMode === 'play' && !this.godMode) {
+                // 回復・休息系のタスク以外なら体力を減らす
+                if (!['sleep', 'rest', 'eat', 'life_slowlife'].includes(task.type)) {
+                    // 筋トレ・建築・鍛冶などの重労働は1.5倍疲れるようにする
+                    let drainMult = ['train', 'build', 'smith'].includes(task.type) ? 1.5 : 1.0;
+                    this.energy -= 0.03 * consumeRate * drainMult;
+                    this.hunger -= 0.03 * consumeRate * drainMult;
+                }
+            }
+
+        } else {
+            // ★修正：スケジュールが空っぽ（暇で立ち止まっている時）の処理
+            const activeStates = ['camping', 'studying', 'training', 'sleeping', 'eating', 'fishing', 'smithing', 'building', 'apprentice_training'];
+            if (activeStates.includes(this.actionState)) { this.actionState = 'idle'; this.visualAction = null; }
+            // 立ち止まっている時でも、時間経過で少しだけお腹が空き、疲れる
+            if (currentMode === 'play' && !this.godMode) { this.energy -= 0.02; this.hunger -= 0.02; }
         }
-    } else if (currentMode === 'play' || currentMode === 'grazing') {
-        const activeStates = ['camping', 'studying', 'training', 'sleeping', 'eating', 'fishing', 'smithing', 'building', 'apprentice_training'];
-        if (this.schedule.length === 0 && activeStates.includes(this.actionState)) { this.actionState = 'idle'; this.visualAction = null; }
-        if (currentMode === 'play' && !this.godMode) { this.energy -= 0.03; this.hunger -= 0.03; }
     }
     
     this.energy = Math.max(0, Math.min(100, this.energy)); this.hunger = Math.max(0, Math.min(100, this.hunger));
+    
+    // ★修正：パッシブ効果の計算を、UP表示の判定より「前」に移動！
+    const isPassiveActing = ['studying', 'training', 'sleeping', 'eating', 'fishing', 'smithing', 'building', 'apprentice_training', 'camping'].includes(this.actionState);
+    if (isPassiveActing && this.activeMonuments) {
+        this.activeMonuments.forEach(m => { this.stats[m.stat] += 0.05; });
+    }
+    if (this.actionState === 'sleeping' && this.activeMonuments && this.activeMonuments.some(m => m.stat === 'beauty')) {
+        this.stats.beauty += 0.1;
+    }
+
     if (Math.floor(this.stats.intel) > oldIntel) addFloatingText(this.x, this.y - 40, "賢さ UP!", "#4fc3f7");
     if (Math.floor(this.stats.power) > oldPower) addFloatingText(this.x, this.y - 40, "パワー UP!", "#ff5252");
-    // ★復活：美しさが上がった時のポップアップ（エレガントな紫色で表示！）
     if (Math.floor(this.stats.beauty) > oldBeauty) addFloatingText(this.x, this.y - 40, "美しさ UP!", "#e040fb");
 
     if (currentMode === 'play' || currentMode === 'grazing') {
@@ -2254,15 +2288,6 @@ aiPet.update = function() {
     } else {
         let dEl = document.getElementById('disciple-vfx');
         if (dEl) dEl.style.display = 'none';
-    }
-
-    // ★追加：モニュメントの常時パッシブ効果
-    const isPassiveActing = ['studying', 'training', 'sleeping', 'eating', 'fishing', 'smithing', 'building', 'apprentice_training', 'camping'].includes(this.actionState);
-    if (isPassiveActing && this.activeMonuments) {
-        this.activeMonuments.forEach(m => { this.stats[m.stat] += 0.05; });
-    }
-    if (this.actionState === 'sleeping' && this.activeMonuments && this.activeMonuments.some(m => m.stat === 'beauty')) {
-        this.stats.beauty += 0.1;
     }
 
     if (++this.tick > 8) { this.frameStep = (this.frameStep + 1) % 4; this.frameIndex = [0, 1, 2, 1][this.frameStep]; this.tick = 0; }
@@ -2666,14 +2691,15 @@ window.applyInitialPet = function(skinKey) {
 // ★ 余生システムの補助関数群
 // ==========================================
 aiPet.processLifePathStart = function(task) {
-    const ls = this.lifespan || 100;
-    let ageRate = 0.1; 
-    if (task.type === 'life_monument' || task.type === 'life_author') ageRate = 0.25;
-    else if (task.type === 'life_guardian' || task.type === 'life_slowlife') ageRate = 0.05;
+    // ★追加：スローライフ以外で、体力や満腹度が少ない時はタスクを諦めて寿命を温存する！
+    if (task.type !== 'life_slowlife' && !this.godMode && (this.energy < 20 || this.hunger < 20)) {
+        this.message = "今は疲れていて、大事業に集中できない...";
+        this.messageTimer = 120;
+        task.aborted = true;
+        task.duration = 0;
+        return; // 年齢（寿命）を消費する前に即座にタスクをキャンセル！
+    }
     
-    this.age += ls * ageRate; 
-    if (typeof addFloatingText === 'function') addFloatingText(this.x, this.y-80, `年齢 +${Math.floor(ls*ageRate)}歳`, "#aaa");
-
     if (task.type === 'life_mentor') { this.visualAction = 'train'; this.actionState = 'training'; }
     else if (task.type === 'life_monument') { this.visualAction = 'smith'; this.actionState = 'smithing'; }
     else if (task.type === 'life_seeker') {
@@ -2687,6 +2713,15 @@ aiPet.processLifePathStart = function(task) {
 };
 
 aiPet.processLifePathFinish = function(task) {
+    // ★修正：大事業をやり遂げた証として、タスク完了時に年齢（寿命）を加算する！
+    const ls = this.lifespan || 100;
+    let ageRate = 0.1; 
+    if (task.type === 'life_monument' || task.type === 'life_author') ageRate = 0.25;
+    else if (task.type === 'life_guardian' || task.type === 'life_slowlife') ageRate = 0.05;
+    
+    this.age += ls * ageRate; 
+    if (typeof addFloatingText === 'function') addFloatingText(this.x, this.y-80, `年齢 +${Math.floor(ls*ageRate)}歳`, "#aaa");
+
     let maxStat = 'power'; let maxVal = this.stats.power;
     if (this.stats.intel > maxVal) { maxStat = 'intel'; maxVal = this.stats.intel; }
     if (this.stats.beauty > maxVal) { maxStat = 'beauty'; maxVal = this.stats.beauty; }
@@ -3430,7 +3465,8 @@ setInterval(() => {
     // 【絶対安全装置】
     let mode = 'unknown'; try { mode = currentMode; } catch(e) {}
     if (mode === 'play' && window.aiPet) {
-        const isRetired = window.aiPet.apprentice && window.aiPet.apprentice.isGraduated;
+        // ★修正：皆伝フラグ(isGraduated)が無くても、余生の夢(lifePath)を持っていれば早送りボタンを出す！
+        const isRetired = window.aiPet.lifePath || (window.aiPet.apprentice && window.aiPet.apprentice.isGraduated);
         let ffBtn = document.getElementById('btn-fast-forward-life');
         
         if (isRetired) {
@@ -3920,6 +3956,11 @@ window.closeDungeonUI = function(isGameOver = false, isRescued = false) {
     const s = window.DUNGEON_STATE; s.active = false;
     if (s.isAuto) window.toggleDungeonAuto();
     
+    // ★修正：死んだ時だけでなく「無事に帰還した時」もしっかりランキングに記録を送信する！
+    if (typeof window.updateDungeonRanking === 'function') {
+        window.updateDungeonRanking(s.mapType, s.floor, s.player.level);
+    }
+    
     let reachedFloor = s.floor; 
     let goldReward = reachedFloor * (s.mapType === 'crystal' ? 100 : 50); 
     let itemsReward = [];
@@ -4208,8 +4249,8 @@ window.generateDungeonFloor = async function() {
 
     // ★修正：敵の基礎ステータスを大幅に下げて、初期レベルでも戦えるようにする
     const enemyCount = 3 + Math.floor(s.floor / 3); // 数も減らす
-    const eHpBase = s.mapType === 'crystal' ? 10 : 20;  // HP: 30 -> 10
-    const eDmgBase = s.mapType === 'crystal' ? 3 : 5;   // Dmg: 8 -> 3
+    const eHpBase = s.mapType === 'crystal' ? 10 : 20;  
+    const eDmgBase = s.mapType === 'crystal' ? 3 : 5;   
 
     for(let i=0; i<enemyCount; i++) {
         let roomIdx = 1 + Math.floor(Math.random() * (rooms.length - 1)); let r = rooms[roomIdx];
@@ -4218,9 +4259,14 @@ window.generateDungeonFloor = async function() {
         } while (s.grid[ey][ex] !== 0 || (ex === s.player.x && ey === s.player.y));
         
         let eType = window._dungeonAiTypesList[Math.floor(Math.random() * window._dungeonAiTypesList.length)];
-        s.enemies.push({ id: 'e_'+i, x: ex, y: ey, hp: eHpBase + s.floor * 5, maxHp: eHpBase + s.floor * 5, damage: eDmgBase + s.floor * 2, name: `迷宮の${eType}`, type: eType, face: 'down', attackAnim: false });
+        
+        // ★修正：階層ボーナス（s.floor * 5等）の上がり幅もマイルドにしました
+        s.enemies.push({ id: 'e_'+i, x: ex, y: ey, hp: eHpBase + s.floor * 3, maxHp: eHpBase + s.floor * 3, damage: eDmgBase + s.floor * 1, name: `迷宮の${eType}`, type: eType, face: 'down', attackAnim: false });
     }
 
+    // ==========================================
+    // ★ 追加：クラウドから救助待ちプレイヤーを取得してマップに配置
+    // ==========================================
     // ==========================================
     // ★ 追加：クラウドから救助待ちプレイヤーを取得してマップに配置
     // ==========================================
@@ -4230,8 +4276,9 @@ window.generateDungeonFloor = async function() {
             requests.forEach(req => {
                 // 同じ階層で倒れている他プレイヤーがいれば配置！
                 if (req.floor === s.floor) {
-                    let roomIdx = Math.floor(Math.random() * rooms.length);
-                    let r = rooms[roomIdx];
+                    // ★修正：rooms配列(中心点のみ)ではなく、s.roomsInfo(幅と高さあり)を使う！
+                    let roomIdx = Math.floor(Math.random() * s.roomsInfo.length);
+                    let r = s.roomsInfo[roomIdx];
                     let rx, ry; 
                     let attempts = 0;
                     do {
@@ -4735,12 +4782,38 @@ window.processDungeonTurn = function() {
                 }
             }
 
-            if (!chosenCommand) chosenCommand = validCmdIds[Math.floor(Math.random() * validCmdIds.length)];
+            // ★修正：最適な行動が見つからずランダムに動く時も、絶対に不可能な行動は選択肢から除外する！
+            if (!chosenCommand) {
+                let smartValidCmds = validCmdIds.filter(cmd => {
+                    if (cmd === 'eat') return s.player.tempInventory.some(i => window.getDungeonItemEffect(i).isConsumable && window.getDungeonItemEffect(i).hunger > 0);
+                    if (cmd === 'heal') return s.player.tempInventory.some(i => window.getDungeonItemEffect(i).isConsumable && window.getDungeonItemEffect(i).hp > 0);
+                    if (cmd === 'equip') return (!s.player.equipWeapon && s.player.tempInventory.some(i => window.getDungeonItemEffect(i).isWeapon)) || (!s.player.equipShield && s.player.tempInventory.some(i => window.getDungeonItemEffect(i).isShield));
+                    if (cmd === 'unequip') return s.player.equipWeapon || s.player.equipShield;
+                    if (cmd === 'attack') return enemyAdjacent != null;
+                    if (['move_up', 'move_down', 'move_left', 'move_right'].includes(cmd)) {
+                        let nx = s.player.x + (cmd === 'move_right' ? 1 : cmd === 'move_left' ? -1 : 0);
+                        let ny = s.player.y + (cmd === 'move_down' ? 1 : cmd === 'move_up' ? -1 : 0);
+                        return nx >= 0 && nx < s.mapWidth && ny >= 0 && ny < s.mapHeight && s.grid[ny][nx] !== 1;
+                    }
+                    return true;
+                });
+                
+                if (smartValidCmds.length > 0) {
+                    chosenCommand = smartValidCmds[Math.floor(Math.random() * smartValidCmds.length)];
+                } else {
+                    // ★追加：知っている言葉の中にできることが一つもない場合は、無駄な行動をせずにスキップする
+                    chosenCommand = 'skip';
+                    window.addDungeonLog(`${aiName} はどうすればいいか迷っている...（チャットで言葉を教えよう！）`, '#aaa');
+                }
+            }
+
             if (typeof chosenCommand === 'object' && chosenCommand !== null) chosenCommand = chosenCommand.id;
 
-            const cmdInfo = window.DUNGEON_AVAILABLE_COMMANDS.find(c => c.id === chosenCommand); 
-            if (cmdInfo) window.addDungeonLog(`${aiName} は「${cmdInfo.name}」と考えた！`, '#FFF');
-            else { chosenCommand = 'attack'; window.addDungeonLog(`${aiName} はとっさに身構えた！`, '#ff9800'); }
+            if (chosenCommand !== 'skip') {
+                const cmdInfo = window.DUNGEON_AVAILABLE_COMMANDS.find(c => c.id === chosenCommand); 
+                if (cmdInfo) window.addDungeonLog(`${aiName} は「${cmdInfo.name}」と考えた！`, '#FFF');
+                else { chosenCommand = 'attack'; window.addDungeonLog(`${aiName} はとっさに身構えた！`, '#ff9800'); }
+            }
         }
     }
 
@@ -4909,8 +4982,9 @@ window.processDungeonTurn = function() {
             
             if (attempts < 10) {
                 let eType = window._dungeonAiTypesList[Math.floor(Math.random() * window._dungeonAiTypesList.length)];
-                const eHpBase = s.mapType === 'crystal' ? 30 : 20;
-                const eDmgBase = s.mapType === 'crystal' ? 8 : 5;
+                // ★修正：ここが「HP30 / 攻撃8」という鬼畜設定になっていたので、初期配置の敵と同じ基準に弱体化！
+                const eHpBase = s.mapType === 'crystal' ? 10 : 20;
+                const eDmgBase = s.mapType === 'crystal' ? 2 : 5;
                 s.enemies.push({ 
                     id: 'e_spawn_'+Date.now(), x: ex, y: ey, 
                     hp: eHpBase + s.floor * 5, maxHp: eHpBase + s.floor * 5, 
@@ -5768,6 +5842,14 @@ aiPet.checkAndTriggerAdulthood = function() {
         this.apprentice.lifePath = chosenPath; 
         
         this.schedule = []; // 現在の行動をキャンセルして立ち止まる
+        
+        // ★追加：予定を消すだけでなく、AIの体（ポーズや状態）も確実にリセットして直立させる！
+        this.actionState = 'idle';
+        this.visualAction = null;
+        this.isIndoors = false;
+        this.indoorTarget = null;
+        this.idleTimer = 0; // 次の行動を起こすまでの時間をリセット
+        
         if (typeof window.updateScheduleList === 'function') window.updateScheduleList();
         
         this.message = "全てを極めた今、自分の夢のために生きよう！";
