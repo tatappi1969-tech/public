@@ -4807,12 +4807,34 @@ window.unlockSupportCard = function(cardId, generation, cardType) {
         cardName = window.TCG_CARD_CATALOG[cardId].name;
     }
 
+    // ★修正：マスターデータから画像座標やカード性能をしっかり取得してコピーする！
+    let masterData = null;
+    if (typeof window.TCG_MASTER !== 'undefined') {
+        masterData = window.TCG_MASTER[cardId];
+    }
+
     // コレクションに追加（TCG画面で使えるようにする）
     window.TCG.myCollection.push({
         uid: 'card_' + Date.now() + Math.floor(Math.random()*1000),
         masterId: cardId,
         name: cardName,
-        type: cardType
+        type: cardType,
+        // ★追加：画像表示とバトルに必要なデータを全て引き継ぐ
+        cost: masterData ? masterData.baseCost : 1,
+        hp: masterData ? masterData.baseHp : 0,
+        maxHp: masterData ? masterData.baseHp : 0,
+        skillName: masterData ? masterData.skillName : "効果なし",
+        skillCost: masterData ? masterData.skillCost : 0,
+        damage: masterData ? masterData.baseDmg : 0,
+        ability: masterData ? masterData.ability : null,
+        image: masterData ? masterData.image : 'support_card.png',
+        imageIndex: masterData ? masterData.imageIndex : 0,
+        sx: masterData ? masterData.sx : undefined,
+        sy: masterData ? masterData.sy : undefined,
+        sw: masterData ? masterData.sw : undefined,
+        sh: masterData ? masterData.sh : undefined,
+        scaleX: masterData ? masterData.scaleX : 1.0,
+        scaleY: masterData ? masterData.scaleY : 1.0
     });
     
     if (typeof saveGameData === 'function') saveGameData();
