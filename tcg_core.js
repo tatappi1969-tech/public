@@ -19,1419 +19,349 @@ window.saveTCGData = function() {
 // ==========================================
 window.TCG_MASTER = {
     // 🐉 ドラゴン
-    "dragon_0": {
-        "name": "幼竜の突進",
-        "type": "dragon",
-        "image": "dragon_card.png",
-        "imageIndex": 0,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 510,
-        "baseCost": 1,
-        "baseHp": 20,
-        "skillName": "体当たり",
-        "skillCost": 1,
-        "baseDmg": 20,
-        "ability": null,
-        "sx": -6,
-        "sy": 44,
-        "sw": 504,
-        "sh": 400,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.39999999999999963
-    },
-    "dragon_1": {
-        "name": "探求の白竜",
-        "type": "dragon",
-        "image": "dragon_card.png",
-        "imageIndex": 1,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 510,
-        "baseCost": 2,
-        "baseHp": 20,
-        "skillName": "知識の探求",
-        "skillCost": 2,
-        "baseDmg": 0,
-        "ability": "draw_card",
-        "sx": 559,
-        "sy": 44,
-        "sw": 504,
-        "sh": 400,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.39999999999999963
-    },
-    "dragon_2": {
-        "name": "結界竜",
-        "type": "dragon",
-        "image": "dragon_card.png",
-        "imageIndex": 2,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 510,
-        "baseCost": 3,
-        "baseHp": 50,
-        "skillName": "バリア展開",
-        "skillCost": 1,
-        "baseDmg": 10,
-        "ability": "taunt",
-        "sx": 1085,
-        "sy": 44,
-        "sw": 504,
-        "sh": 400,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.39999999999999963
-    },
-    "dragon_3": {
-        "name": "飛翔する白竜",
-        "type": "dragon",
-        "image": "dragon_card.png",
-        "imageIndex": 3,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 510,
-        "baseCost": 2,
-        "baseHp": 30,
-        "skillName": "滑空攻撃",
-        "skillCost": 1,
-        "baseDmg": 20,
-        "ability": "flight",
-        "sx": 27,
-        "sy": 554,
-        "sw": 504,
-        "sh": 400,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.39999999999999963
-    },
-    "dragon_4": {
-        "name": "業火の竜",
-        "type": "dragon",
-        "image": "dragon_card.png",
-        "imageIndex": 4,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 510,
-        "baseCost": 5,
-        "baseHp": 50,
-        "skillName": "ファイアブレス",
-        "skillCost": 3,
-        "baseDmg": 40,
-        "ability": null,
-        "sx": 535,
-        "sy": 554,
-        "sw": 504,
-        "sh": 400,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.39999999999999963
-    },
-    "dragon_5": {
-        "name": "森に潜む竜",
-        "type": "dragon",
-        "image": "dragon_card.png",
-        "imageIndex": 5,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 510,
-        "baseCost": 1,
-        "baseHp": 30,
-        "skillName": "威嚇",
-        "skillCost": 1,
-        "baseDmg": 10,
-        "ability": "stealth",
-        "sx": 1078,
-        "sy": 554,
-        "sw": 504,
-        "sh": 400,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.39999999999999963
-    },
-    "dragon_6": {
-        "name": "洞窟の番竜",
-        "type": "dragon",
-        "image": "dragon_card.png",
-        "imageIndex": 6,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 510,
-        "baseCost": 3,
-        "baseHp": 60,
-        "skillName": "岩砕き",
-        "skillCost": 2,
-        "baseDmg": 20,
-        "ability": "taunt",
-        "sx": 27,
-        "sy": 1066,
-        "sw": 504,
-        "sh": 400,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.39999999999999963
-    },
-    "dragon_7": {
-        "name": "魔力解放の竜",
-        "type": "dragon",
-        "image": "dragon_card.png",
-        "imageIndex": 7,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 510,
-        "baseCost": 4,
-        "baseHp": 30,
-        "skillName": "マジックミサイル",
-        "skillCost": 2,
-        "baseDmg": 30,
-        "ability": null,
-        "sx": 532,
-        "sy": 1066,
-        "sw": 504,
-        "sh": 400,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.39999999999999963
-    },
-    "dragon_8": {
-        "name": "宝物庫の主",
-        "type": "dragon",
-        "image": "dragon_card.png",
-        "imageIndex": 8,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 510,
-        "baseCost": 6,
-        "baseHp": 70,
-        "skillName": "黄金の咆哮",
-        "skillCost": 4,
-        "baseDmg": 50,
-        "ability": null,
-        "sx": 1065,
-        "sy": 1066,
-        "sw": 504,
-        "sh": 400,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.39999999999999963
-    },
-    "dragon_9": {
-        "name": "疾風の爪",
-        "type": "dragon",
-        "image": "dragon_card.png",
-        "imageIndex": 9,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 510,
-        "baseCost": 2,
-        "baseHp": 20,
-        "skillName": "ウィンドスラッシュ",
-        "skillCost": 1,
-        "baseDmg": 30,
-        "ability": null,
-        "sx": 27,
-        "sy": 1586,
-        "sw": 504,
-        "sh": 400,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.39999999999999963
-    },
-    "dragon_10": {
-        "name": "終焉の黒球",
-        "type": "dragon",
-        "image": "dragon_card.png",
-        "imageIndex": 10,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 510,
-        "baseCost": 7,
-        "baseHp": 40,
-        "skillName": "ブラックホール",
-        "skillCost": 5,
-        "baseDmg": 80,
-        "ability": null,
-        "sx": 545,
-        "sy": 1586,
-        "sw": 504,
-        "sh": 400,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.39999999999999963
-    },
-    "dragon_11": {
-        "name": "力尽きた竜",
-        "type": "dragon",
-        "image": "dragon_card.png",
-        "imageIndex": 11,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 510,
-        "baseCost": 1,
-        "baseHp": 10,
-        "skillName": "最後のあがき",
-        "skillCost": 1,
-        "baseDmg": 10,
-        "ability": null,
-        "sx": 1064,
-        "sy": 1646,
-        "sw": 504,
-        "sh": 400,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.39999999999999963
-    },
-    "dragon_12": {
-        "name": "迅雷の竜",
-        "type": "dragon",
-        "image": "dragon_card.png",
-        "imageIndex": 12,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 510,
-        "baseCost": 4,
-        "baseHp": 40,
-        "skillName": "ライトニングブレス",
-        "skillCost": 2,
-        "baseDmg": 40,
-        "ability": null,
-        "sx": 27,
-        "sy": 2125,
-        "sw": 504,
-        "sh": 400,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.39999999999999963
-    },
-    "dragon_13": {
-        "name": "覚醒の光",
-        "type": "dragon",
-        "image": "dragon_card.png",
-        "imageIndex": 13,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 510,
-        "baseCost": 5,
-        "baseHp": 50,
-        "skillName": "マナチャージ",
-        "skillCost": 1,
-        "baseDmg": 0,
-        "ability": "heal_self",
-        "sx": 532,
-        "sy": 2200,
-        "sw": 504,
-        "sh": 400,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.39999999999999963
-    },
-    "dragon_14": {
-        "name": "まどろみの竜",
-        "type": "dragon",
-        "image": "dragon_card.png",
-        "imageIndex": 14,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 510,
-        "baseCost": 2,
-        "baseHp": 40,
-        "skillName": "休息",
-        "skillCost": 1,
-        "baseDmg": 0,
-        "ability": "heal_self",
-        "sx": 1067,
-        "sy": 2200,
-        "sw": 504,
-        "sh": 400,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.39999999999999963
-    },
+    "dragon_0": { "name": "幼竜の突進", "type": "dragon", "image": "dragon_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 510, "baseCost": 1, "baseHp": 30, "skillName": "体当たり", "skillCost": 1, "baseDmg": 20, "ability": "haste", "sx": -6, "sy": 44, "sw": 504, "sh": 400, "scaleX": 0.39999999999999963, "scaleY": 0.39999999999999963 },
+    "dragon_1": { "name": "探求の白竜", "type": "dragon", "image": "dragon_card.png", "imageIndex": 1, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 510, "baseCost": 2, "baseHp": 20, "skillName": "知識の探求", "skillCost": 2, "baseDmg": 20, "ability": "draw_card", "sx": 559, "sy": 44, "sw": 504, "sh": 400, "scaleX": 0.39999999999999963, "scaleY": 0.39999999999999963 },
+    "dragon_2": { "name": "結界竜", "type": "dragon", "image": "dragon_card.png", "imageIndex": 2, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 510, "baseCost": 3, "baseHp": 60, "skillName": "バリア展開", "skillCost": 1, "baseDmg": 20, "ability": "taunt", "sx": 1085, "sy": 44, "sw": 504, "sh": 400, "scaleX": 0.39999999999999963, "scaleY": 0.39999999999999963 },
+    "dragon_3": { "name": "飛翔する白竜", "type": "dragon", "image": "dragon_card.png", "imageIndex": 3, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 510, "baseCost": 2, "baseHp": 30, "skillName": "滑空攻撃", "skillCost": 1, "baseDmg": 30, "ability": "flight", "sx": 27, "sy": 554, "sw": 504, "sh": 400, "scaleX": 0.39999999999999963, "scaleY": 0.39999999999999963 },
+    "dragon_4": { "name": "業火の竜", "type": "dragon", "image": "dragon_card.png", "imageIndex": 4, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 510, "baseCost": 5, "baseHp": 60, "skillName": "ファイアブレス", "skillCost": 3, "baseDmg": 50, "ability": "roar", "sx": 535, "sy": 554, "sw": 504, "sh": 400, "scaleX": 0.39999999999999963, "scaleY": 0.39999999999999963 },
+    "dragon_5": { "name": "森に潜む竜", "type": "dragon", "image": "dragon_card.png", "imageIndex": 5, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 510, "baseCost": 1, "baseHp": 30, "skillName": "威嚇", "skillCost": 1, "baseDmg": 20, "ability": "stealth", "sx": 1078, "sy": 554, "sw": 504, "sh": 400, "scaleX": 0.39999999999999963, "scaleY": 0.39999999999999963 },
+    "dragon_6": { "name": "洞窟の番竜", "type": "dragon", "image": "dragon_card.png", "imageIndex": 6, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 510, "baseCost": 3, "baseHp": 60, "skillName": "岩砕き", "skillCost": 2, "baseDmg": 20, "ability": "wrath", "sx": 27, "sy": 1066, "sw": 504, "sh": 400, "scaleX": 0.39999999999999963, "scaleY": 0.39999999999999963 },
+    "dragon_7": { "name": "魔力解放の竜", "type": "dragon", "image": "dragon_card.png", "imageIndex": 7, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 510, "baseCost": 4, "baseHp": 40, "skillName": "マジックミサイル", "skillCost": 2, "baseDmg": 40, "ability": "splash_damage", "sx": 532, "sy": 1066, "sw": 504, "sh": 400, "scaleX": 0.39999999999999963, "scaleY": 0.39999999999999963 },
+    "dragon_8": { "name": "宝物庫の主", "type": "dragon", "image": "dragon_card.png", "imageIndex": 8, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 510, "baseCost": 6, "baseHp": 80, "skillName": "黄金の咆哮", "skillCost": 4, "baseDmg": 60, "ability": null, "sx": 1065, "sy": 1066, "sw": 504, "sh": 400, "scaleX": 0.39999999999999963, "scaleY": 0.39999999999999963 },
+    "dragon_9": { "name": "疾風の爪", "type": "dragon", "image": "dragon_card.png", "imageIndex": 9, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 510, "baseCost": 2, "baseHp": 30, "skillName": "ウィンドスラッシュ", "skillCost": 1, "baseDmg": 40, "ability": null, "sx": 27, "sy": 1586, "sw": 504, "sh": 400, "scaleX": 0.39999999999999963, "scaleY": 0.39999999999999963 },
+    "dragon_10": { "name": "終焉の黒球", "type": "dragon", "image": "dragon_card.png", "imageIndex": 10, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 510, "baseCost": 7, "baseHp": 60, "skillName": "ブラックホール", "skillCost": 5, "baseDmg": 80, "ability": "cataclysm", "sx": 545, "sy": 1586, "sw": 504, "sh": 400, "scaleX": 0.39999999999999963, "scaleY": 0.39999999999999963 },
+    "dragon_11": { "name": "力尽きた竜", "type": "dragon", "image": "dragon_card.png", "imageIndex": 11, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 510, "baseCost": 1, "baseHp": 10, "skillName": "最後のあがき", "skillCost": 1, "baseDmg": 20, "ability": "death_bomb", "sx": 1064, "sy": 1646, "sw": 504, "sh": 400, "scaleX": 0.39999999999999963, "scaleY": 0.39999999999999963 },
+    "dragon_12": { "name": "迅雷の竜", "type": "dragon", "image": "dragon_card.png", "imageIndex": 12, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 510, "baseCost": 4, "baseHp": 40, "skillName": "ライトニングブレス", "skillCost": 2, "baseDmg": 40, "ability": "double_strike", "sx": 27, "sy": 2125, "sw": 504, "sh": 400, "scaleX": 0.39999999999999963, "scaleY": 0.39999999999999963 },
+    "dragon_13": { "name": "覚醒の光", "type": "dragon", "image": "dragon_card.png", "imageIndex": 13, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 510, "baseCost": 5, "baseHp": 50, "skillName": "マナチャージ", "skillCost": 1, "baseDmg": 40, "ability": "mana_ramp", "sx": 532, "sy": 2200, "sw": 504, "sh": 400, "scaleX": 0.39999999999999963, "scaleY": 0.39999999999999963 },
+    "dragon_14": { "name": "まどろみの竜", "type": "dragon", "image": "dragon_card.png", "imageIndex": 14, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 510, "baseCost": 2, "baseHp": 40, "skillName": "休息", "skillCost": 1, "baseDmg": 20, "ability": "heal_self", "sx": 1067, "sy": 2200, "sw": 504, "sh": 400, "scaleX": 0.39999999999999963, "scaleY": 0.39999999999999963 },
     // 🤖 ロボット
-    "robot_0": {
-        "name": "パンチングロボ",
-        "type": "robot",
-        "image": "robot_card.png",
-        "imageIndex": 0,
-        "offsetX": 5,
-        "offsetY": 0,
-        "zoomX": 335,
-        "zoomY": 505,
-        "baseCost": 1,
-        "baseHp": 30,
-        "skillName": "ストレート",
-        "skillCost": 1,
-        "baseDmg": 20,
-        "ability": null,
-        "sx": 348,
-        "sy": -27,
-        "sw": 339,
-        "sh": 354,
-        "scaleX": 0.5999999999999996,
-        "scaleY": 0.4999999999999996
-    },
-    "robot_1": {
-        "name": "ビームキャノン機",
-        "type": "robot",
-        "image": "robot_card.png",
-        "imageIndex": 1,
-        "offsetX": -3,
-        "offsetY": 0,
-        "zoomX": 360,
-        "zoomY": 505,
-        "baseCost": 4,
-        "baseHp": 40,
-        "skillName": "極太レーザー",
-        "skillCost": 3,
-        "baseDmg": 50,
-        "ability": null,
-        "sx": 1404,
-        "sy": -27,
-        "sw": 339,
-        "sh": 354,
-        "scaleX": 0.5999999999999996,
-        "scaleY": 0.4999999999999996
-    },
-    "robot_2": {
-        "name": "採掘ロボ",
-        "type": "robot",
-        "image": "robot_card.png",
-        "imageIndex": 2,
-        "offsetX": -4.5,
-        "offsetY": 0.5,
-        "zoomX": 360,
-        "zoomY": 520,
-        "baseCost": 2,
-        "baseHp": 40,
-        "skillName": "マテリアル発掘",
-        "skillCost": 2,
-        "baseDmg": 0,
-        "ability": "mana_ramp",
-        "sx": 2203,
-        "sy": -27,
-        "sw": 339,
-        "sh": 354,
-        "scaleX": 0.5999999999999996,
-        "scaleY": 0.4999999999999996
-    },
-    "robot_3": {
-        "name": "アサシンロボ",
-        "type": "robot",
-        "image": "robot_card.png",
-        "imageIndex": 3,
-        "offsetX": 4.5,
-        "offsetY": 0.5,
-        "zoomX": 360,
-        "zoomY": 520,
-        "baseCost": 2,
-        "baseHp": 20,
-        "skillName": "急所蹴り",
-        "skillCost": 1,
-        "baseDmg": 30,
-        "ability": "stealth",
-        "sx": 409,
-        "sy": 279,
-        "sw": 339,
-        "sh": 340,
-        "scaleX": 0.5999999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_4": {
-        "name": "浮遊ビット展開機",
-        "type": "robot",
-        "image": "robot_card.png",
-        "imageIndex": 4,
-        "offsetX": 3,
-        "offsetY": 0.5,
-        "zoomX": 360,
-        "zoomY": 520,
-        "baseCost": 3,
-        "baseHp": 30,
-        "skillName": "オールレンジ攻撃",
-        "skillCost": 2,
-        "baseDmg": 30,
-        "ability": "flight",
-        "sx": 1299,
-        "sy": 279,
-        "sw": 339,
-        "sh": 340,
-        "scaleX": 0.5999999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_5": {
-        "name": "黄昏の監視者",
-        "type": "robot",
-        "image": "robot_card.png",
-        "imageIndex": 5,
-        "offsetX": -4.5,
-        "offsetY": 0.5,
-        "zoomX": 360,
-        "zoomY": 520,
-        "baseCost": 2,
-        "baseHp": 50,
-        "skillName": "索敵",
-        "skillCost": 1,
-        "baseDmg": 0,
-        "ability": "taunt",
-        "sx": 2303,
-        "sy": 279,
-        "sw": 339,
-        "sh": 340,
-        "scaleX": 0.5999999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_6": {
-        "name": "双剣の機神",
-        "type": "robot",
-        "image": "robot_card.png",
-        "imageIndex": 6,
-        "offsetX": 4.5,
-        "offsetY": 0,
-        "zoomX": 345,
-        "zoomY": 520,
-        "baseCost": 5,
-        "baseHp": 50,
-        "skillName": "ツインブレード",
-        "skillCost": 3,
-        "baseDmg": 60,
-        "ability": null,
-        "sx": 367,
-        "sy": 577,
-        "sw": 394,
-        "sh": 340,
-        "scaleX": 0.4999999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_7": {
-        "name": "帯電アーマー機",
-        "type": "robot",
-        "image": "robot_card.png",
-        "imageIndex": 7,
-        "offsetX": -2,
-        "offsetY": 0,
-        "zoomX": 345,
-        "zoomY": 520,
-        "baseCost": 3,
-        "baseHp": 40,
-        "skillName": "放電ショック",
-        "skillCost": 2,
-        "baseDmg": 20,
-        "ability": "taunt",
-        "sx": 1231,
-        "sy": 577,
-        "sw": 394,
-        "sh": 340,
-        "scaleX": 0.4999999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_8": {
-        "name": "修理特化ロボ",
-        "type": "robot",
-        "image": "robot_card.png",
-        "imageIndex": 8,
-        "offsetX": -4.5,
-        "offsetY": 0,
-        "zoomX": 345,
-        "zoomY": 520,
-        "baseCost": 2,
-        "baseHp": 30,
-        "skillName": "オーバーホール",
-        "skillCost": 1,
-        "baseDmg": 0,
-        "ability": "heal_self",
-        "sx": 2182,
-        "sy": 577,
-        "sw": 394,
-        "sh": 340,
-        "scaleX": 0.4999999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_9": {
-        "name": "格闘教官機",
-        "type": "robot",
-        "image": "robot_card.png",
-        "imageIndex": 9,
-        "offsetX": 4.5,
-        "offsetY": 0,
-        "zoomX": 345,
-        "zoomY": 520,
-        "baseCost": 3,
-        "baseHp": 40,
-        "skillName": "クロスカウンター",
-        "skillCost": 2,
-        "baseDmg": 40,
-        "ability": null,
-        "sx": 367,
-        "sy": 877,
-        "sw": 394,
-        "sh": 340,
-        "scaleX": 0.4999999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_10": {
-        "name": "シールド発生機",
-        "type": "robot",
-        "image": "robot_card.png",
-        "imageIndex": 10,
-        "offsetX": 2,
-        "offsetY": 0,
-        "zoomX": 345,
-        "zoomY": 520,
-        "baseCost": 4,
-        "baseHp": 70,
-        "skillName": "イージス展開",
-        "skillCost": 2,
-        "baseDmg": 0,
-        "ability": "taunt",
-        "sx": 1150,
-        "sy": 877,
-        "sw": 394,
-        "sh": 340,
-        "scaleX": 0.4999999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_11": {
-        "name": "スクラップ機",
-        "type": "robot",
-        "image": "robot_card.png",
-        "imageIndex": 11,
-        "offsetX": -6.5,
-        "offsetY": 0,
-        "zoomX": 345,
-        "zoomY": 520,
-        "baseCost": 1,
-        "baseHp": 10,
-        "skillName": "ショート",
-        "skillCost": 1,
-        "baseDmg": 10,
-        "ability": null,
-        "sx": 2173,
-        "sy": 900,
-        "sw": 394,
-        "sh": 340,
-        "scaleX": 0.4999999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_12": {
-        "name": "高速スピン機",
-        "type": "robot",
-        "image": "robot_card.png",
-        "imageIndex": 12,
-        "offsetX": 4.5,
-        "offsetY": 0,
-        "zoomX": 345,
-        "zoomY": 520,
-        "baseCost": 2,
-        "baseHp": 30,
-        "skillName": "竜巻旋風",
-        "skillCost": 2,
-        "baseDmg": 20,
-        "ability": "flight",
-        "sx": 318,
-        "sy": 1180,
-        "sw": 394,
-        "sh": 340,
-        "scaleX": 0.4999999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_13": {
-        "name": "次元転送機",
-        "type": "robot",
-        "image": "robot_card.png",
-        "imageIndex": 13,
-        "offsetX": -2,
-        "offsetY": -0.5,
-        "zoomX": 345,
-        "zoomY": 525,
-        "baseCost": 6,
-        "baseHp": 50,
-        "skillName": "ワープアタック",
-        "skillCost": 4,
-        "baseDmg": 70,
-        "ability": "stealth",
-        "sx": 1189,
-        "sy": 1180,
-        "sw": 394,
-        "sh": 340,
-        "scaleX": 0.4999999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_14": {
-        "name": "勝利のガッツポーズ",
-        "type": "robot",
-        "image": "robot_card.png",
-        "imageIndex": 14,
-        "offsetX": -4.5,
-        "offsetY": -0.5,
-        "zoomX": 345,
-        "zoomY": 525,
-        "baseCost": 3,
-        "baseHp": 40,
-        "skillName": "士気高揚",
-        "skillCost": 2,
-        "baseDmg": 0,
-        "ability": "draw_card",
-        "sx": 2134,
-        "sy": 1180,
-        "sw": 394,
-        "sh": 340,
-        "scaleX": 0.4999999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type1_0": {
-        "name": "キリング・マシーン",
-        "type": "robot_type1",
-        "image": "robot_type1_card.png",
-        "imageIndex": 2,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 3,
-        "baseHp": 70,
-        "skillName": "プラズマデストロイ",
-        "skillCost": 2,
-        "baseDmg": 40,
-        "ability": "pierce_recoil",
-        "evolvesFrom": "robot",
-        "sx": 1123,
-        "sy": 1674,
-        "sw": 436,
-        "sh": 341,
-        "scaleX": 0.4499999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type2_0": {
-        "name": "アイドル・ギア",
-        "type": "robot_type2",
-        "image": "robot_type2_card.png",
-        "imageIndex": 11,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 2,
-        "baseHp": 50,
-        "skillName": "ホログラムライブ",
-        "skillCost": 1,
-        "baseDmg": 20,
-        "ability": "aoe_heal_play",
-        "evolvesFrom": "robot",
-        "sx": 675,
-        "sy": 1022,
-        "sw": 436,
-        "sh": 341,
-        "scaleX": 0.4499999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type3_0": {
-        "name": "アナリティクス・マキナ",
-        "type": "robot_type3",
-        "image": "robot_type3_card.png",
-        "imageIndex": 8,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 2,
-        "baseHp": 60,
-        "skillName": "データクラッシュ",
-        "skillCost": 2,
-        "baseDmg": 25,
-        "ability": "start_draw",
-        "evolvesFrom": "robot",
-        "sx": 670,
-        "sy": 1011,
-        "sw": 436,
-        "sh": 341,
-        "scaleX": 0.4499999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type3_2_0": {
-        "name": "マザー・ブレイン",
-        "type": "robot_type3_2",
-        "image": "robot_type3_2_card.png",
-        "imageIndex": 10,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 3,
-        "baseHp": 60,
-        "skillName": "エレメンタルカノン",
-        "skillCost": 2,
-        "baseDmg": 30,
-        "ability": "aura_action_cost",
-        "evolvesFrom": "robot",
-        "sx": 615,
-        "sy": -6,
-        "sw": 436,
-        "sh": 341,
-        "scaleX": 0.4499999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type4_0": {
-        "name": "ヘビー・タンク",
-        "type": "robot_type4",
-        "image": "robot_type4_card.png",
-        "imageIndex": 5,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 3,
-        "baseHp": 90,
-        "skillName": "ギガントドリル",
-        "skillCost": 2,
-        "baseDmg": 35,
-        "ability": "heavy_armor",
-        "evolvesFrom": "robot",
-        "sx": 1224,
-        "sy": 995,
-        "sw": 436,
-        "sh": 341,
-        "scaleX": 0.4499999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type4_2_0": {
-        "name": "アサルト・マキナ",
-        "type": "robot_type4_2",
-        "image": "robot_type4_2_card.png",
-        "imageIndex": 12,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 4,
-        "baseHp": 80,
-        "skillName": "メテオバーン",
-        "skillCost": 3,
-        "baseDmg": 50,
-        "ability": "snipe_play",
-        "evolvesFrom": "robot",
-        "sx": 1330,
-        "sy": 815,
-        "sw": 436,
-        "sh": 341,
-        "scaleX": 0.4499999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type5_0": {
-        "name": "スクラップ・ウォーカー",
-        "type": "robot_type5",
-        "image": "robot_type5_card.png",
-        "imageIndex": 12,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 2,
-        "baseHp": 75,
-        "skillName": "ネイチャーバインド",
-        "skillCost": 1,
-        "baseDmg": 20,
-        "ability": "end_heal",
-        "evolvesFrom": "robot",
-        "sx": 1291,
-        "sy": 100,
-        "sw": 436,
-        "sh": 341,
-        "scaleX": 0.4499999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type1_2_0": {
-        "name": "シン・マキナ",
-        "type": "robot_type1_2",
-        "image": "robot_type1_2_card.png",
-        "imageIndex": 2,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 7,
-        "baseHp": 160,
-        "skillName": "崩星の咆哮",
-        "skillCost": 3,
-        "baseDmg": 80,
-        "ability": "perfect_predation",
-        "evolvesFrom": "robot_type1",
-        "sx": 739,
-        "sy": 29,
-        "sw": 436,
-        "sh": 341,
-        "scaleX": 0.4499999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type1_3_0": {
-        "name": "ヘル・ギア",
-        "type": "robot_type1_3",
-        "image": "robot_type1_3_card.png",
-        "imageIndex": 2,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 7,
-        "baseHp": 150,
-        "skillName": "煉獄の鎖",
-        "skillCost": 3,
-        "baseDmg": 90,
-        "ability": "nightmare_rule",
-        "evolvesFrom": "robot_type1",
-        "sx": 618,
-        "sy": 54,
-        "sw": 436,
-        "sh": 341,
-        "scaleX": 0.4499999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type2_2_0": {
-        "name": "スターライト・アーマー",
-        "type": "robot_type2_2",
-        "image": "robot_type2_2_card.png",
-        "imageIndex": 2,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 6,
-        "baseHp": 140,
-        "skillName": "ギャラクシー・ブレード",
-        "skillCost": 2,
-        "baseDmg": 70,
-        "ability": "star_hope",
-        "evolvesFrom": "robot_type2",
-        "sx": 625,
-        "sy": 1075,
-        "sw": 436,
-        "sh": 341,
-        "scaleX": 0.4499999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type2_3_0": {
-        "name": "セラフィム・ギア",
-        "type": "robot_type2_3",
-        "image": "robot_type2_3_card.png",
-        "imageIndex": 11,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 8,
-        "baseHp": 120,
-        "skillName": "神罰の光",
-        "skillCost": 4,
-        "baseDmg": 60,
-        "ability": "divine_grace",
-        "evolvesFrom": "robot_type2",
-        "sx": 550,
-        "sy": 1241,
-        "sw": 436,
-        "sh": 341,
-        "scaleX": 0.4499999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type2_4_0": {
-        "name": "ゴールデン・パラディン",
-        "type": "robot_type2_4",
-        "image": "robot_type2_4_card.png",
-        "imageIndex": 12,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 9,
-        "baseHp": 180,
-        "skillName": "ジャッジメント",
-        "skillCost": 5,
-        "baseDmg": 100,
-        "ability": "heaven_punishment",
-        "evolvesFrom": "robot_type2",
-        "sx": 435,
-        "sy": 693,
-        "sw": 436,
-        "sh": 341,
-        "scaleX": 0.4499999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type3_3_0": {
-        "name": "ユニバース・コア",
-        "type": "robot_type3_3",
-        "image": "robot_type3_3_card.png",
-        "imageIndex": 11,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 8,
-        "baseHp": 200,
-        "skillName": "特異点生成",
-        "skillCost": 4,
-        "baseDmg": 0,
-        "ability": "event_horizon",
-        "evolvesFrom": "robot_type3",
-        "sx": 758,
-        "sy": 412,
-        "sw": 549,
-        "sh": 344,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type3_4_0": {
-        "name": "マスター・コンソール",
-        "type": "robot_type3_4",
-        "image": "robot_type3_4_card.png",
-        "imageIndex": 12,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 6,
-        "baseHp": 130,
-        "skillName": "真理の書き換え",
-        "skillCost": 2,
-        "baseDmg": 50,
-        "ability": "truth_overwrite",
-        "evolvesFrom": "robot_type3_2",
-        "sx": 492,
-        "sy": 22,
-        "sw": 549,
-        "sh": 344,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type3_5_0": {
-        "name": "サテライト・ルーラー",
-        "type": "robot_type3_5",
-        "image": "robot_type3_5_card.png",
-        "imageIndex": 11,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 7,
-        "baseHp": 150,
-        "skillName": "オービタル・カノン",
-        "skillCost": 3,
-        "baseDmg": 60,
-        "ability": "heaven_judgement",
-        "evolvesFrom": "robot_type3",
-        "sx": 110,
-        "sy": -6,
-        "sw": 549,
-        "sh": 344,
-        "scaleX": 0.39999999999999963,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type4_3_0": {
-        "name": "フルアーマー・タイタン",
-        "type": "robot_type4_3",
-        "image": "robot_type4_3_card.png",
-        "imageIndex": 12,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 8,
-        "baseHp": 250,
-        "skillName": "オメガ・バッシュ",
-        "skillCost": 3,
-        "baseDmg": 80,
-        "ability": "absolute_fortress",
-        "evolvesFrom": "robot_type4",
-        "sx": 315,
-        "sy": -6,
-        "sw": 549,
-        "sh": 344,
-        "scaleX": 0.5499999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type4_4_0": {
-        "name": "ギガント・クラッシャー",
-        "type": "robot_type4_4",
-        "image": "robot_type4_4_card.png",
-        "imageIndex": 12,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 9,
-        "baseHp": 180,
-        "skillName": "次元穿孔ドリル",
-        "skillCost": 4,
-        "baseDmg": 120,
-        "ability": "dimension_drill",
-        "evolvesFrom": "robot_type4_2",
-        "sx": 306,
-        "sy": 68,
-        "sw": 549,
-        "sh": 344,
-        "scaleX": 0.5499999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type5_2_0": {
-        "name": "クロックワーク・ゴッド",
-        "type": "robot_type5_2",
-        "image": "robot_type5_2_card.png",
-        "imageIndex": 13,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 7,
-        "baseHp": 160,
-        "skillName": "タイム・パラドックス",
-        "skillCost": 3,
-        "baseDmg": 70,
-        "ability": "time_manipulation",
-        "evolvesFrom": "robot_type5",
-        "sx": 523,
-        "sy": 1,
-        "sw": 549,
-        "sh": 344,
-        "scaleX": 0.5499999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type5_3_0": {
-        "name": "アストロ・ダイバー",
-        "type": "robot_type5_3",
-        "image": "robot_type5_3_card.png",
-        "imageIndex": 12,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 10,
-        "baseHp": 170,
-        "skillName": "超新星爆発",
-        "skillCost": 6,
-        "baseDmg": 90,
-        "ability": "super_gravity",
-        "evolvesFrom": "robot_type5",
-        "sx": 536,
-        "sy": 594,
-        "sw": 549,
-        "sh": 344,
-        "scaleX": 0.5499999999999996,
-        "scaleY": 0.5499999999999996
-    },
-    "robot_type5_4_0": {
-        "name": "エンシェント・レリック",
-        "type": "robot_type5_4",
-        "image": "robot_type5_4_card.png",
-        "imageIndex": 12,
-        "offsetX": 0,
-        "offsetY": 0,
-        "zoomX": 300,
-        "zoomY": 500,
-        "baseCost": 6,
-        "baseHp": 190,
-        "skillName": "ロスト・テクノロジー",
-        "skillCost": 2,
-        "baseDmg": 80,
-        "ability": "eternal_rebirth",
-        "evolvesFrom": "robot_type5",
-        "sx": 1066,
-        "sy": -14,
-        "sw": 549,
-        "sh": 344,
-        "scaleX": 0.5499999999999996,
-        "scaleY": 0.5499999999999996
-    },
+    "robot_0": { "name": "パンチングロボ", "type": "robot", "image": "robot_card.png", "imageIndex": 0, "offsetX": 5, "offsetY": 0, "zoomX": 335, "zoomY": 505, "baseCost": 1, "baseHp": 40, "skillName": "ストレート", "skillCost": 1, "baseDmg": 30, "ability": null, "sx": 348, "sy": -27, "sw": 339, "sh": 354, "scaleX": 0.5999999999999996, "scaleY": 0.4999999999999996 },
+    "robot_1": { "name": "ビームキャノン機", "type": "robot", "image": "robot_card.png", "imageIndex": 1, "offsetX": -3, "offsetY": 0, "zoomX": 360, "zoomY": 505, "baseCost": 4, "baseHp": 40, "skillName": "極太レーザー", "skillCost": 3, "baseDmg": 60, "ability": null, "sx": 1404, "sy": -27, "sw": 339, "sh": 354, "scaleX": 0.5999999999999996, "scaleY": 0.4999999999999996 },
+    "robot_2": { "name": "採掘ロボ", "type": "robot", "image": "robot_card.png", "imageIndex": 2, "offsetX": -4.5, "offsetY": 0.5, "zoomX": 360, "zoomY": 520, "baseCost": 2, "baseHp": 40, "skillName": "マテリアル発掘", "skillCost": 2, "baseDmg": 10, "ability": "mana_ramp", "sx": 2203, "sy": -27, "sw": 339, "sh": 354, "scaleX": 0.5999999999999996, "scaleY": 0.4999999999999996 },
+    "robot_3": { "name": "アサシンロボ", "type": "robot", "image": "robot_card.png", "imageIndex": 3, "offsetX": 4.5, "offsetY": 0.5, "zoomX": 360, "zoomY": 520, "baseCost": 2, "baseHp": 20, "skillName": "急所蹴り", "skillCost": 1, "baseDmg": 40, "ability": "stealth", "sx": 409, "sy": 279, "sw": 339, "sh": 340, "scaleX": 0.5999999999999996, "scaleY": 0.5499999999999996 },
+    "robot_4": { "name": "浮遊ビット展開機", "type": "robot", "image": "robot_card.png", "imageIndex": 4, "offsetX": 3, "offsetY": 0.5, "zoomX": 360, "zoomY": 520, "baseCost": 3, "baseHp": 30, "skillName": "オールレンジ攻撃", "skillCost": 2, "baseDmg": 20, "ability": "double_strike", "sx": 1299, "sy": 279, "sw": 339, "sh": 340, "scaleX": 0.5999999999999996, "scaleY": 0.5499999999999996 },
+    "robot_5": { "name": "黄昏の監視者", "type": "robot", "image": "robot_card.png", "imageIndex": 5, "offsetX": -4.5, "offsetY": 0.5, "zoomX": 360, "zoomY": 520, "baseCost": 2, "baseHp": 50, "skillName": "索敵", "skillCost": 1, "baseDmg": 10, "ability": "taunt", "sx": 2303, "sy": 279, "sw": 339, "sh": 340, "scaleX": 0.5999999999999996, "scaleY": 0.5499999999999996 },
+    "robot_6": { "name": "双剣の機神", "type": "robot", "image": "robot_card.png", "imageIndex": 6, "offsetX": 4.5, "offsetY": 0, "zoomX": 345, "zoomY": 520, "baseCost": 5, "baseHp": 50, "skillName": "ツインブレード", "skillCost": 3, "baseDmg": 40, "ability": "double_strike", "sx": 367, "sy": 577, "sw": 394, "sh": 340, "scaleX": 0.4999999999999996, "scaleY": 0.5499999999999996 },
+    "robot_7": { "name": "帯電アーマー機", "type": "robot", "image": "robot_card.png", "imageIndex": 7, "offsetX": -2, "offsetY": 0, "zoomX": 345, "zoomY": 520, "baseCost": 3, "baseHp": 50, "skillName": "放電ショック", "skillCost": 2, "baseDmg": 20, "ability": "heavy_armor", "sx": 1231, "sy": 577, "sw": 394, "sh": 340, "scaleX": 0.4999999999999996, "scaleY": 0.5499999999999996 },
+    "robot_8": { "name": "修理特化ロボ", "type": "robot", "image": "robot_card.png", "imageIndex": 8, "offsetX": -4.5, "offsetY": 0, "zoomX": 345, "zoomY": 520, "baseCost": 2, "baseHp": 30, "skillName": "オーバーホール", "skillCost": 1, "baseDmg": 10, "ability": "heal_self", "sx": 2182, "sy": 577, "sw": 394, "sh": 340, "scaleX": 0.4999999999999996, "scaleY": 0.5499999999999996 },
+    "robot_9": { "name": "格闘教官機", "type": "robot", "image": "robot_card.png", "imageIndex": 9, "offsetX": 4.5, "offsetY": 0, "zoomX": 345, "zoomY": 520, "baseCost": 3, "baseHp": 40, "skillName": "クロスカウンター", "skillCost": 2, "baseDmg": 40, "ability": "counter_attack", "sx": 367, "sy": 877, "sw": 394, "sh": 340, "scaleX": 0.4999999999999996, "scaleY": 0.5499999999999996 },
+    "robot_10": { "name": "シールド発生機", "type": "robot", "image": "robot_card.png", "imageIndex": 10, "offsetX": 2, "offsetY": 0, "zoomX": 345, "zoomY": 520, "baseCost": 4, "baseHp": 70, "skillName": "イージス展開", "skillCost": 2, "baseDmg": 20, "ability": "taunt", "sx": 1150, "sy": 877, "sw": 394, "sh": 340, "scaleX": 0.4999999999999996, "scaleY": 0.5499999999999996 },
+    "robot_11": { "name": "スクラップ機", "type": "robot", "image": "robot_card.png", "imageIndex": 11, "offsetX": -6.5, "offsetY": 0, "zoomX": 345, "zoomY": 520, "baseCost": 1, "baseHp": 10, "skillName": "ショート", "skillCost": 1, "baseDmg": 10, "ability": "self_destruct", "sx": 2173, "sy": 900, "sw": 394, "sh": 340, "scaleX": 0.4999999999999996, "scaleY": 0.5499999999999996 },
+    "robot_12": { "name": "高速スピン機", "type": "robot", "image": "robot_card.png", "imageIndex": 12, "offsetX": 4.5, "offsetY": 0, "zoomX": 345, "zoomY": 520, "baseCost": 2, "baseHp": 30, "skillName": "竜巻旋風", "skillCost": 2, "baseDmg": 30, "ability": "flight", "sx": 318, "sy": 1180, "sw": 394, "sh": 340, "scaleX": 0.4999999999999996, "scaleY": 0.5499999999999996 },
+    "robot_13": { "name": "次元転送機", "type": "robot", "image": "robot_card.png", "imageIndex": 13, "offsetX": -2, "offsetY": -0.5, "zoomX": 345, "zoomY": 525, "baseCost": 6, "baseHp": 50, "skillName": "ワープアタック", "skillCost": 4, "baseDmg": 80, "ability": "stealth", "sx": 1189, "sy": 1180, "sw": 394, "sh": 340, "scaleX": 0.4999999999999996, "scaleY": 0.5499999999999996 },
+    "robot_14": { "name": "勝利のガッツポーズ", "type": "robot", "image": "robot_card.png", "imageIndex": 14, "offsetX": -4.5, "offsetY": -0.5, "zoomX": 345, "zoomY": 525, "baseCost": 3, "baseHp": 40, "skillName": "士気高揚", "skillCost": 2, "baseDmg": 20, "ability": "draw_card", "sx": 2134, "sy": 1180, "sw": 394, "sh": 340, "scaleX": 0.4999999999999996, "scaleY": 0.5499999999999996 },
+    "robot_type1_0": { "name": "キリング・マシーン", "type": "robot_type1", "image": "robot_type1_card.png", "imageIndex": 2, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 70, "skillName": "プラズマデストロイ", "skillCost": 2, "baseDmg": 60, "ability": "pierce_recoil", "evolvesFrom": "robot", "sx": 1123, "sy": 1674, "sw": 436, "sh": 341, "scaleX": 0.4499999999999996, "scaleY": 0.5499999999999996 },
+    "robot_type2_0": { "name": "アイドル・ギア", "type": "robot_type2", "image": "robot_type2_card.png", "imageIndex": 11, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 2, "baseHp": 60, "skillName": "ホログラムライブ", "skillCost": 1, "baseDmg": 30, "ability": "aoe_heal_play", "evolvesFrom": "robot", "sx": 675, "sy": 1022, "sw": 436, "sh": 341, "scaleX": 0.4499999999999996, "scaleY": 0.5499999999999996 },
+    "robot_type3_0": { "name": "アナリティクス・マキナ", "type": "robot_type3", "image": "robot_type3_card.png", "imageIndex": 8, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 2, "baseHp": 60, "skillName": "データクラッシュ", "skillCost": 2, "baseDmg": 40, "ability": "start_draw", "evolvesFrom": "robot", "sx": 670, "sy": 1011, "sw": 436, "sh": 341, "scaleX": 0.4499999999999996, "scaleY": 0.5499999999999996 },
+    "robot_type3_2_0": { "name": "マザー・ブレイン", "type": "robot_type3_2", "image": "robot_type3_2_card.png", "imageIndex": 10, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 70, "skillName": "エレメンタルカノン", "skillCost": 2, "baseDmg": 40, "ability": "aura_action_cost", "evolvesFrom": "robot", "sx": 615, "sy": -6, "sw": 436, "sh": 341, "scaleX": 0.4499999999999996, "scaleY": 0.5499999999999996 },
+    "robot_type4_0": { "name": "ヘビー・タンク", "type": "robot_type4", "image": "robot_type4_card.png", "imageIndex": 5, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 100, "skillName": "ギガントドリル", "skillCost": 2, "baseDmg": 40, "ability": "heavy_armor", "evolvesFrom": "robot", "sx": 1224, "sy": 995, "sw": 436, "sh": 341, "scaleX": 0.4499999999999996, "scaleY": 0.5499999999999996 },
+    "robot_type4_2_0": { "name": "アサルト・マキナ", "type": "robot_type4_2", "image": "robot_type4_2_card.png", "imageIndex": 12, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 80, "skillName": "メテオバーン", "skillCost": 3, "baseDmg": 60, "ability": "snipe_play", "evolvesFrom": "robot", "sx": 1330, "sy": 815, "sw": 436, "sh": 341, "scaleX": 0.4499999999999996, "scaleY": 0.5499999999999996 },
+    "robot_type5_0": { "name": "スクラップ・ウォーカー", "type": "robot_type5", "image": "robot_type5_card.png", "imageIndex": 12, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 2, "baseHp": 80, "skillName": "ネイチャーバインド", "skillCost": 1, "baseDmg": 30, "ability": "end_heal", "evolvesFrom": "robot", "sx": 1291, "sy": 100, "sw": 436, "sh": 341, "scaleX": 0.4499999999999996, "scaleY": 0.5499999999999996 },
+    "robot_type1_2_0": { "name": "シン・マキナ", "type": "robot_type1_2", "image": "robot_type1_2_card.png", "imageIndex": 2, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 180, "skillName": "崩星の咆哮", "skillCost": 3, "baseDmg": 90, "ability": "perfect_predation", "evolvesFrom": "robot_type1", "sx": 739, "sy": 29, "sw": 436, "sh": 341, "scaleX": 0.4499999999999996, "scaleY": 0.5499999999999996 },
+    "robot_type1_3_0": { "name": "ヘル・ギア", "type": "robot_type1_3", "image": "robot_type1_3_card.png", "imageIndex": 2, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 150, "skillName": "煉獄の鎖", "skillCost": 3, "baseDmg": 100, "ability": "nightmare_rule", "evolvesFrom": "robot_type1", "sx": 618, "sy": 54, "sw": 436, "sh": 341, "scaleX": 0.4499999999999996, "scaleY": 0.5499999999999996 },
+    "robot_type2_2_0": { "name": "スターライト・アーマー", "type": "robot_type2_2", "image": "robot_type2_2_card.png", "imageIndex": 2, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 140, "skillName": "ギャラクシー・ブレード", "skillCost": 2, "baseDmg": 80, "ability": "star_hope", "evolvesFrom": "robot_type2", "sx": 625, "sy": 1075, "sw": 436, "sh": 341, "scaleX": 0.4499999999999996, "scaleY": 0.5499999999999996 },
+    "robot_type2_3_0": { "name": "セラフィム・ギア", "type": "robot_type2_3", "image": "robot_type2_3_card.png", "imageIndex": 11, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 120, "skillName": "神罰の光", "skillCost": 4, "baseDmg": 70, "ability": "divine_grace", "evolvesFrom": "robot_type2", "sx": 550, "sy": 1241, "sw": 436, "sh": 341, "scaleX": 0.4499999999999996, "scaleY": 0.5499999999999996 },
+    "robot_type2_4_0": { "name": "ゴールデン・パラディン", "type": "robot_type2_4", "image": "robot_type2_4_card.png", "imageIndex": 12, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 200, "skillName": "ジャッジメント", "skillCost": 5, "baseDmg": 100, "ability": "heaven_punishment", "evolvesFrom": "robot_type2", "sx": 435, "sy": 693, "sw": 436, "sh": 341, "scaleX": 0.4499999999999996, "scaleY": 0.5499999999999996 },
+    "robot_type3_3_0": { "name": "ユニバース・コア", "type": "robot_type3_3", "image": "robot_type3_3_card.png", "imageIndex": 11, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 200, "skillName": "特異点生成", "skillCost": 4, "baseDmg": 50, "ability": "event_horizon", "evolvesFrom": "robot_type3", "sx": 758, "sy": 412, "sw": 549, "sh": 344, "scaleX": 0.39999999999999963, "scaleY": 0.5499999999999996 },
+    "robot_type3_4_0": { "name": "マスター・コンソール", "type": "robot_type3_4", "image": "robot_type3_4_card.png", "imageIndex": 12, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 130, "skillName": "真理の書き換え", "skillCost": 2, "baseDmg": 70, "ability": "truth_overwrite", "evolvesFrom": "robot_type3_2", "sx": 492, "sy": 22, "sw": 549, "sh": 344, "scaleX": 0.39999999999999963, "scaleY": 0.5499999999999996 },
+    "robot_type3_5_0": { "name": "サテライト・ルーラー", "type": "robot_type3_5", "image": "robot_type3_5_card.png", "imageIndex": 11, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 150, "skillName": "オービタル・カノン", "skillCost": 3, "baseDmg": 80, "ability": "heaven_judgement", "evolvesFrom": "robot_type3", "sx": 110, "sy": -6, "sw": 549, "sh": 344, "scaleX": 0.39999999999999963, "scaleY": 0.5499999999999996 },
+    "robot_type4_3_0": { "name": "フルアーマー・タイタン", "type": "robot_type4_3", "image": "robot_type4_3_card.png", "imageIndex": 12, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 250, "skillName": "オメガ・バッシュ", "skillCost": 3, "baseDmg": 90, "ability": "absolute_fortress", "evolvesFrom": "robot_type4", "sx": 315, "sy": -6, "sw": 549, "sh": 344, "scaleX": 0.5499999999999996, "scaleY": 0.5499999999999996 },
+    "robot_type4_4_0": { "name": "ギガント・クラッシャー", "type": "robot_type4_4", "image": "robot_type4_4_card.png", "imageIndex": 12, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 190, "skillName": "次元穿孔ドリル", "skillCost": 4, "baseDmg": 120, "ability": "dimension_drill", "evolvesFrom": "robot_type4_2", "sx": 306, "sy": 68, "sw": 549, "sh": 344, "scaleX": 0.5499999999999996, "scaleY": 0.5499999999999996 },
+    "robot_type5_2_0": { "name": "クロックワーク・ゴッド", "type": "robot_type5_2", "image": "robot_type5_2_card.png", "imageIndex": 13, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 160, "skillName": "タイム・パラドックス", "skillCost": 3, "baseDmg": 80, "ability": "time_manipulation", "evolvesFrom": "robot_type5", "sx": 523, "sy": 1, "sw": 549, "sh": 344, "scaleX": 0.5499999999999996, "scaleY": 0.5499999999999996 },
+    "robot_type5_3_0": { "name": "アストロ・ダイバー", "type": "robot_type5_3", "image": "robot_type5_3_card.png", "imageIndex": 12, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 10, "baseHp": 170, "skillName": "超新星爆発", "skillCost": 6, "baseDmg": 100, "ability": "super_gravity", "evolvesFrom": "robot_type5", "sx": 536, "sy": 594, "sw": 549, "sh": 344, "scaleX": 0.5499999999999996, "scaleY": 0.5499999999999996 },
+    "robot_type5_4_0": { "name": "エンシェント・レリック", "type": "robot_type5_4", "image": "robot_type5_4_card.png", "imageIndex": 12, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 190, "skillName": "ロスト・テクノロジー", "skillCost": 2, "baseDmg": 90, "ability": "eternal_rebirth", "evolvesFrom": "robot_type5", "sx": 1066, "sy": -14, "sw": 549, "sh": 344, "scaleX": 0.5499999999999996, "scaleY": 0.5499999999999996 },
 
     // 🧙 魔法使い
-    'magician_0': { name: "雷鎚の魔道士", type: "magician", image: "magician_card.png", imageIndex: 0, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 3, baseHp: 30, skillName: "サンダースマッシュ", skillCost: 2, baseDmg: 40, ability: null },
-    'magician_1': { name: "浮遊する魔法使い", type: "magician", image: "magician_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 2, baseHp: 20, skillName: "マジックアロー", skillCost: 1, baseDmg: 20, ability: "flight" },
-    'magician_2': { name: "防壁の結界師", type: "magician", image: "magician_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 4, baseHp: 60, skillName: "魔法の盾", skillCost: 2, baseDmg: 0, ability: "taunt" },
-    'magician_3': { name: "暗殺魔法", type: "magician", image: "magician_card.png", imageIndex: 3, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 2, baseHp: 20, skillName: "ダガー・スロー", skillCost: 1, baseDmg: 30, ability: "stealth" },
-    'magician_4': { name: "メテオストライク", type: "magician", image: "magician_card.png", imageIndex: 4, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 6, baseHp: 40, skillName: "星の怒り", skillCost: 5, baseDmg: 80, ability: null },
-    'magician_5': { name: "書庫の賢者", type: "magician", image: "magician_card.png", imageIndex: 5, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 3, baseHp: 30, skillName: "知識の探求", skillCost: 2, baseDmg: 0, ability: "draw_card" },
-    'magician_6': { name: "地裂の杖", type: "magician", image: "magician_card.png", imageIndex: 6, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 4, baseHp: 40, skillName: "アースクエイク", skillCost: 3, baseDmg: 50, ability: null },
-    'magician_7': { name: "魔導書の詠唱", type: "magician", image: "magician_card.png", imageIndex: 7, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 2, baseHp: 30, skillName: "魔力抽出", skillCost: 1, baseDmg: 0, ability: "mana_ramp" },
-    'magician_8': { name: "財宝の発見", type: "magician", image: "magician_card.png", imageIndex: 8, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 1, baseHp: 20, skillName: "強欲な壺", skillCost: 2, baseDmg: 0, ability: "draw_card" },
-    'magician_9': { name: "残像ダッシュ", type: "magician", image: "magician_card.png", imageIndex: 9, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 1, baseHp: 20, skillName: "クイックムーブ", skillCost: 1, baseDmg: 10, ability: "stealth" },
-    'magician_10': { name: "召喚士の契約", type: "magician", image: "magician_card.png", imageIndex: 10, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 5, baseHp: 40, skillName: "悪魔召喚", skillCost: 3, baseDmg: 60, ability: null },
+    'magician_0': { name: "雷鎚の魔道士", type: "magician", image: "magician_card.png", imageIndex: 0, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 3, baseHp: 40, skillName: "サンダースマッシュ", skillCost: 2, baseDmg: 40, ability: "splash_damage" },
+    'magician_1': { name: "浮遊する魔法使い", type: "magician", image: "magician_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 2, baseHp: 20, skillName: "マジックアロー", skillCost: 1, baseDmg: 30, ability: "flight" },
+    'magician_2': { name: "防壁の結界師", type: "magician", image: "magician_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 4, baseHp: 60, skillName: "魔法の盾", skillCost: 2, baseDmg: 10, ability: "taunt" },
+    'magician_3': { name: "暗殺魔法", type: "magician", image: "magician_card.png", imageIndex: 3, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 2, baseHp: 20, skillName: "ダガー・スロー", skillCost: 1, baseDmg: 30, ability: "silence" },
+    'magician_4': { name: "メテオストライク", type: "magician", image: "magician_card.png", imageIndex: 4, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 6, baseHp: 40, skillName: "星の怒り", skillCost: 5, baseDmg: 80, ability: "trample" },
+    'magician_5': { name: "書庫の賢者", type: "magician", image: "magician_card.png", imageIndex: 5, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 3, baseHp: 30, skillName: "知識の探求", skillCost: 2, baseDmg: 10, ability: "draw_card" },
+    'magician_6': { name: "地裂の杖", type: "magician", image: "magician_card.png", imageIndex: 6, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 4, baseHp: 40, skillName: "アースクエイク", skillCost: 3, baseDmg: 50, ability: "splash_damage" },
+    'magician_7': { name: "魔導書の詠唱", type: "magician", image: "magician_card.png", imageIndex: 7, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 2, baseHp: 30, skillName: "魔力抽出", skillCost: 1, baseDmg: 10, ability: "mana_ramp" },
+    'magician_8': { name: "財宝の発見", type: "magician", image: "magician_card.png", imageIndex: 8, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 1, baseHp: 20, skillName: "強欲な壺", skillCost: 2, baseDmg: 10, ability: "draw_card" },
+    'magician_9': { name: "残像ダッシュ", type: "magician", image: "magician_card.png", imageIndex: 9, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 1, baseHp: 20, skillName: "クイックムーブ", skillCost: 1, baseDmg: 10, ability: "haste" },
+    'magician_10': { name: "召喚士の契約", type: "magician", image: "magician_card.png", imageIndex: 10, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 5, baseHp: 50, skillName: "悪魔召喚", skillCost: 3, baseDmg: 60, ability: null },
     'magician_11': { name: "魔力切れ", type: "magician", image: "magician_card.png", imageIndex: 11, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 1, baseHp: 10, skillName: "ぽんこつ魔法", skillCost: 1, baseDmg: 10, ability: null },
-    'magician_12': { name: "魔力キック", type: "magician", image: "magician_card.png", imageIndex: 12, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 2, baseHp: 30, skillName: "エンチャント蹴り", skillCost: 2, baseDmg: 30, ability: null },
-    'magician_13': { name: "氷炎の魔道士", type: "magician", image: "magician_card.png", imageIndex: 13, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 4, baseHp: 40, skillName: "ダブルキャスト", skillCost: 3, baseDmg: 50, ability: null },
-    'magician_14': { name: "癒やしの泉", type: "magician", image: "magician_card.png", imageIndex: 14, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 3, baseHp: 30, skillName: "ヒールオーラ", skillCost: 2, baseDmg: 0, ability: "heal_self" },
+    'magician_12': { name: "魔力キック", type: "magician", image: "magician_card.png", imageIndex: 12, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 2, baseHp: 40, skillName: "エンチャント蹴り", skillCost: 2, baseDmg: 30, ability: null },
+    'magician_13': { name: "氷炎の魔道士", type: "magician", image: "magician_card.png", imageIndex: 13, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 4, baseHp: 40, skillName: "ダブルキャスト", skillCost: 3, baseDmg: 50, ability: "splash_damage" },
+    'magician_14': { name: "癒やしの泉", type: "magician", image: "magician_card.png", imageIndex: 14, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 3, baseHp: 30, skillName: "ヒールオーラ", skillCost: 2, baseDmg: 10, ability: "heal_self" },
 
     // 🍃 精霊
-    'spirit_0': { name: "リーフブレード", type: "spirit", image: "spirit_card.png", imageIndex: 0, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 1, baseHp: 20, skillName: "葉っぱ斬り", skillCost: 1, baseDmg: 20, ability: null },
-    'spirit_1': { name: "森の妖精の呪文", type: "spirit", image: "spirit_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 2, baseHp: 20, skillName: "自然の導き", skillCost: 2, baseDmg: 0, ability: "draw_card" },
-    'spirit_2': { name: "葉っぱの盾", type: "spirit", image: "spirit_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 2, baseHp: 50, skillName: "防御態勢", skillCost: 1, baseDmg: 0, ability: "taunt" },
+    'spirit_0': { name: "リーフブレード", type: "spirit", image: "spirit_card.png", imageIndex: 0, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 1, baseHp: 20, skillName: "葉っぱ斬り", skillCost: 1, baseDmg: 30, ability: null },
+    'spirit_1': { name: "森の妖精の呪文", type: "spirit", image: "spirit_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 2, baseHp: 20, skillName: "自然の導き", skillCost: 2, baseDmg: 10, ability: "draw_card" },
+    'spirit_2': { name: "葉っぱの盾", type: "spirit", image: "spirit_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 2, baseHp: 50, skillName: "防御態勢", skillCost: 1, baseDmg: 10, ability: "taunt" },
     'spirit_3': { name: "キノコキック", type: "spirit", image: "spirit_card.png", imageIndex: 3, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 2, baseHp: 30, skillName: "スポアアタック", skillCost: 1, baseDmg: 20, ability: "stealth" },
-    'spirit_4': { name: "茨の束縛", type: "spirit", image: "spirit_card.png", imageIndex: 4, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 3, baseHp: 40, skillName: "ソーンウィップ", skillCost: 2, baseDmg: 30, ability: null },
+    'spirit_4': { name: "茨の束縛", type: "spirit", image: "spirit_card.png", imageIndex: 4, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 3, baseHp: 40, skillName: "ソーンウィップ", skillCost: 2, baseDmg: 30, ability: "heavy_strike" },
     'spirit_5': { name: "森の狩人", type: "spirit", image: "spirit_card.png", imageIndex: 5, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 3, baseHp: 30, skillName: "ツルムチ", skillCost: 2, baseDmg: 40, ability: "flight" },
-    'spirit_6': { name: "つるのムチ", type: "spirit", image: "spirit_card.png", imageIndex: 6, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 2, baseHp: 30, skillName: "ダブルウィップ", skillCost: 1, baseDmg: 20, ability: null },
-    'spirit_7': { name: "精霊のバリア", type: "spirit", image: "spirit_card.png", imageIndex: 7, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 4, baseHp: 60, skillName: "自然の守り", skillCost: 2, baseDmg: 0, ability: "taunt" },
+    'spirit_6': { name: "つるのムチ", type: "spirit", image: "spirit_card.png", imageIndex: 6, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 2, baseHp: 30, skillName: "ダブルウィップ", skillCost: 1, baseDmg: 20, ability: "double_strike" },
+    'spirit_7': { name: "精霊のバリア", type: "spirit", image: "spirit_card.png", imageIndex: 7, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 4, baseHp: 60, skillName: "自然の守り", skillCost: 2, baseDmg: 20, ability: "taunt" },
     'spirit_8': { name: "擬態する精霊", type: "spirit", image: "spirit_card.png", imageIndex: 8, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 1, baseHp: 20, skillName: "隠れ身", skillCost: 1, baseDmg: 10, ability: "stealth" },
-    'spirit_9': { name: "風の刃", type: "spirit", image: "spirit_card.png", imageIndex: 9, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 3, baseHp: 30, skillName: "カマイタチ", skillCost: 2, baseDmg: 40, ability: null },
-    'spirit_10': { name: "命の粉塵", type: "spirit", image: "spirit_card.png", imageIndex: 10, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 3, baseHp: 40, skillName: "癒やしの胞子", skillCost: 2, baseDmg: 0, ability: "heal_self" },
-    'spirit_11': { name: "亀と長寿の精霊", type: "spirit", image: "spirit_card.png", imageIndex: 11, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 5, baseHp: 70, skillName: "のしかかり", skillCost: 3, baseDmg: 30, ability: "taunt" },
-    'spirit_12': { name: "岩石封じ", type: "spirit", image: "spirit_card.png", imageIndex: 12, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 4, baseHp: 50, skillName: "ゴーレム縛り", skillCost: 3, baseDmg: 40, ability: null },
-    'spirit_13': { name: "マナの結晶", type: "spirit", image: "spirit_card.png", imageIndex: 13, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 2, baseHp: 30, skillName: "大地の恵み", skillCost: 1, baseDmg: 0, ability: "mana_ramp" },
-    'spirit_14': { name: "お昼寝", type: "spirit", image: "spirit_card.png", imageIndex: 14, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 1, baseHp: 10, skillName: "すやすや", skillCost: 1, baseDmg: 0, ability: "heal_self" },
+    'spirit_9': { name: "風の刃", type: "spirit", image: "spirit_card.png", imageIndex: 9, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 3, baseHp: 30, skillName: "カマイタチ", skillCost: 2, baseDmg: 40, ability: "splash_damage" },
+    'spirit_10': { name: "命の粉塵", type: "spirit", image: "spirit_card.png", imageIndex: 10, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 3, baseHp: 40, skillName: "癒やしの胞子", skillCost: 2, baseDmg: 10, ability: "heal_self" },
+    'spirit_11': { name: "亀と長寿の精霊", type: "spirit", image: "spirit_card.png", imageIndex: 11, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 5, baseHp: 70, skillName: "のしかかり", skillCost: 3, baseDmg: 30, ability: "regeneration" },
+    'spirit_12': { name: "岩石封じ", type: "spirit", image: "spirit_card.png", imageIndex: 12, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 4, baseHp: 50, skillName: "ゴーレム縛り", skillCost: 3, baseDmg: 40, ability: "heavy_strike" },
+    'spirit_13': { name: "マナの結晶", type: "spirit", image: "spirit_card.png", imageIndex: 13, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 2, baseHp: 30, skillName: "大地の恵み", skillCost: 1, baseDmg: 10, ability: "mana_ramp" },
+    'spirit_14': { name: "お昼寝", type: "spirit", image: "spirit_card.png", imageIndex: 14, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 505, baseCost: 1, baseHp: 20, skillName: "すやすや", skillCost: 1, baseDmg: 10, ability: "heal_self" },
 
     // 🪨 ゴーレム
     'stone_0': { name: "岩石の拳", type: "stone", image: "stone_card.png", imageIndex: 0, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 2, baseHp: 40, skillName: "スマッシュ", skillCost: 2, baseDmg: 30, ability: null },
-    'stone_1': { name: "守護者の咆哮", type: "stone", image: "stone_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 3, baseHp: 50, skillName: "威圧", skillCost: 1, baseDmg: 0, ability: "taunt" },
-    'stone_2': { name: "絶対防壁", type: "stone", image: "stone_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 4, baseHp: 80, skillName: "城壁化", skillCost: 2, baseDmg: 0, ability: "taunt" },
+    'stone_1': { name: "守護者の咆哮", type: "stone", image: "stone_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 3, baseHp: 50, skillName: "威圧", skillCost: 1, baseDmg: 20, ability: "taunt" },
+    'stone_2': { name: "絶対防壁", type: "stone", image: "stone_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 4, baseHp: 80, skillName: "城壁化", skillCost: 2, baseDmg: 20, ability: "counter_attack" },
     'stone_3': { name: "投石兵", type: "stone", image: "stone_card.png", imageIndex: 3, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 30, skillName: "大岩投げ", skillCost: 2, baseDmg: 40, ability: null },
-    'stone_4': { name: "磁力ゴーレム", type: "stone", image: "stone_card.png", imageIndex: 4, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 40, skillName: "引き寄せ", skillCost: 2, baseDmg: 20, ability: "draw_card" },
-    'stone_5': { name: "苔むす巨人", type: "stone", image: "stone_card.png", imageIndex: 5, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 60, skillName: "大地の休息", skillCost: 1, baseDmg: 0, ability: "heal_self" },
-    'stone_6': { name: "攻城の巨岩", type: "stone", image: "stone_card.png", imageIndex: 6, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 5, baseHp: 60, skillName: "城門破り", skillCost: 4, baseDmg: 70, ability: null },
-    'stone_7': { name: "大地を割る者", type: "stone", image: "stone_card.png", imageIndex: 7, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 6, baseHp: 50, skillName: "アース・スタンプ", skillCost: 4, baseDmg: 60, ability: null },
+    'stone_4': { name: "磁力ゴーレム", type: "stone", image: "stone_card.png", imageIndex: 4, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 50, skillName: "引き寄せ", skillCost: 2, baseDmg: 20, ability: "draw_card" },
+    'stone_5': { name: "苔むす巨人", type: "stone", image: "stone_card.png", imageIndex: 5, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 60, skillName: "大地の休息", skillCost: 1, baseDmg: 20, ability: "heal_self" },
+    'stone_6': { name: "攻城の巨岩", type: "stone", image: "stone_card.png", imageIndex: 6, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 5, baseHp: 60, skillName: "城門破り", skillCost: 4, baseDmg: 70, ability: "trample" },
+    'stone_7': { name: "大地を割る者", type: "stone", image: "stone_card.png", imageIndex: 7, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 6, baseHp: 70, skillName: "アース・スタンプ", skillCost: 4, baseDmg: 80, ability: "heavy_strike" },
     'stone_8': { name: "崩れゆく石像", type: "stone", image: "stone_card.png", imageIndex: 8, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 1, baseHp: 20, skillName: "破片飛ばし", skillCost: 1, baseDmg: 20, ability: null },
-    'stone_9': { name: "地盤沈下", type: "stone", image: "stone_card.png", imageIndex: 9, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 4, baseHp: 40, skillName: "クレーター生成", skillCost: 3, baseDmg: 50, ability: null },
-    'stone_10': { name: "ストーンミサイル", type: "stone", image: "stone_card.png", imageIndex: 10, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 20, skillName: "岩石連射", skillCost: 2, baseDmg: 40, ability: null },
-    'stone_11': { name: "鉄壁の軍団", type: "stone", image: "stone_card.png", imageIndex: 11, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 7, baseHp: 90, skillName: "要塞陣形", skillCost: 3, baseDmg: 30, ability: "taunt" },
+    'stone_9': { name: "地盤沈下", type: "stone", image: "stone_card.png", imageIndex: 9, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 4, baseHp: 40, skillName: "クレーター生成", skillCost: 3, baseDmg: 50, ability: "heavy_strike" },
+    'stone_10': { name: "ストーンミサイル", type: "stone", image: "stone_card.png", imageIndex: 10, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 20, skillName: "岩石連射", skillCost: 2, baseDmg: 40, ability: "haste" },
+    'stone_11': { name: "鉄壁の軍団", type: "stone", image: "stone_card.png", imageIndex: 11, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 7, baseHp: 100, skillName: "要塞陣形", skillCost: 3, baseDmg: 40, ability: "taunt" },
     'stone_12': { name: "百裂拳のゴーレム", type: "stone", image: "stone_card.png", imageIndex: 12, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 5, baseHp: 50, skillName: "ガトリングパンチ", skillCost: 3, baseDmg: 60, ability: null },
     'stone_13': { name: "双極の岩神", type: "stone", image: "stone_card.png", imageIndex: 13, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 6, baseHp: 60, skillName: "氷炎撃", skillCost: 4, baseDmg: 80, ability: null },
-    'stone_14': { name: "瞑想する岩", type: "stone", image: "stone_card.png", imageIndex: 14, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 40, skillName: "魔力吸収", skillCost: 1, baseDmg: 0, ability: "mana_ramp" },
+    'stone_14': { name: "瞑想する岩", type: "stone", image: "stone_card.png", imageIndex: 14, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 40, skillName: "魔力吸収", skillCost: 1, baseDmg: 10, ability: "mana_ramp" },
 
     // ⚙️ ぜんまい
-    'machine_0': { name: "ダッシュぜんまい", type: "machine", image: "machine_card.png", imageIndex: 0, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 1, baseHp: 10, skillName: "突撃", skillCost: 1, baseDmg: 20, ability: null },
+    'machine_0': { name: "ダッシュぜんまい", type: "machine", image: "machine_card.png", imageIndex: 0, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 1, baseHp: 20, skillName: "突撃", skillCost: 1, baseDmg: 20, ability: "haste" },
     'machine_1': { name: "電撃放逐機", type: "machine", image: "machine_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 3, baseHp: 30, skillName: "ショックウェーブ", skillCost: 2, baseDmg: 40, ability: null },
-    'machine_2': { name: "ぜんまいシールド", type: "machine", image: "machine_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 2, baseHp: 40, skillName: "盾構え", skillCost: 1, baseDmg: 0, ability: "taunt" },
-    'machine_3': { name: "溶接アーム", type: "machine", image: "machine_card.png", imageIndex: 3, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 20, skillName: "バーナー炙り", skillCost: 2, baseDmg: 30, ability: null },
-    'machine_4': { name: "歯車の結界", type: "machine", image: "machine_card.png", imageIndex: 4, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 4, baseHp: 50, skillName: "ギア・フォース", skillCost: 2, baseDmg: 0, ability: "taunt" },
-    'machine_5': { name: "設計図の解読", type: "machine", image: "machine_card.png", imageIndex: 5, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 20, skillName: "ひらめき", skillCost: 2, baseDmg: 0, ability: "draw_card" },
+    'machine_2': { name: "ぜんまいシールド", type: "machine", image: "machine_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 2, baseHp: 40, skillName: "盾構え", skillCost: 1, baseDmg: 10, ability: "taunt" },
+    'machine_3': { name: "溶接アーム", type: "machine", image: "machine_card.png", imageIndex: 3, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 30, skillName: "バーナー炙り", skillCost: 2, baseDmg: 30, ability: null },
+    'machine_4': { name: "歯車の結界", type: "machine", image: "machine_card.png", imageIndex: 4, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 4, baseHp: 60, skillName: "ギア・フォース", skillCost: 2, baseDmg: 20, ability: "taunt" },
+    'machine_5': { name: "設計図の解読", type: "machine", image: "machine_card.png", imageIndex: 5, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 20, skillName: "ひらめき", skillCost: 2, baseDmg: 10, ability: "draw_card" },
     'machine_6': { name: "解体ハンマー", type: "machine", image: "machine_card.png", imageIndex: 6, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 30, skillName: "クラッシュ", skillCost: 2, baseDmg: 50, ability: null },
-    'machine_7': { name: "オーバーヒート", type: "machine", image: "machine_card.png", imageIndex: 7, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 5, baseHp: 40, skillName: "リミッター解除", skillCost: 4, baseDmg: 80, ability: null },
-    'machine_8': { name: "故障したぜんまい", type: "machine", image: "machine_card.png", imageIndex: 8, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 1, baseHp: 10, skillName: "空回り", skillCost: 1, baseDmg: 10, ability: null },
+    'machine_7': { name: "オーバーヒート", type: "machine", image: "machine_card.png", imageIndex: 7, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 5, baseHp: 40, skillName: "リミッター解除", skillCost: 4, baseDmg: 80, ability: "death_bomb" },
+    'machine_8': { name: "故障したぜんまい", type: "machine", image: "machine_card.png", imageIndex: 8, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 1, baseHp: 10, skillName: "空回り", skillCost: 1, baseDmg: 10, ability: "death_bomb" },
     'machine_9': { name: "ジャンク・キック", type: "machine", image: "machine_card.png", imageIndex: 9, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 30, skillName: "飛び蹴り", skillCost: 1, baseDmg: 20, ability: null },
-    'machine_10': { name: "覚醒の歯車", type: "machine", image: "machine_card.png", imageIndex: 10, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 4, baseHp: 40, skillName: "フル稼働", skillCost: 2, baseDmg: 30, ability: "mana_ramp" },
-    'machine_11': { name: "修理の連鎖", type: "machine", image: "machine_card.png", imageIndex: 11, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 30, skillName: "仲間を直す", skillCost: 2, baseDmg: 0, ability: "heal_self" },
-    'machine_12': { name: "量産型ぜんまい", type: "machine", image: "machine_card.png", imageIndex: 12, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 20, skillName: "集団攻撃", skillCost: 1, baseDmg: 20, ability: null },
-    'machine_13': { name: "発火ぜんまい", type: "machine", image: "machine_card.png", imageIndex: 13, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 20, skillName: "自爆特攻", skillCost: 2, baseDmg: 60, ability: null },
-    'machine_14': { name: "ガラクタの山", type: "machine", image: "machine_card.png", imageIndex: 14, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 1, baseHp: 40, skillName: "鉄くずの壁", skillCost: 1, baseDmg: 0, ability: "taunt" },
+    'machine_10': { name: "覚醒の歯車", type: "machine", image: "machine_card.png", imageIndex: 10, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 4, baseHp: 50, skillName: "フル稼働", skillCost: 2, baseDmg: 30, ability: "mana_ramp" },
+    'machine_11': { name: "修理の連鎖", type: "machine", image: "machine_card.png", imageIndex: 11, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 30, skillName: "仲間を直す", skillCost: 2, baseDmg: 20, ability: "aoe_heal_play" },
+    'machine_12': { name: "量産型ぜんまい", type: "machine", image: "machine_card.png", imageIndex: 12, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 20, skillName: "集団攻撃", skillCost: 1, baseDmg: 20, ability: "death_bomb" },
+    'machine_13': { name: "発火ぜんまい", type: "machine", image: "machine_card.png", imageIndex: 13, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 20, skillName: "自爆特攻", skillCost: 2, baseDmg: 60, ability: "death_bomb" },
+    'machine_14': { name: "ガラクタの山", type: "machine", image: "machine_card.png", imageIndex: 14, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 1, baseHp: 40, skillName: "鉄くずの壁", skillCost: 1, baseDmg: 10, ability: "taunt" },
 
     // 👻 ゴースト
-    'ghost_0': { name: "ポルターガイスト", type: "ghost", image: "ghost_card.png", imageIndex: 0, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 2, baseHp: 20, skillName: "物投げ", skillCost: 1, baseDmg: 30, ability: null },
-    'ghost_1': { name: "霊魂のビーム", type: "ghost", image: "ghost_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 3, baseHp: 30, skillName: "ソウルレイ", skillCost: 2, baseDmg: 40, ability: null },
-    'ghost_2': { name: "魂の結晶", type: "ghost", image: "ghost_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 4, baseHp: 60, skillName: "硬化", skillCost: 1, baseDmg: 0, ability: "taunt" },
-    'ghost_3': { name: "怨念の渦", type: "ghost", image: "ghost_card.png", imageIndex: 3, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 4, baseHp: 30, skillName: "ダークトルネード", skillCost: 3, baseDmg: 50, ability: null },
-    'ghost_4': { name: "呪いの魔導書", type: "ghost", image: "ghost_card.png", imageIndex: 4, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 20, skillName: "禁術の詠唱", skillCost: 2, baseDmg: 0, ability: "draw_card" },
-    'ghost_5': { name: "水面の浮遊霊", type: "ghost", image: "ghost_card.png", imageIndex: 5, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 1, baseHp: 20, skillName: "呪縛", skillCost: 1, baseDmg: 10, ability: "stealth" },
-    'ghost_6': { name: "地縛霊", type: "ghost", image: "ghost_card.png", imageIndex: 6, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 40, skillName: "足止め", skillCost: 1, baseDmg: 10, ability: "taunt" },
-    'ghost_7': { name: "霊体の盾", type: "ghost", image: "ghost_card.png", imageIndex: 7, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 50, skillName: "霊的防壁", skillCost: 2, baseDmg: 0, ability: "taunt" },
-    'ghost_8': { name: "取り憑く霊", type: "ghost", image: "ghost_card.png", imageIndex: 8, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 20, skillName: "ドレイン", skillCost: 2, baseDmg: 30, ability: "heal_self" },
-    'ghost_9': { name: "悪霊の急襲", type: "ghost", image: "ghost_card.png", imageIndex: 9, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 20, skillName: "奇襲", skillCost: 1, baseDmg: 30, ability: "stealth" },
+    'ghost_0': { name: "ポルターガイスト", type: "ghost", image: "ghost_card.png", imageIndex: 0, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 2, baseHp: 30, skillName: "物投げ", skillCost: 1, baseDmg: 30, ability: "discard_hand" },
+    'ghost_1': { name: "霊魂のビーム", type: "ghost", image: "ghost_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 3, baseHp: 30, skillName: "ソウルレイ", skillCost: 2, baseDmg: 50, ability: null },
+    'ghost_2': { name: "魂の結晶", type: "ghost", image: "ghost_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 4, baseHp: 60, skillName: "硬化", skillCost: 1, baseDmg: 20, ability: "taunt" },
+    'ghost_3': { name: "怨念の渦", type: "ghost", image: "ghost_card.png", imageIndex: 3, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 4, baseHp: 30, skillName: "ダークトルネード", skillCost: 3, baseDmg: 50, ability: "haunt" },
+    'ghost_4': { name: "呪いの魔導書", type: "ghost", image: "ghost_card.png", imageIndex: 4, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 20, skillName: "禁術の詠唱", skillCost: 2, baseDmg: 20, ability: "draw_card" },
+    'ghost_5': { name: "水面の浮遊霊", type: "ghost", image: "ghost_card.png", imageIndex: 5, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 1, baseHp: 20, skillName: "呪縛", skillCost: 1, baseDmg: 20, ability: "stealth" },
+    'ghost_6': { name: "地縛霊", type: "ghost", image: "ghost_card.png", imageIndex: 6, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 40, skillName: "足止め", skillCost: 1, baseDmg: 20, ability: "taunt" },
+    'ghost_7': { name: "霊体の盾", type: "ghost", image: "ghost_card.png", imageIndex: 7, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 60, skillName: "霊的防壁", skillCost: 2, baseDmg: 20, ability: "taunt" },
+    'ghost_8': { name: "取り憑く霊", type: "ghost", image: "ghost_card.png", imageIndex: 8, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 20, skillName: "ドレイン", skillCost: 2, baseDmg: 30, ability: "life_drain" },
+    'ghost_9': { name: "悪霊の急襲", type: "ghost", image: "ghost_card.png", imageIndex: 9, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 20, skillName: "奇襲", skillCost: 1, baseDmg: 30, ability: "haste" },
     'ghost_10': { name: "エクトプラズム", type: "ghost", image: "ghost_card.png", imageIndex: 10, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 4, baseHp: 40, skillName: "霊体攻撃", skillCost: 2, baseDmg: 40, ability: "flight" },
-    'ghost_11': { name: "スライム化", type: "ghost", image: "ghost_card.png", imageIndex: 11, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 1, baseHp: 10, skillName: "べとべと", skillCost: 1, baseDmg: 10, ability: null },
+    'ghost_11': { name: "スライム化", type: "ghost", image: "ghost_card.png", imageIndex: 11, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 1, baseHp: 10, skillName: "べとべと", skillCost: 1, baseDmg: 10, ability: "debuff_attack" },
     'ghost_12': { name: "森の悪霊", type: "ghost", image: "ghost_card.png", imageIndex: 12, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 40, skillName: "養分吸収", skillCost: 2, baseDmg: 20, ability: "mana_ramp" },
     'ghost_13': { name: "次元の狭間", type: "ghost", image: "ghost_card.png", imageIndex: 13, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 5, baseHp: 30, skillName: "異次元送り", skillCost: 4, baseDmg: 70, ability: "stealth" },
-    'ghost_14': { name: "竜の守護霊", type: "ghost", image: "ghost_card.png", imageIndex: 14, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 5, baseHp: 50, skillName: "ドラゴンソウル", skillCost: 3, baseDmg: 50, ability: "flight" },
+    'ghost_14': { name: "竜の守護霊", type: "ghost", image: "ghost_card.png", imageIndex: 14, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 5, baseHp: 60, skillName: "ドラゴンソウル", skillCost: 3, baseDmg: 50, ability: "flight" },
 
     // 🐦 鳥
     'bird_0': { name: "筋トレバード", type: "bird", image: "bird_card.png", imageIndex: 0, offsetX: 3, offsetY: 3, zoomX: 320, zoomY: 550, baseCost: 2, baseHp: 30, skillName: "マッスルアタック", skillCost: 1, baseDmg: 30, ability: null },
     'bird_1': { name: "吹雪の翼", type: "bird", image: "bird_card.png", imageIndex: 1, offsetX: 0, offsetY: 3, zoomX: 320, zoomY: 550, baseCost: 4, baseHp: 30, skillName: "ブリザード", skillCost: 3, baseDmg: 50, ability: "flight" },
     'bird_2': { name: "盾持ち鳥", type: "bird", image: "bird_card.png", imageIndex: 2, offsetX: -3, offsetY: 3, zoomX: 320, zoomY: 550, baseCost: 3, baseHp: 40, skillName: "シールドバッシュ", skillCost: 2, baseDmg: 20, ability: "taunt" },
     'bird_3': { name: "急降下爆撃", type: "bird", image: "bird_card.png", imageIndex: 3, offsetX: 3, offsetY: 3, zoomX: 320, zoomY: 550, baseCost: 3, baseHp: 20, skillName: "ダイブアタック", skillCost: 2, baseDmg: 50, ability: "flight" },
-    'bird_4': { name: "知識のフクロウ", type: "bird", image: "bird_card.png", imageIndex: 4, offsetX: 0, offsetY: 3, zoomX: 320, zoomY: 550, baseCost: 2, baseHp: 20, skillName: "読書", skillCost: 2, baseDmg: 0, ability: "draw_card" },
-    'bird_5': { name: "おやすみ鳥", type: "bird", image: "bird_card.png", imageIndex: 5, offsetX: -3, offsetY: 1.5, zoomX: 320, zoomY: 550, baseCost: 1, baseHp: 20, skillName: "羽休め", skillCost: 1, baseDmg: 0, ability: "heal_self" },
+    'bird_4': { name: "知識のフクロウ", type: "bird", image: "bird_card.png", imageIndex: 4, offsetX: 0, offsetY: 3, zoomX: 320, zoomY: 550, baseCost: 2, baseHp: 20, skillName: "読書", skillCost: 2, baseDmg: 10, ability: "draw_card" },
+    'bird_5': { name: "おやすみ鳥", type: "bird", image: "bird_card.png", imageIndex: 5, offsetX: -3, offsetY: 1.5, zoomX: 320, zoomY: 550, baseCost: 1, baseHp: 20, skillName: "羽休め", skillCost: 1, baseDmg: 10, ability: "heal_self" },
     'bird_6': { name: "ドリルバード", type: "bird", image: "bird_card.png", imageIndex: 6, offsetX: 3, offsetY: 0.5, zoomX: 320, zoomY: 550, baseCost: 2, baseHp: 20, skillName: "貫通くちばし", skillCost: 1, baseDmg: 40, ability: "stealth" },
-    'bird_7': { name: "魔法の結界鳥", type: "bird", image: "bird_card.png", imageIndex: 7, offsetX: 0, offsetY: 0.5, zoomX: 320, zoomY: 550, baseCost: 4, baseHp: 50, skillName: "オーラ防壁", skillCost: 2, baseDmg: 0, ability: "taunt" },
-    'bird_8': { name: "優勝バード", type: "bird", image: "bird_card.png", imageIndex: 8, offsetX: -3, offsetY: 0.5, zoomX: 320, zoomY: 550, baseCost: 5, baseHp: 40, skillName: "チャンピオンの舞", skillCost: 2, baseDmg: 0, ability: "mana_ramp" },
+    'bird_7': { name: "魔法の結界鳥", type: "bird", image: "bird_card.png", imageIndex: 7, offsetX: 0, offsetY: 0.5, zoomX: 320, zoomY: 550, baseCost: 4, baseHp: 50, skillName: "オーラ防壁", skillCost: 2, baseDmg: 20, ability: "taunt" },
+    'bird_8': { name: "優勝バード", type: "bird", image: "bird_card.png", imageIndex: 8, offsetX: -3, offsetY: 0.5, zoomX: 320, zoomY: 550, baseCost: 5, baseHp: 50, skillName: "チャンピオンの舞", skillCost: 2, baseDmg: 30, ability: "mana_ramp" },
     'bird_9': { name: "爆砕の翼", type: "bird", image: "bird_card.png", imageIndex: 9, offsetX: 3, offsetY: -0.5, zoomX: 320, zoomY: 550, baseCost: 3, baseHp: 20, skillName: "フレアダイブ", skillCost: 2, baseDmg: 60, ability: "flight" },
-    'bird_10': { name: "氷柱落とし", type: "bird", image: "bird_card.png", imageIndex: 10, offsetX: 0, offsetY: -0.5, zoomX: 320, zoomY: 550, baseCost: 4, baseHp: 30, skillName: "アイシクル", skillCost: 2, baseDmg: 40, ability: "flight" },
-    'bird_11': { name: "力尽きた鳥", type: "bird", image: "bird_card.png", imageIndex: 11, offsetX: -3, offsetY: -0.5, zoomX: 320, zoomY: 550, baseCost: 1, baseHp: 10, skillName: "墜落", skillCost: 1, baseDmg: 10, ability: null },
+    'bird_10': { name: "氷柱落とし", type: "bird", image: "bird_card.png", imageIndex: 10, offsetX: 0, offsetY: -0.5, zoomX: 320, zoomY: 550, baseCost: 4, baseHp: 30, skillName: "アイシクル", skillCost: 2, baseDmg: 40, ability: "double_strike" },
+    'bird_11': { name: "力尽きた鳥", type: "bird", image: "bird_card.png", imageIndex: 11, offsetX: -3, offsetY: -0.5, zoomX: 320, zoomY: 550, baseCost: 1, baseHp: 10, skillName: "墜落", skillCost: 1, baseDmg: 10, ability: "haste" },
     'bird_12': { name: "魔法修練鳥", type: "bird", image: "bird_card.png", imageIndex: 12, offsetX: 3, offsetY: -0.5, zoomX: 320, zoomY: 550, baseCost: 2, baseHp: 30, skillName: "詠唱", skillCost: 2, baseDmg: 20, ability: "draw_card" },
-    'bird_13': { name: "ダンベルバード", type: "bird", image: "bird_card.png", imageIndex: 13, offsetX: -0.5, offsetY: -0.5, zoomX: 320, zoomY: 550, baseCost: 3, baseHp: 40, skillName: "ダブルダンベル", skillCost: 2, baseDmg: 40, ability: null },
-    'bird_14': { name: "瞑想バード", type: "bird", image: "bird_card.png", imageIndex: 14, offsetX: -3, offsetY: -0.5, zoomX: 320, zoomY: 550, baseCost: 2, baseHp: 30, skillName: "精神統一", skillCost: 1, baseDmg: 0, ability: "mana_ramp" },
+    'bird_13': { name: "ダンベルバード", type: "bird", image: "bird_card.png", imageIndex: 13, offsetX: -0.5, offsetY: -0.5, zoomX: 320, zoomY: 550, baseCost: 3, baseHp: 40, skillName: "ダブルダンベル", skillCost: 2, baseDmg: 40, ability: "double_strike" },
+    'bird_14': { name: "瞑想バード", type: "bird", image: "bird_card.png", imageIndex: 14, offsetX: -3, offsetY: -0.5, zoomX: 320, zoomY: 550, baseCost: 2, baseHp: 30, skillName: "精神統一", skillCost: 1, baseDmg: 10, ability: "mana_ramp" },
 
     // 🪲 かぶとむし
-    'beetle_0': { name: "岩砕きの甲虫", type: "beetle", image: "beetle_card.png", imageIndex: 0, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 3, baseHp: 40, skillName: "ホーンアタック", skillCost: 2, baseDmg: 40, ability: null },
-    'beetle_1': { name: "魔力集中の兜", type: "beetle", image: "beetle_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 4, baseHp: 30, skillName: "エネルギー波", skillCost: 3, baseDmg: 50, ability: null },
-    'beetle_2': { name: "虹色の鉄壁", type: "beetle", image: "beetle_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 4, baseHp: 60, skillName: "オーラガード", skillCost: 2, baseDmg: 0, ability: "taunt" },
+    'beetle_0': { name: "岩砕きの甲虫", type: "beetle", image: "beetle_card.png", imageIndex: 0, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 3, baseHp: 40, skillName: "ホーンアタック", skillCost: 2, baseDmg: 40, ability: "trample" },
+    'beetle_1': { name: "魔力集中の兜", type: "beetle", image: "beetle_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 4, baseHp: 40, skillName: "エネルギー波", skillCost: 3, baseDmg: 50, ability: null },
+    'beetle_2': { name: "虹色の鉄壁", type: "beetle", image: "beetle_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 4, baseHp: 60, skillName: "オーラガード", skillCost: 2, baseDmg: 20, ability: "taunt" },
     'beetle_3': { name: "力比べの甲虫", type: "beetle", image: "beetle_card.png", imageIndex: 3, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 30, skillName: "投げ飛ばし", skillCost: 2, baseDmg: 30, ability: null },
     'beetle_4': { name: "爆発甲虫", type: "beetle", image: "beetle_card.png", imageIndex: 4, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 5, baseHp: 20, skillName: "大爆発", skillCost: 4, baseDmg: 80, ability: null },
-    'beetle_5': { name: "黄昏の甲虫", type: "beetle", image: "beetle_card.png", imageIndex: 5, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 50, skillName: "甲殻防御", skillCost: 1, baseDmg: 10, ability: "taunt" },
-    'beetle_6': { name: "森の暴れん坊", type: "beetle", image: "beetle_card.png", imageIndex: 6, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 30, skillName: "連続角突き", skillCost: 2, baseDmg: 50, ability: null },
-    'beetle_7': { name: "自然との調和", type: "beetle", image: "beetle_card.png", imageIndex: 7, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 40, skillName: "ツルの罠", skillCost: 1, baseDmg: 10, ability: "stealth" },
-    'beetle_8': { name: "知識の虫", type: "beetle", image: "beetle_card.png", imageIndex: 8, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 20, skillName: "読書", skillCost: 2, baseDmg: 0, ability: "draw_card" },
-    'beetle_9': { name: "砂煙の強襲", type: "beetle", image: "beetle_card.png", imageIndex: 9, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 20, skillName: "サンドタックル", skillCost: 1, baseDmg: 30, ability: "stealth" },
+    'beetle_5': { name: "黄昏の甲虫", type: "beetle", image: "beetle_card.png", imageIndex: 5, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 50, skillName: "甲殻防御", skillCost: 1, baseDmg: 10, ability: "heavy_armor" },
+    'beetle_6': { name: "森の暴れん坊", type: "beetle", image: "beetle_card.png", imageIndex: 6, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 40, skillName: "連続角突き", skillCost: 2, baseDmg: 50, ability: null },
+    'beetle_7': { name: "自然との調和", type: "beetle", image: "beetle_card.png", imageIndex: 7, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 40, skillName: "ツルの罠", skillCost: 1, baseDmg: 20, ability: "stealth" },
+    'beetle_8': { name: "知識の虫", type: "beetle", image: "beetle_card.png", imageIndex: 8, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 30, skillName: "読書", skillCost: 2, baseDmg: 10, ability: "draw_card" },
+    'beetle_9': { name: "砂煙の強襲", type: "beetle", image: "beetle_card.png", imageIndex: 9, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 20, skillName: "サンドタックル", skillCost: 1, baseDmg: 30, ability: "haste" },
     'beetle_10': { name: "地中潜行", type: "beetle", image: "beetle_card.png", imageIndex: 10, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 40, skillName: "アースダイブ", skillCost: 2, baseDmg: 40, ability: "stealth" },
-    'beetle_11': { name: "ひっくり返った虫", type: "beetle", image: "beetle_card.png", imageIndex: 11, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 1, baseHp: 10, skillName: "じたばた", skillCost: 1, baseDmg: 10, ability: null },
-    'beetle_12': { name: "飛翔する甲虫", type: "beetle", image: "beetle_card.png", imageIndex: 12, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 30, skillName: "フライングプレス", skillCost: 2, baseDmg: 40, ability: "flight" },
-    'beetle_13': { name: "甲虫の群れ", type: "beetle", image: "beetle_card.png", imageIndex: 13, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 4, baseHp: 30, skillName: "スウォーム", skillCost: 2, baseDmg: 50, ability: null },
-    'beetle_14': { name: "骸の上の王", type: "beetle", image: "beetle_card.png", imageIndex: 14, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 6, baseHp: 60, skillName: "王者の威厳", skillCost: 3, baseDmg: 60, ability: "taunt" },
+    'beetle_11': { name: "ひっくり返った虫", type: "beetle", image: "beetle_card.png", imageIndex: 11, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 1, baseHp: 20, skillName: "じたばた", skillCost: 1, baseDmg: 10, ability: null },
+    'beetle_12': { name: "飛翔する甲虫", type: "beetle", image: "beetle_card.png", imageIndex: 12, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 30, skillName: "フライングプレス", skillCost: 2, baseDmg: 40, ability: "haste" },
+    'beetle_13': { name: "甲虫の群れ", type: "beetle", image: "beetle_card.png", imageIndex: 13, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 4, baseHp: 40, skillName: "スウォーム", skillCost: 2, baseDmg: 50, ability: null },
+    'beetle_14': { name: "骸の上の王", type: "beetle", image: "beetle_card.png", imageIndex: 14, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 6, baseHp: 80, skillName: "王者の威厳", skillCost: 3, baseDmg: 70, ability: "trample" },
 
     // 🌱 つぼみ
-    'seed_0': { name: "筋トレつぼみ", type: "seed", image: "seed_card.png", imageIndex: 0, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 2, baseHp: 30, skillName: "ダンベル殴り", skillCost: 1, baseDmg: 20, ability: null },
-    'seed_1': { name: "毒の息", type: "seed", image: "seed_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 3, baseHp: 30, skillName: "ポイズンブレス", skillCost: 2, baseDmg: 40, ability: null },
-    'seed_2': { name: "棘の結界", type: "seed", image: "seed_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 3, baseHp: 50, skillName: "チクチクガード", skillCost: 1, baseDmg: 10, ability: "taunt" },
+    'seed_0': { name: "筋トレつぼみ", type: "seed", image: "seed_card.png", imageIndex: 0, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 2, baseHp: 30, skillName: "ダンベル殴り", skillCost: 1, baseDmg: 30, ability: null },
+    'seed_1': { name: "毒の息", type: "seed", image: "seed_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 3, baseHp: 40, skillName: "ポイズンブレス", skillCost: 2, baseDmg: 20, ability: "venom_strike" },
+    'seed_2': { name: "棘の結界", type: "seed", image: "seed_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 3, baseHp: 50, skillName: "チクチクガード", skillCost: 1, baseDmg: 20, ability: "taunt" },
     'seed_3': { name: "弾むつぼみ", type: "seed", image: "seed_card.png", imageIndex: 3, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 1, baseHp: 20, skillName: "体当たり", skillCost: 1, baseDmg: 10, ability: "flight" },
-    'seed_4': { name: "緑のレーザー", type: "seed", image: "seed_card.png", imageIndex: 4, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 4, baseHp: 30, skillName: "ソーラービーム", skillCost: 3, baseDmg: 60, ability: null },
-    'seed_5': { name: "木登りつぼみ", type: "seed", image: "seed_card.png", imageIndex: 5, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 2, baseHp: 20, skillName: "上から目線", skillCost: 1, baseDmg: 20, ability: "stealth" },
+    'seed_4': { name: "緑のレーザー", type: "seed", image: "seed_card.png", imageIndex: 4, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 4, baseHp: 40, skillName: "ソーラービーム", skillCost: 3, baseDmg: 60, ability: null },
+    'seed_5': { name: "木登りつぼみ", type: "seed", image: "seed_card.png", imageIndex: 5, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 2, baseHp: 30, skillName: "上から目線", skillCost: 1, baseDmg: 20, ability: "stealth" },
     'seed_6': { name: "茨の鞭", type: "seed", image: "seed_card.png", imageIndex: 6, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 3, baseHp: 30, skillName: "ウィップアタック", skillCost: 2, baseDmg: 40, ability: null },
-    'seed_7': { name: "魔法植物", type: "seed", image: "seed_card.png", imageIndex: 7, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 3, baseHp: 30, skillName: "魔力吸収", skillCost: 2, baseDmg: 0, ability: "draw_card" },
-    'seed_8': { name: "水やり", type: "seed", image: "seed_card.png", imageIndex: 8, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 2, baseHp: 30, skillName: "成長の兆し", skillCost: 1, baseDmg: 0, ability: "mana_ramp" },
-    'seed_9': { name: "地中からの強襲", type: "seed", image: "seed_card.png", imageIndex: 9, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 2, baseHp: 20, skillName: "根っこ攻撃", skillCost: 1, baseDmg: 30, ability: "stealth" },
-    'seed_10': { name: "光合成", type: "seed", image: "seed_card.png", imageIndex: 10, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 4, baseHp: 40, skillName: "太陽の恵み", skillCost: 2, baseDmg: 0, ability: "heal_self" },
-    'seed_11': { name: "枯れたつぼみ", type: "seed", image: "seed_card.png", imageIndex: 11, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 1, baseHp: 10, skillName: "しおれる", skillCost: 1, baseDmg: 10, ability: null },
+    'seed_7': { name: "魔法植物", type: "seed", image: "seed_card.png", imageIndex: 7, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 3, baseHp: 30, skillName: "魔力吸収", skillCost: 2, baseDmg: 20, ability: "draw_card" },
+    'seed_8': { name: "水やり", type: "seed", image: "seed_card.png", imageIndex: 8, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 2, baseHp: 30, skillName: "成長の兆し", skillCost: 1, baseDmg: 10, ability: "mana_ramp" },
+    'seed_9': { name: "地中からの強襲", type: "seed", image: "seed_card.png", imageIndex: 9, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 2, baseHp: 20, skillName: "根っこ攻撃", skillCost: 1, baseDmg: 30, ability: "haste" },
+    'seed_10': { name: "光合成", type: "seed", image: "seed_card.png", imageIndex: 10, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 4, baseHp: 40, skillName: "太陽の恵み", skillCost: 2, baseDmg: 40, ability: "life_drain" },
+    'seed_11': { name: "枯れたつぼみ", type: "seed", image: "seed_card.png", imageIndex: 11, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 1, baseHp: 10, skillName: "しおれる", skillCost: 1, baseDmg: 10, ability: "death_bomb" },
     'seed_12': { name: "弾き飛ばす", type: "seed", image: "seed_card.png", imageIndex: 12, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 2, baseHp: 40, skillName: "バウンス", skillCost: 2, baseDmg: 20, ability: "taunt" },
-    'seed_13': { name: "夜の森の妖精", type: "seed", image: "seed_card.png", imageIndex: 13, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 3, baseHp: 30, skillName: "妖精の粉", skillCost: 2, baseDmg: 30, ability: "stealth" },
-    'seed_14': { name: "進化の輝き", type: "seed", image: "seed_card.png", imageIndex: 14, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 5, baseHp: 50, skillName: "開花の予感", skillCost: 2, baseDmg: 0, ability: "mana_ramp" },
+    'seed_13': { name: "夜の森の妖精", type: "seed", image: "seed_card.png", imageIndex: 13, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 3, baseHp: 30, skillName: "妖精の粉", skillCost: 2, baseDmg: 30, ability: "debuff_attack" },
+    'seed_14': { name: "進化の輝き", type: "seed", image: "seed_card.png", imageIndex: 14, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 510, baseCost: 5, baseHp: 50, skillName: "開花の予感", skillCost: 2, baseDmg: 30, ability: "mana_ramp" },
 
     // 🎈 風船
     'balloon_0': { name: "氷の拳", type: "balloon", image: "balloon_card.png", imageIndex: 0, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 2, baseHp: 30, skillName: "アイスパンチ", skillCost: 1, baseDmg: 30, ability: null },
-    'balloon_1': { name: "魔法の射手", type: "balloon", image: "balloon_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 3, baseHp: 20, skillName: "マジックアロー", skillCost: 2, baseDmg: 40, ability: null },
-    'balloon_2': { name: "氷のドーム", type: "balloon", image: "balloon_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 3, baseHp: 50, skillName: "絶対零度ガード", skillCost: 1, baseDmg: 0, ability: "taunt" },
+    'balloon_1': { name: "魔法の射手", type: "balloon", image: "balloon_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 3, baseHp: 30, skillName: "マジックアロー", skillCost: 2, baseDmg: 40, ability: null },
+    'balloon_2': { name: "氷のドーム", type: "balloon", image: "balloon_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 490, baseCost: 3, baseHp: 50, skillName: "絶対零度ガード", skillCost: 1, baseDmg: 10, ability: "taunt" },
     'balloon_3': { name: "炎の剣士", type: "balloon", image: "balloon_card.png", imageIndex: 3, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 30, skillName: "フレイムスラッシュ", skillCost: 2, baseDmg: 40, ability: null },
-    'balloon_4': { name: "氷結の読書家", type: "balloon", image: "balloon_card.png", imageIndex: 4, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 30, skillName: "知識の探求", skillCost: 2, baseDmg: 0, ability: "draw_card" },
-    'balloon_5': { name: "聖なる守護", type: "balloon", image: "balloon_card.png", imageIndex: 5, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 4, baseHp: 60, skillName: "ホーリーバリア", skillCost: 2, baseDmg: 0, ability: "taunt" },
+    'balloon_4': { name: "氷結の読書家", type: "balloon", image: "balloon_card.png", imageIndex: 4, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 30, skillName: "知識の探求", skillCost: 2, baseDmg: 20, ability: "draw_card" },
+    'balloon_5': { name: "聖なる守護", type: "balloon", image: "balloon_card.png", imageIndex: 5, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 4, baseHp: 60, skillName: "ホーリーバリア", skillCost: 2, baseDmg: 20, ability: "taunt" },
     'balloon_6': { name: "水刃の剣士", type: "balloon", image: "balloon_card.png", imageIndex: 6, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 4, baseHp: 40, skillName: "アクアブレード", skillCost: 3, baseDmg: 50, ability: null },
-    'balloon_7': { name: "光のビーム", type: "balloon", image: "balloon_card.png", imageIndex: 7, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 5, baseHp: 30, skillName: "ソーラーレイ", skillCost: 4, baseDmg: 70, ability: null },
-    'balloon_8': { name: "おやすみ風船", type: "balloon", image: "balloon_card.png", imageIndex: 8, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 1, baseHp: 20, skillName: "休息", skillCost: 1, baseDmg: 0, ability: "heal_self" },
+    'balloon_7': { name: "光のビーム", type: "balloon", image: "balloon_card.png", imageIndex: 7, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 5, baseHp: 30, skillName: "ソーラーレイ", skillCost: 4, baseDmg: 70, ability: "debuff_attack" },
+    'balloon_8': { name: "おやすみ風船", type: "balloon", image: "balloon_card.png", imageIndex: 8, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 1, baseHp: 20, skillName: "休息", skillCost: 1, baseDmg: 10, ability: "heal_self" },
     'balloon_9': { name: "風の竜巻", type: "balloon", image: "balloon_card.png", imageIndex: 9, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 30, skillName: "トルネード", skillCost: 2, baseDmg: 40, ability: "flight" },
-    'balloon_10': { name: "宇宙の理", type: "balloon", image: "balloon_card.png", imageIndex: 10, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 6, baseHp: 50, skillName: "コスモパワー", skillCost: 3, baseDmg: 0, ability: "mana_ramp" },
-    'balloon_11': { name: "立ち向かう風船", type: "balloon", image: "balloon_card.png", imageIndex: 11, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 40, skillName: "挑発", skillCost: 1, baseDmg: 10, ability: "taunt" },
+    'balloon_10': { name: "宇宙の理", type: "balloon", image: "balloon_card.png", imageIndex: 10, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 5, baseHp: 50, skillName: "コスモパワー", skillCost: 3, baseDmg: 20, ability: "mana_ramp" },
+    'balloon_11': { name: "立ち向かう風船", type: "balloon", image: "balloon_card.png", imageIndex: 11, offsetX: 0, offsetY: 1.5, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 40, skillName: "挑発", skillCost: 1, baseDmg: 10, ability: "burst_damage" },
     'balloon_12': { name: "トゲトゲ風船", type: "balloon", image: "balloon_card.png", imageIndex: 12, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 2, baseHp: 30, skillName: "ニードルアタック", skillCost: 1, baseDmg: 30, ability: null },
     'balloon_13': { name: "次元の歪み", type: "balloon", image: "balloon_card.png", imageIndex: 13, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 5, baseHp: 40, skillName: "ディメンション", skillCost: 3, baseDmg: 60, ability: "stealth" },
     'balloon_14': { name: "雷の譲渡", type: "balloon", image: "balloon_card.png", imageIndex: 14, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 520, baseCost: 3, baseHp: 30, skillName: "スパーク", skillCost: 2, baseDmg: 30, ability: "draw_card" },
 
 // 🍃 精霊 (Spirit) 進化ライン
-    "spirit_type2_0": { "name": "スプリング・ピクシー", "type": "spirit_type2", "image": "spirit_type2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "春の息吹", "skillCost": 2, "baseDmg": 20, "ability": "mana_refund", "evolvesFrom": "spirit" },
-    "spirit_type2_2_0": { "name": "フラワースピリット", "type": "spirit_type2_2", "image": "spirit_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 60, "skillName": "癒やしの香", "skillCost": 3, "baseDmg": 30, "ability": "burst_spores", "evolvesFrom": "spirit_type2" },
-//    "spirit_type2_3_0": { "name": "クリスタル・ロータス", "type": "spirit_type2_3", "image": "spirit_type2_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 80, "skillName": "幻光の反射", "skillCost": 4, "baseDmg": 40, "ability": "magic_reflect", "evolvesFrom": "spirit_type2" },
-    "spirit_type4_0": { "name": "ウッド・ゴーレム", "type": "spirit_type4", "image": "spirit_type4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 70, "skillName": "丸太パンチ", "skillCost": 2, "baseDmg": 40, "ability": "taunt", "evolvesFrom": "spirit" },
+    "spirit_type2_0": { "name": "スプリング・ピクシー", "type": "spirit_type2", "image": "spirit_type2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "春の息吹", "skillCost": 2, "baseDmg": 20, "ability": "wind_blessing", "evolvesFrom": "spirit" },
+    "spirit_type2_2_0": { "name": "フラワースピリット", "type": "spirit_type2_2", "image": "spirit_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 60, "skillName": "癒やしの香", "skillCost": 3, "baseDmg": 40, "ability": "burst_spores", "evolvesFrom": "spirit_type2" },
+    // "spirit_type2_3_0": { "name": "クリスタル・ロータス", "type": "spirit_type2_3", "image": "spirit_type2_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 100, "skillName": "幻光の反射", "skillCost": 4, "baseDmg": 50, "ability": "magic_reflect", "evolvesFrom": "spirit_type2_2" },
+    "spirit_type4_0": { "name": "ウッド・ゴーレム", "type": "spirit_type4", "image": "spirit_type4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 70, "skillName": "丸太パンチ", "skillCost": 2, "baseDmg": 50, "ability": "taunt", "evolvesFrom": "spirit" },
     "spirit_type4_2_0": { "name": "エルダー・トレント", "type": "spirit_type4_2", "image": "spirit_type4_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 100, "skillName": "大自然の怒り", "skillCost": 4, "baseDmg": 60, "ability": "thorns", "evolvesFrom": "spirit_type4" },
-//    "spirit_type4_3_0": { "name": "フォレスト・ガーディアン", "type": "spirit_type4_3", "image": "spirit_type4_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 120, "skillName": "森羅万象撃", "skillCost": 5, "baseDmg": 80, "ability": "piercing_juggernaut", "evolvesFrom": "spirit_type4" },
+    // "spirit_type4_3_0": { "name": "フォレスト・ガーディアン", "type": "spirit_type4_3", "image": "spirit_type4_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 130, "skillName": "森羅万象撃", "skillCost": 5, "baseDmg": 90, "ability": "piercing_juggernaut", "evolvesFrom": "spirit_type4_2" },
     "spirit_type5_0": { "name": "ドライ・リーフ", "type": "spirit_type5", "image": "spirit_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 2, "baseHp": 30, "skillName": "かさかさの舞", "skillCost": 1, "baseDmg": 10, "ability": "mana_refund", "evolvesFrom": "spirit" },
-    "spirit_type5_2_0": { "name": "オータム・リーフ", "type": "spirit_type5_2", "image": "spirit_type5_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 50, "skillName": "紅葉の風", "skillCost": 2, "baseDmg": 30, "ability": "mana_refund", "evolvesFrom": "spirit_type5" },
-//    "spirit_type5_3_0": { "name": "ウィンター・ウィル", "type": "spirit_type5_3", "image": "spirit_type5_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 80, "skillName": "絶対零度の静寂", "skillCost": 4, "baseDmg": 50, "ability": "absolute_sanctuary", "evolvesFrom": "spirit_type5" },
-    "spirit_type1_0": { "name": "ポイズン・スポア", "type": "spirit_type1", "image": "spirit_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "猛毒胞子", "skillCost": 2, "baseDmg": 20, "ability": "burn_field", "evolvesFrom": "spirit" },
-    "spirit_type1_2_0": { "name": "マンドラゴラ・マザー", "type": "spirit_type1_2", "image": "spirit_type1_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 70, "skillName": "発狂の悲鳴", "skillCost": 4, "baseDmg": 50, "ability": "curse_death", "evolvesFrom": "spirit_type1" },
-    "spirit_type3_0": { "name": "リーフ・スカラー", "type": "spirit_type3", "image": "spirit_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "自然の記録", "skillCost": 2, "baseDmg": 20, "ability": "draw_card", "evolvesFrom": "spirit" },
-    "spirit_type3_2_0": { "name": "オラクル・ツリー", "type": "spirit_type3_2", "image": "spirit_type3_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 90, "skillName": "星の啓示", "skillCost": 0, "baseDmg": 0, "ability": "mana_sovereign", "evolvesFrom": "spirit_type3" },
+    "spirit_type5_2_0": { "name": "オータム・リーフ", "type": "spirit_type5_2", "image": "spirit_type5_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 50, "skillName": "紅葉の風", "skillCost": 2, "baseDmg": 30, "ability": "death_bomb", "evolvesFrom": "spirit_type5" },
+    // "spirit_type5_3_0": { "name": "ウィンター・ウィル", "type": "spirit_type5_3", "image": "spirit_type5_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 100, "skillName": "絶対零度の静寂", "skillCost": 4, "baseDmg": 60, "ability": "absolute_sanctuary", "evolvesFrom": "spirit_type5_2" },
+    "spirit_type1_0": { "name": "ポイズン・スポア", "type": "spirit_type1", "image": "spirit_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "猛毒胞子", "skillCost": 2, "baseDmg": 20, "ability": "venom_strike", "evolvesFrom": "spirit" },
+    "spirit_type1_2_0": { "name": "マンドラゴラ・マザー", "type": "spirit_type1_2", "image": "spirit_type1_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 70, "skillName": "発狂の悲鳴", "skillCost": 4, "baseDmg": 60, "ability": "curse_death", "evolvesFrom": "spirit_type1" },
+    "spirit_type3_0": { "name": "リーフ・スカラー", "type": "spirit_type3", "image": "spirit_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "自然の記録", "skillCost": 2, "baseDmg": 30, "ability": "draw_card", "evolvesFrom": "spirit" },
+    "spirit_type3_2_0": { "name": "オラクル・ツリー", "type": "spirit_type3_2", "image": "spirit_type3_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 90, "skillName": "星の啓示", "skillCost": 0, "baseDmg": 40, "ability": "mana_sovereign", "evolvesFrom": "spirit_type3" },
 
     // 🧙 魔法使い (Magician) 進化ライン
     "magician_type4_0": { "name": "バトル・メイジ", "type": "magician_type4", "image": "magician_type4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 60, "skillName": "マジック・ブロウ", "skillCost": 2, "baseDmg": 40, "ability": "spell_echo", "evolvesFrom": "magician" },
-    "magician_type4_2_0": { "name": "フレイム・マスター", "type": "magician_type4_2", "image": "magician_type4_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 50, "skillName": "エクスプロージョン", "skillCost": 3, "baseDmg": 50, "ability": "burn_field", "evolvesFrom": "magician" },
-    "magician_type4_3_0": { "name": "ウォー・ウォーロック", "type": "magician_type4_3", "image": "magician_type4_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 100, "skillName": "闘神のオーラ", "skillCost": 4, "baseDmg": 70, "ability": "impregnable_armor", "evolvesFrom": "magician_type4" },
-//    "magician_type4_4_0": { "name": "ドラゴニック・メイジ", "type": "magician_type4_4", "image": "magician_type4_4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 110, "skillName": "竜鱗の拳", "skillCost": 5, "baseDmg": 80, "ability": "devour", "evolvesFrom": "magician_type4" },
-    "magician_type1_0": { "name": "ヴェノム・ウィッチ", "type": "magician_type1", "image": "magician_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 50, "skillName": "カース・スペル", "skillCost": 2, "baseDmg": 30, "ability": "thorns", "evolvesFrom": "magician" },
-    "magician_type1_2_0": { "name": "ダーク・ウィザード", "type": "magician_type1_2", "image": "magician_type1_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 60, "skillName": "ドレイン・タッチ", "skillCost": 3, "baseDmg": 40, "ability": "soul_drain", "evolvesFrom": "magician" },
-    "magician_type1_3_0": { "name": "アビス・ネクロマンサー", "type": "magician_type1_3", "image": "magician_type1_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 80, "skillName": "ソウル・リバース", "skillCost": 5, "baseDmg": 50, "ability": "raise_dead", "evolvesFrom": "magician_type1" },
-//    "magician_type1_4_0": { "name": "デーモン・サマナー", "type": "magician_type1_4", "image": "magician_type1_4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 70, "skillName": "サクリファイス", "skillCost": 6, "baseDmg": 100, "ability": "doomsday_detonation", "evolvesFrom": "magician_type1" },
-    "magician_type5_0": { "name": "グランド・メイガス", "type": "magician_type5", "image": "magician_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 50, "skillName": "洗練された魔術", "skillCost": 2, "baseDmg": 40, "ability": "mana_refund", "evolvesFrom": "magician" },
+    "magician_type4_2_0": { "name": "フレイム・マスター", "type": "magician_type4_2", "image": "magician_type4_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 60, "skillName": "エクスプロージョン", "skillCost": 3, "baseDmg": 60, "ability": "burn_field", "evolvesFrom": "magician" },
+    "magician_type4_3_0": { "name": "ウォー・ウォーロック", "type": "magician_type4_3", "image": "magician_type4_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 110, "skillName": "闘神のオーラ", "skillCost": 4, "baseDmg": 70, "ability": "impregnable_armor", "evolvesFrom": "magician_type4" },
+    // "magician_type4_4_0": { "name": "ドラゴニック・メイジ", "type": "magician_type4_4", "image": "magician_type4_4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 120, "skillName": "竜鱗の拳", "skillCost": 5, "baseDmg": 90, "ability": "devour", "evolvesFrom": "magician_type4_3" },
+    "magician_type1_0": { "name": "ヴェノム・ウィッチ", "type": "magician_type1", "image": "magician_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 50, "skillName": "カース・スペル", "skillCost": 2, "baseDmg": 30, "ability": "silence", "evolvesFrom": "magician" },
+    "magician_type1_2_0": { "name": "ダーク・ウィザード", "type": "magician_type1_2", "image": "magician_type1_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 60, "skillName": "ドレイン・タッチ", "skillCost": 3, "baseDmg": 40, "ability": "soul_drain", "evolvesFrom": "magician_type1" },
+    "magician_type1_3_0": { "name": "アビス・ネクロマンサー", "type": "magician_type1_3", "image": "magician_type1_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 90, "skillName": "ソウル・リバース", "skillCost": 5, "baseDmg": 50, "ability": "raise_dead", "evolvesFrom": "magician_type1_2" },
+    // "magician_type1_4_0": { "name": "デーモン・サマナー", "type": "magician_type1_4", "image": "magician_type1_4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 80, "skillName": "サクリファイス", "skillCost": 6, "baseDmg": 100, "ability": "doomsday_detonation", "evolvesFrom": "magician_type1_3" },
+    "magician_type5_0": { "name": "グランド・メイガス", "type": "magician_type5", "image": "magician_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 60, "skillName": "洗練された魔術", "skillCost": 2, "baseDmg": 40, "ability": "mana_refund", "evolvesFrom": "magician" },
     "magician_type5_2_0": { "name": "タイム・ウォーカー", "type": "magician_type5_2", "image": "magician_type5_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 80, "skillName": "クロノス・スライサー", "skillCost": 4, "baseDmg": 60, "ability": "time_manipulation", "evolvesFrom": "magician_type5" },
-    "magician_type5_3_0": { "name": "アストラル・プロフェット", "type": "magician_type5_3", "image": "magician_type5_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 100, "skillName": "星の導き", "skillCost": 3, "baseDmg": 30, "ability": "absolute_sanctuary", "evolvesFrom": "magician_type5" },
-    "magician_type2_0": { "name": "スター・イリュージョニスト", "type": "magician_type2", "image": "magician_type2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 50, "skillName": "イリュージョン", "skillCost": 2, "baseDmg": 20, "ability": "charm_enemy", "evolvesFrom": "magician" },
-    "magician_type2_2_0": { "name": "アイス・クイーン", "type": "magician_type2_2", "image": "magician_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 70, "skillName": "フロスト・ノヴァ", "skillCost": 3, "baseDmg": 50, "ability": "fossilize", "evolvesFrom": "magician" },
-    "magician_type2_3_0": { "name": "プリズム・マギ", "type": "magician_type2_3", "image": "magician_type2_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 80, "skillName": "プリズム・リフレクト", "skillCost": 3, "baseDmg": 40, "ability": "magic_reflect", "evolvesFrom": "magician_type2" },
-//    "magician_type2_4_0": { "name": "セレスティアル・プリンセス", "type": "magician_type2_4", "image": "magician_type2_4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 90, "skillName": "エンジェル・ハイロウ", "skillCost": 4, "baseDmg": 40, "ability": "mass_charm", "evolvesFrom": "magician_type2" },
-    "magician_type3_0": { "name": "ステラ・スカラー", "type": "magician_type3", "image": "magician_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "天体観測", "skillCost": 1, "baseDmg": 10, "ability": "draw_card", "evolvesFrom": "magician" },
-    "magician_type3_2_0": { "name": "コスモ・ルーラー", "type": "magician_type3_2", "image": "magician_type3_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 90, "skillName": "グラビティ・フォール", "skillCost": 5, "baseDmg": 70, "ability": "mass_bounce", "evolvesFrom": "magician_type3" },
-    "magician_type3_3_0": { "name": "アカシック・セージ", "type": "magician_type3_3", "image": "magician_type3_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 100, "skillName": "真理の門", "skillCost": 6, "baseDmg": 90, "ability": "absolute_evasion", "evolvesFrom": "magician_type3" },
+    "magician_type5_3_0": { "name": "アストラル・プロフェット", "type": "magician_type5_3", "image": "magician_type5_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 100, "skillName": "星の導き", "skillCost": 3, "baseDmg": 50, "ability": "absolute_sanctuary", "evolvesFrom": "magician_type5_2" },
+    "magician_type2_0": { "name": "スター・イリュージョニスト", "type": "magician_type2", "image": "magician_type2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 50, "skillName": "イリュージョン", "skillCost": 2, "baseDmg": 30, "ability": "charm_enemy", "evolvesFrom": "magician" },
+    "magician_type2_2_0": { "name": "アイス・クイーン", "type": "magician_type2_2", "image": "magician_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 70, "skillName": "フロスト・ノヴァ", "skillCost": 3, "baseDmg": 50, "ability": "fossilize", "evolvesFrom": "magician_type2" },
+    "magician_type2_3_0": { "name": "プリズム・マギ", "type": "magician_type2_3", "image": "magician_type2_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 80, "skillName": "プリズム・リフレクト", "skillCost": 3, "baseDmg": 40, "ability": "magic_reflect", "evolvesFrom": "magician_type2_2" },
+    // "magician_type2_4_0": { "name": "セレスティアル・プリンセス", "type": "magician_type2_4", "image": "magician_type2_4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 100, "skillName": "エンジェル・ハイロウ", "skillCost": 4, "baseDmg": 40, "ability": "mass_charm", "evolvesFrom": "magician_type2_3" },
+    "magician_type3_0": { "name": "ステラ・スカラー", "type": "magician_type3", "image": "magician_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "天体観測", "skillCost": 1, "baseDmg": 20, "ability": "draw_card", "evolvesFrom": "magician" },
+    "magician_type3_2_0": { "name": "コスモ・ルーラー", "type": "magician_type3_2", "image": "magician_type3_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 100, "skillName": "グラビティ・フォール", "skillCost": 5, "baseDmg": 70, "ability": "mass_bounce", "evolvesFrom": "magician_type3" },
+    "magician_type3_3_0": { "name": "アカシック・セージ", "type": "magician_type3_3", "image": "magician_type3_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 100, "skillName": "真理の門", "skillCost": 6, "baseDmg": 90, "ability": "absolute_evasion", "evolvesFrom": "magician_type3_2" },
 
     // 🐦 鳥 (Bird) 進化ライン
     "bird_type2_0": { "name": "フェアリーテイル", "type": "bird_type2", "image": "bird_type2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "魅惑の鱗粉", "skillCost": 2, "baseDmg": 20, "ability": "charm_enemy", "evolvesFrom": "bird" },
     "bird_type2_2_0": { "name": "セレスティアル・ピーコック", "type": "bird_type2_2", "image": "bird_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 80, "skillName": "銀河の尾羽", "skillCost": 4, "baseDmg": 60, "ability": "rebirth", "evolvesFrom": "bird_type2" },
-    "bird_type4_0": { "name": "ハンターホーク", "type": "bird_type4", "image": "bird_type4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 50, "skillName": "ソニック・ダイブ", "skillCost": 3, "baseDmg": 50, "ability": "piercing_juggernaut", "evolvesFrom": "bird" },
+    "bird_type4_0": { "name": "ハンターホーク", "type": "bird_type4", "image": "bird_type4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 50, "skillName": "ソニック・ダイブ", "skillCost": 3, "baseDmg": 50, "ability": "double_strike", "evolvesFrom": "bird" },
     "bird_type4_2_0": { "name": "ストーム・ガルーダ", "type": "bird_type4_2", "image": "bird_type4_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 100, "skillName": "テンペスト", "skillCost": 5, "baseDmg": 80, "ability": "cataclysm", "evolvesFrom": "bird_type4" },
     "bird_type5_0": { "name": "ワイズオウル", "type": "bird_type5", "image": "bird_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 50, "skillName": "静寂の凝視", "skillCost": 2, "baseDmg": 30, "ability": "evasion", "evolvesFrom": "bird" },
-    "bird_type5_2_0": { "name": "エンシェント・アーケオ", "type": "bird_type5_2", "image": "bird_type5_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 90, "skillName": "始祖の鳴き声", "skillCost": 3, "baseDmg": 40, "ability": "absolute_sanctuary", "evolvesFrom": "bird_type5" },
-    "bird_type1_0": { "name": "ナイトレイヴン", "type": "bird_type1", "image": "bird_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "凶兆のついばみ", "skillCost": 2, "baseDmg": 40, "ability": "thorns", "evolvesFrom": "bird" },
-    "bird_type1_2_0": { "name": "カオス・コンドル", "type": "bird_type1_2", "image": "bird_type1_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 70, "skillName": "デッド・ウィング", "skillCost": 4, "baseDmg": 60, "ability": "curse_death", "evolvesFrom": "bird_type1" },
+    "bird_type5_2_0": { "name": "エンシェント・アーケオ", "type": "bird_type5_2", "image": "bird_type5_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 100, "skillName": "始祖の鳴き声", "skillCost": 3, "baseDmg": 40, "ability": "absolute_sanctuary", "evolvesFrom": "bird_type5" },
+    "bird_type1_0": { "name": "ナイトレイヴン", "type": "bird_type1", "image": "bird_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "凶兆のついばみ", "skillCost": 2, "baseDmg": 40, "ability": "discard_hand", "evolvesFrom": "bird" },
+    "bird_type1_2_0": { "name": "カオス・コンドル", "type": "bird_type1_2", "image": "bird_type1_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 70, "skillName": "デッド・ウィング", "skillCost": 4, "baseDmg": 80, "ability": "curse_death", "evolvesFrom": "bird_type1" },
     "bird_type3_0": { "name": "ルーンバード", "type": "bird_type3", "image": "bird_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 40, "skillName": "空中魔方陣", "skillCost": 3, "baseDmg": 40, "ability": "spell_echo", "evolvesFrom": "bird" },
-    "bird_type3_2_0": { "name": "メカニックピジョン", "type": "bird_type3_2", "image": "bird_type3_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 50, "skillName": "データリンク", "skillCost": 1, "baseDmg": 10, "ability": "mana_refund", "evolvesFrom": "bird" },
-    "bird_type3_3_0": { "name": "アカシック・オウル", "type": "bird_type3_3", "image": "bird_type3_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 90, "skillName": "神眼の看破", "skillCost": 4, "baseDmg": 50, "ability": "absolute_evasion", "evolvesFrom": "bird_type3" },
+    "bird_type3_2_0": { "name": "メカニックピジョン", "type": "bird_type3_2", "image": "bird_type3_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 50, "skillName": "データリンク", "skillCost": 1, "baseDmg": 30, "ability": "mana_refund", "evolvesFrom": "bird" },
+    "bird_type3_3_0": { "name": "アカシック・オウル", "type": "bird_type3_3", "image": "bird_type3_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 90, "skillName": "神眼の看破", "skillCost": 4, "baseDmg": 70, "ability": "absolute_evasion", "evolvesFrom": "bird_type3" },
 
     // ⚙️ ぜんまい (Machine) 進化ライン
-    "machine_type2_0": { "name": "オルゴール・ドール", "type": "machine_type2", "image": "machine_type2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 50, "skillName": "ヒーリング・メロディ", "skillCost": 2, "baseDmg": 10, "ability": "heal_self", "evolvesFrom": "machine" },
-    "machine_type2_2_0": { "name": "マジェスティック・クロック", "type": "machine_type2_2", "image": "machine_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 90, "skillName": "クロノス・ギア", "skillCost": 4, "baseDmg": 50, "ability": "time_manipulation", "evolvesFrom": "machine_type2" },
-    "machine_type4_0": { "name": "ピストン・ワーカー", "type": "machine_type4", "image": "machine_type4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 60, "skillName": "スチームパンチ", "skillCost": 2, "baseDmg": 40, "ability": "devour", "evolvesFrom": "machine" },
+    "machine_type2_0": { "name": "オルゴール・ドール", "type": "machine_type2", "image": "machine_type2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 60, "skillName": "ヒーリング・メロディ", "skillCost": 2, "baseDmg": 20, "ability": "heal_self", "evolvesFrom": "machine" },
+    "machine_type2_2_0": { "name": "マジェスティック・クロック", "type": "machine_type2_2", "image": "machine_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 90, "skillName": "クロノス・ギア", "skillCost": 4, "baseDmg": 60, "ability": "time_manipulation", "evolvesFrom": "machine_type2" },
+    "machine_type4_0": { "name": "ピストン・ワーカー", "type": "machine_type4", "image": "machine_type4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 60, "skillName": "スチームパンチ", "skillCost": 2, "baseDmg": 40, "ability": "haste", "evolvesFrom": "machine" },
     "machine_type4_2_0": { "name": "スチーム・ドレッドノート", "type": "machine_type4_2", "image": "machine_type4_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 120, "skillName": "オーバードライブ", "skillCost": 5, "baseDmg": 80, "ability": "piercing_juggernaut", "evolvesFrom": "machine_type4" },
-    "machine_type5_0": { "name": "アンティーク・ギア", "type": "machine_type5", "image": "machine_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 2, "baseHp": 40, "skillName": "サビついた回転", "skillCost": 1, "baseDmg": 20, "ability": "mana_refund", "evolvesFrom": "machine" },
-    "machine_type5_2_0": { "name": "モス・マシナリー", "type": "machine_type5_2", "image": "machine_type5_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 70, "skillName": "自然修復", "skillCost": 3, "baseDmg": 30, "ability": "burst_spores", "evolvesFrom": "machine_type5" },
-    "machine_type5_3_0": { "name": "ロスト・テクノロジー", "type": "machine_type5_3", "image": "machine_type5_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 150, "skillName": "静寂なる起動", "skillCost": 4, "baseDmg": 40, "ability": "impregnable_armor", "evolvesFrom": "machine_type5" },
-    "machine_type1_0": { "name": "カースド・ドール", "type": "machine_type1", "image": "machine_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "ホラー・アプローチ", "skillCost": 2, "baseDmg": 30, "ability": "charm_enemy", "evolvesFrom": "machine" },
-    "machine_type1_2_0": { "name": "スクラップ・ホラー", "type": "machine_type1_2", "image": "machine_type1_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 100, "skillName": "デッドリー・アマルガム", "skillCost": 6, "baseDmg": 120, "ability": "doomsday_detonation", "evolvesFrom": "machine_type1" },
-    "machine_type3_0": { "name": "ディファレンス・エンジン", "type": "machine_type3", "image": "machine_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 50, "skillName": "高速演算", "skillCost": 3, "baseDmg": 40, "ability": "spell_echo", "evolvesFrom": "machine" },
-    "machine_type3_2_0": { "name": "クォンタム・クロックワーク", "type": "machine_type3_2", "image": "machine_type3_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 90, "skillName": "特異点計算", "skillCost": 0, "baseDmg": 0, "ability": "infinite_gear", "evolvesFrom": "machine_type3" },
+    "machine_type5_0": { "name": "アンティーク・ギア", "type": "machine_type5", "image": "machine_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 2, "baseHp": 50, "skillName": "サビついた回転", "skillCost": 1, "baseDmg": 30, "ability": "mana_refund", "evolvesFrom": "machine" },
+    "machine_type5_2_0": { "name": "モス・マシナリー", "type": "machine_type5_2", "image": "machine_type5_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 70, "skillName": "自然修復", "skillCost": 3, "baseDmg": 40, "ability": "burst_spores", "evolvesFrom": "machine_type5" },
+    "machine_type5_3_0": { "name": "ロスト・テクノロジー", "type": "machine_type5_3", "image": "machine_type5_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 150, "skillName": "静寂なる起動", "skillCost": 4, "baseDmg": 60, "ability": "impregnable_armor", "evolvesFrom": "machine_type5" },
+    "machine_type1_0": { "name": "カースド・ドール", "type": "machine_type1", "image": "machine_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "ホラー・アプローチ", "skillCost": 2, "baseDmg": 30, "ability": "death_bomb", "evolvesFrom": "machine" },
+    "machine_type1_2_0": { "name": "スクラップ・ホラー", "type": "machine_type1_2", "image": "machine_type1_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 120, "skillName": "デッドリー・アマルガム", "skillCost": 6, "baseDmg": 120, "ability": "doomsday_detonation", "evolvesFrom": "machine_type1" },
+    "machine_type3_0": { "name": "ディファレンス・エンジン", "type": "machine_type3", "image": "machine_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 60, "skillName": "高速演算", "skillCost": 3, "baseDmg": 40, "ability": "spell_echo", "evolvesFrom": "machine" },
+    "machine_type3_2_0": { "name": "クォンタム・クロックワーク", "type": "machine_type3_2", "image": "machine_type3_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 100, "skillName": "特異点計算", "skillCost": 0, "baseDmg": 50, "ability": "infinite_gear", "evolvesFrom": "machine_type3" },
 
     // 🪨 ゴーレム (Stone) 進化ライン
     "stone_type2_0": { "name": "クリスタル・ゴーレム", "type": "stone_type2", "image": "stone_type2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 80, "skillName": "クリスタル・レイ", "skillCost": 3, "baseDmg": 40, "ability": "magic_reflect", "evolvesFrom": "stone" },
-    "stone_type2_2_0": { "name": "ブリリアント・コロッサス", "type": "stone_type2_2", "image": "stone_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 150, "skillName": "ダイヤ・プレッシャー", "skillCost": 5, "baseDmg": 60, "ability": "pure_aegis", "evolvesFrom": "stone_type2" },
+    "stone_type2_2_0": { "name": "ブリリアント・コロッサス", "type": "stone_type2_2", "image": "stone_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 180, "skillName": "ダイヤ・プレッシャー", "skillCost": 5, "baseDmg": 60, "ability": "pure_aegis", "evolvesFrom": "stone_type2" },
     "stone_type4_0": { "name": "マグマ・ギガント", "type": "stone_type4", "image": "stone_type4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 90, "skillName": "ヴォルカニック・スマッシュ", "skillCost": 4, "baseDmg": 60, "ability": "burn_field", "evolvesFrom": "stone" },
-    "stone_type4_2_0": { "name": "アイアン・フォートレス", "type": "stone_type4_2", "image": "stone_type4_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 120, "skillName": "鉄の城壁", "skillCost": 3, "baseDmg": 40, "ability": "impregnable_armor", "evolvesFrom": "stone" },
-    "stone_type4_3_0": { "name": "メテオ・タイタン", "type": "stone_type4_3", "image": "stone_type4_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 10, "baseHp": 180, "skillName": "アース・シャター", "skillCost": 6, "baseDmg": 100, "ability": "nova_burst", "evolvesFrom": "stone_type4" },
-    "stone_type5_0": { "name": "モノリス・ルイン", "type": "stone_type5", "image": "stone_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 80, "skillName": "遺跡の守護", "skillCost": 2, "baseDmg": 20, "ability": "taunt", "evolvesFrom": "stone" },
+    "stone_type4_2_0": { "name": "アイアン・フォートレス", "type": "stone_type4_2", "image": "stone_type4_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 100, "skillName": "鉄の城壁", "skillCost": 3, "baseDmg": 60, "ability": "counter_attack", "evolvesFrom": "stone" },
+    "stone_type4_3_0": { "name": "メテオ・タイタン", "type": "stone_type4_3", "image": "stone_type4_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 10, "baseHp": 180, "skillName": "アース・シャター", "skillCost": 6, "baseDmg": 100, "ability": "trample", "evolvesFrom": "stone_type4" },
+    "stone_type5_0": { "name": "モノリス・ルイン", "type": "stone_type5", "image": "stone_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 80, "skillName": "遺跡の守護", "skillCost": 2, "baseDmg": 30, "ability": "taunt", "evolvesFrom": "stone" },
     "stone_type5_2_0": { "name": "アストラル・モノリス", "type": "stone_type5_2", "image": "stone_type5_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 140, "skillName": "悠久の刻", "skillCost": 4, "baseDmg": 30, "ability": "absolute_sanctuary", "evolvesFrom": "stone_type5" },
     "stone_type1_0": { "name": "カースド・ガーゴイル", "type": "stone_type1", "image": "stone_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 70, "skillName": "ダーク・ダイブ", "skillCost": 3, "baseDmg": 50, "ability": "soul_drain", "evolvesFrom": "stone" },
-    "stone_type1_2_0": { "name": "ヴォイド・オブシディアン", "type": "stone_type1_2", "image": "stone_type1_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 100, "skillName": "虚無の引力", "skillCost": 5, "baseDmg": 60, "ability": "void_counter", "evolvesFrom": "stone_type1" },
-    "stone_type3_0": { "name": "ルーン・ゴーレム", "type": "stone_type3", "image": "stone_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 60, "skillName": "ルーン・バレット", "skillCost": 2, "baseDmg": 30, "ability": "mana_refund", "evolvesFrom": "stone" },
-    "stone_type3_2_0": { "name": "オラクル・ストーン", "type": "stone_type3_2", "image": "stone_type3_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 90, "skillName": "重力反発", "skillCost": 0, "baseDmg": 0, "ability": "mana_sovereign", "evolvesFrom": "stone_type3" },
+    "stone_type1_2_0": { "name": "ヴォイド・オブシディアン", "type": "stone_type1_2", "image": "stone_type1_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 100, "skillName": "虚無の引力", "skillCost": 5, "baseDmg": 80, "ability": "void_counter", "evolvesFrom": "stone_type1" },
+    "stone_type3_0": { "name": "ルーン・ゴーレム", "type": "stone_type3", "image": "stone_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 60, "skillName": "ルーン・バレット", "skillCost": 2, "baseDmg": 30, "ability": "counter_attack", "evolvesFrom": "stone" },
+    "stone_type3_2_0": { "name": "オラクル・ストーン", "type": "stone_type3_2", "image": "stone_type3_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 90, "skillName": "重力反発", "skillCost": 0, "baseDmg": 40, "ability": "mana_sovereign", "evolvesFrom": "stone_type3" },
 
     // 🎈 風船 (Balloon) 進化ライン
-    "balloon_type2_0": { "name": "シャボン・スライム", "type": "balloon_type2", "image": "balloon_type2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "プリズム・バブル", "skillCost": 2, "baseDmg": 20, "ability": "charm_enemy", "evolvesFrom": "balloon" },
-    "balloon_type2_2_0": { "name": "プリズム・ドロップ", "type": "balloon_type2_2", "image": "balloon_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 50, "skillName": "グラス・シャワー", "skillCost": 3, "baseDmg": 40, "ability": "magic_reflect", "evolvesFrom": "balloon_type2" },
+    "balloon_type2_0": { "name": "シャボン・スライム", "type": "balloon_type2", "image": "balloon_type2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "プリズム・バブル", "skillCost": 2, "baseDmg": 20, "ability": "debuff_attack", "evolvesFrom": "balloon" },
+    "balloon_type2_2_0": { "name": "プリズム・ドロップ", "type": "balloon_type2_2", "image": "balloon_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 60, "skillName": "グラス・シャワー", "skillCost": 3, "baseDmg": 40, "ability": "magic_reflect", "evolvesFrom": "balloon_type2" },
     "balloon_type2_3_0": { "name": "ファンタジー・パレード", "type": "balloon_type2_3", "image": "balloon_type2_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 80, "skillName": "ドリーム・フェスティバル", "skillCost": 4, "baseDmg": 30, "ability": "mass_charm", "evolvesFrom": "balloon_type2_2" },
-    "balloon_type4_0": { "name": "マッスル・バルーン", "type": "balloon_type4", "image": "balloon_type4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 60, "skillName": "バウンド・タックル", "skillCost": 2, "baseDmg": 40, "ability": "thorns", "evolvesFrom": "balloon" },
+    "balloon_type4_0": { "name": "マッスル・バルーン", "type": "balloon_type4", "image": "balloon_type4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 60, "skillName": "バウンド・タックル", "skillCost": 2, "baseDmg": 40, "ability": "burst_damage", "evolvesFrom": "balloon" },
     "balloon_type4_2_0": { "name": "ホットエア・バルーン", "type": "balloon_type4_2", "image": "balloon_type4_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 70, "skillName": "バーナー・フレイム", "skillCost": 3, "baseDmg": 50, "ability": "burn_field", "evolvesFrom": "balloon_type4" },
     "balloon_type4_3_0": { "name": "ヘビー・ゼペリン", "type": "balloon_type4_3", "image": "balloon_type4_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 130, "skillName": "カーペット・ボミング", "skillCost": 5, "baseDmg": 70, "ability": "impregnable_armor", "evolvesFrom": "balloon_type4_2" },
     "balloon_type1_0": { "name": "スモッグ・ファントム", "type": "balloon_type1", "image": "balloon_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "ポイズン・スモーク", "skillCost": 2, "baseDmg": 30, "ability": "curse_death", "evolvesFrom": "balloon" },
     "balloon_type1_2_0": { "name": "ダーク・マイン", "type": "balloon_type1_2", "image": "balloon_type1_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 50, "skillName": "コンタクト・ボム", "skillCost": 4, "baseDmg": 80, "ability": "nova_burst", "evolvesFrom": "balloon_type1" },
     "balloon_type1_3_0": { "name": "ナイトメア・ブラスト", "type": "balloon_type1_3", "image": "balloon_type1_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 70, "skillName": "絶望の破裂", "skillCost": 5, "baseDmg": 60, "ability": "mass_bounce", "evolvesFrom": "balloon_type1_2" },
-    "balloon_type5_0": { "name": "デフレート・スライム", "type": "balloon_type5", "image": "balloon_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 2, "baseHp": 20, "skillName": "しわしわガード", "skillCost": 1, "baseDmg": 0, "ability": "absolute_sanctuary", "evolvesFrom": "balloon" },
-    "balloon_type3_0": { "name": "ウェザー・バルーン", "type": "balloon_type3", "image": "balloon_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "観測データ", "skillCost": 1, "baseDmg": 10, "ability": "draw_card", "evolvesFrom": "balloon" },
+    "balloon_type5_0": { "name": "デフレート・スライム", "type": "balloon_type5", "image": "balloon_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 2, "baseHp": 20, "skillName": "しわしわガード", "skillCost": 1, "baseDmg": 10, "ability": "absolute_sanctuary", "evolvesFrom": "balloon" },
+    "balloon_type3_0": { "name": "ウェザー・バルーン", "type": "balloon_type3", "image": "balloon_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 50, "skillName": "観測データ", "skillCost": 1, "baseDmg": 20, "ability": "draw_card", "evolvesFrom": "balloon" },
     "balloon_type3_2_0": { "name": "スコープ・バルーン", "type": "balloon_type3_2", "image": "balloon_type3_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 50, "skillName": "レーザー・フォーカス", "skillCost": 3, "baseDmg": 40, "ability": "spell_echo", "evolvesFrom": "balloon_type3" },
     "balloon_type3_3_0": { "name": "サテライト・アイ", "type": "balloon_type3_3", "image": "balloon_type3_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 80, "skillName": "オービタル・ストライク", "skillCost": 5, "baseDmg": 70, "ability": "absolute_evasion", "evolvesFrom": "balloon_type3_2" },
 
     // 👻 ゴースト (Ghost) 進化ライン
-    "ghost_type2_0": { "name": "ルミナス・ソウル", "type": "ghost_type2", "image": "ghost_type2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 30, "skillName": "導きの光", "skillCost": 2, "baseDmg": 20, "ability": "burst_spores", "evolvesFrom": "ghost" },
-    "ghost_type2_2_0": { "name": "ホーリー・ファントム", "type": "ghost_type2_2", "image": "ghost_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 70, "skillName": "ディヴァイン・ライト", "skillCost": 4, "baseDmg": 50, "ability": "pure_aegis", "evolvesFrom": "ghost_type2" },
-    "ghost_type4_0": { "name": "ポルターガイスト", "type": "ghost_type4", "image": "ghost_type4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 50, "skillName": "サイコ・クラッシュ", "skillCost": 3, "baseDmg": 50, "ability": "thorns", "evolvesFrom": "ghost" },
+    "ghost_type2_0": { "name": "ルミナス・ソウル", "type": "ghost_type2", "image": "ghost_type2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "導きの光", "skillCost": 2, "baseDmg": 30, "ability": "burst_spores", "evolvesFrom": "ghost" },
+    "ghost_type2_2_0": { "name": "ホーリー・ファントム", "type": "ghost_type2_2", "image": "ghost_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 80, "skillName": "ディヴァイン・ライト", "skillCost": 4, "baseDmg": 60, "ability": "pure_aegis", "evolvesFrom": "ghost_type2" },
+    "ghost_type4_0": { "name": "ポルターガイスト", "type": "ghost_type4", "image": "ghost_type4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 50, "skillName": "サイコ・クラッシュ", "skillCost": 3, "baseDmg": 50, "ability": "haunt", "evolvesFrom": "ghost" },
     "ghost_type4_2_0": { "name": "ファントム・ジャガーノート", "type": "ghost_type4_2", "image": "ghost_type4_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 100, "skillName": "怨念の蹂躙", "skillCost": 5, "baseDmg": 80, "ability": "piercing_juggernaut", "evolvesFrom": "ghost_type4" },
-    "ghost_type5_0": { "name": "エイシェント・レイス", "type": "ghost_type5", "image": "ghost_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 60, "skillName": "魂の吸収", "skillCost": 3, "baseDmg": 40, "ability": "soul_drain", "evolvesFrom": "ghost" },
-    "ghost_type5_2_0": { "name": "エターナル・ファラオ", "type": "ghost_type5_2", "image": "ghost_type5_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 110, "skillName": "王の呪い", "skillCost": 6, "baseDmg": 70, "ability": "soul_reap", "evolvesFrom": "ghost_type5" },
-    "ghost_type1_0": { "name": "シャドウ・リーパー", "type": "ghost_type1", "image": "ghost_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 40, "skillName": "デス・サイズ", "skillCost": 3, "baseDmg": 60, "ability": "curse_death", "evolvesFrom": "ghost" },
-    "ghost_type1_2_0": { "name": "デス・ブリンガー", "type": "ghost_type1_2", "image": "ghost_type1_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 70, "skillName": "死の宣告", "skillCost": 5, "baseDmg": 90, "ability": "void_counter", "evolvesFrom": "ghost_type1" },
+    "ghost_type5_0": { "name": "エイシェント・レイス", "type": "ghost_type5", "image": "ghost_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 70, "skillName": "魂の吸収", "skillCost": 3, "baseDmg": 40, "ability": "soul_drain", "evolvesFrom": "ghost" },
+    "ghost_type5_2_0": { "name": "エターナル・ファラオ", "type": "ghost_type5_2", "image": "ghost_type5_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 130, "skillName": "王の呪い", "skillCost": 6, "baseDmg": 80, "ability": "soul_reap", "evolvesFrom": "ghost_type5" },
+    "ghost_type1_0": { "name": "シャドウ・リーパー", "type": "ghost_type1", "image": "ghost_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 40, "skillName": "デス・サイズ", "skillCost": 3, "baseDmg": 70, "ability": "curse_death", "evolvesFrom": "ghost" },
+    "ghost_type1_2_0": { "name": "デス・ブリンガー", "type": "ghost_type1_2", "image": "ghost_type1_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 90, "skillName": "死の宣告", "skillCost": 5, "baseDmg": 100, "ability": "discard_hand", "evolvesFrom": "ghost_type1" },
     "ghost_type3_0": { "name": "アカデミー・ゴースト", "type": "ghost_type3", "image": "ghost_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "ポルター・リード", "skillCost": 2, "baseDmg": 30, "ability": "spell_echo", "evolvesFrom": "ghost" },
     "ghost_type3_2_0": { "name": "テレパス・ソウル", "type": "ghost_type3_2", "image": "ghost_type3_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 50, "skillName": "マインド・ハック", "skillCost": 3, "baseDmg": 40, "ability": "charm_enemy", "evolvesFrom": "ghost_type3" },
-//    "ghost_type3_3_0": { "name": "マスター・リッチ", "type": "ghost_type3_3", "image": "ghost_type3_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 90, "skillName": "アブソリュート・マジック", "skillCost": 6, "baseDmg": 100, "ability": "time_manipulation", "evolvesFrom": "ghost_type3_2" },
+    // "ghost_type3_3_0": { "name": "マスター・リッチ", "type": "ghost_type3_3", "image": "ghost_type3_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 100, "skillName": "アブソリュート・マジック", "skillCost": 6, "baseDmg": 90, "ability": "mass_bounce", "evolvesFrom": "ghost_type3_2" },
 
     // 🪲 かぶとむし (Beetle) 進化ライン
-    "beetle_type4_0": { "name": "タイタン・ホーン", "type": "beetle_type4", "image": "beetle_type4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 80, "skillName": "ギガ・スロウ", "skillCost": 4, "baseDmg": 70, "ability": "devour", "evolvesFrom": "beetle" },
-    "beetle_type5_0": { "name": "アンバー・スカラベ", "type": "beetle_type5", "image": "beetle_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 70, "skillName": "琥珀の盾", "skillCost": 2, "baseDmg": 20, "ability": "mana_refund", "evolvesFrom": "beetle" },
-    "beetle_type5_2_0": { "name": "エターナル・アンモナイト", "type": "beetle_type5_2", "image": "beetle_type5_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 130, "skillName": "化石の檻", "skillCost": 4, "baseDmg": 50, "ability": "fossilize", "evolvesFrom": "beetle_type5" },
+    "beetle_type4_0": { "name": "タイタン・ホーン", "type": "beetle_type4", "image": "beetle_type4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 80, "skillName": "ギガ・スロウ", "skillCost": 4, "baseDmg": 80, "ability": "trample", "evolvesFrom": "beetle" },
+    "beetle_type5_0": { "name": "アンバー・スカラベ", "type": "beetle_type5", "image": "beetle_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 70, "skillName": "琥珀の盾", "skillCost": 2, "baseDmg": 20, "ability": "heavy_armor", "evolvesFrom": "beetle" },
+    "beetle_type5_2_0": { "name": "エターナル・アンモナイト", "type": "beetle_type5_2", "image": "beetle_type5_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 150, "skillName": "化石の檻", "skillCost": 4, "baseDmg": 50, "ability": "fossilize", "evolvesFrom": "beetle_type5" },
     "beetle_type2_0": { "name": "ジュエル・インセクト", "type": "beetle_type2", "image": "beetle_type2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 50, "skillName": "ジュエル・フラッシュ", "skillCost": 2, "baseDmg": 30, "ability": "magic_reflect", "evolvesFrom": "beetle" },
-    "beetle_type2_2_0": { "name": "ルーセント・スタッグ", "type": "beetle_type2_2", "image": "beetle_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 60, "skillName": "ムーンライト・シザー", "skillCost": 3, "baseDmg": 50, "ability": "charm_enemy", "evolvesFrom": "beetle" },
-    "beetle_type2_3_0": { "name": "フェアリー・モルフォ", "type": "beetle_type2_3", "image": "beetle_type2_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 70, "skillName": "イリュージョン・ダンス", "skillCost": 4, "baseDmg": 40, "ability": "absolute_evasion", "evolvesFrom": "beetle_type2" },
-    "beetle_type2_4_0": { "name": "セイクリッド・ビートル", "type": "beetle_type2_4", "image": "beetle_type2_4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 120, "skillName": "神光のオーラ", "skillCost": 5, "baseDmg": 60, "ability": "pure_aegis", "evolvesFrom": "beetle_type2_2" },
-    "beetle_type3_0": { "name": "ブレイン・バグ", "type": "beetle_type3", "image": "beetle_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 60, "skillName": "フェロモン・コマンド", "skillCost": 0, "baseDmg": 0, "ability": "mana_sovereign", "evolvesFrom": "beetle" },
-    "beetle_type1_0": { "name": "ブラッド・シザー", "type": "beetle_type1", "image": "beetle_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 60, "skillName": "ギロチン・シザー", "skillCost": 3, "baseDmg": 60, "ability": "piercing_juggernaut", "evolvesFrom": "beetle" },
+    "beetle_type2_2_0": { "name": "ルーセント・スタッグ", "type": "beetle_type2_2", "image": "beetle_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 60, "skillName": "ムーンライト・シザー", "skillCost": 3, "baseDmg": 50, "ability": "mass_charm", "evolvesFrom": "beetle" },
+    "beetle_type2_3_0": { "name": "フェアリー・モルフォ", "type": "beetle_type2_3", "image": "beetle_type2_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 80, "skillName": "イリュージョン・ダンス", "skillCost": 4, "baseDmg": 50, "ability": "absolute_evasion", "evolvesFrom": "beetle_type2" },
+    "beetle_type2_4_0": { "name": "セイクリッド・ビートル", "type": "beetle_type2_4", "image": "beetle_type2_4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 120, "skillName": "神光のオーラ", "skillCost": 5, "baseDmg": 80, "ability": "pure_aegis", "evolvesFrom": "beetle_type2_2" },
+    "beetle_type3_0": { "name": "ブレイン・バグ", "type": "beetle_type3", "image": "beetle_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 60, "skillName": "フェロモン・コマンド", "skillCost": 0, "baseDmg": 20, "ability": "mana_sovereign", "evolvesFrom": "beetle" },
+    "beetle_type1_0": { "name": "ブラッド・シザー", "type": "beetle_type1", "image": "beetle_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 60, "skillName": "ギロチン・シザー", "skillCost": 3, "baseDmg": 60, "ability": "haste", "evolvesFrom": "beetle" },
 
     // 🌱 つぼみ (Seed) 進化ライン
     "seed_type4_0": { "name": "ワイルド・ルーツ", "type": "seed_type4", "image": "seed_type4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 60, "skillName": "大地の怒り", "skillCost": 3, "baseDmg": 40, "ability": "devour", "evolvesFrom": "seed" },
     "seed_type4_2_0": { "name": "ガイア・オメガプランツ", "type": "seed_type4_2", "image": "seed_type4_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 140, "skillName": "アース・イーター", "skillCost": 6, "baseDmg": 90, "ability": "apex_predator", "evolvesFrom": "seed_type4" },
-    "seed_type1_0": { "name": "ペイン・アイビー", "type": "seed_type1", "image": "seed_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 50, "skillName": "ポイズン・ソーン", "skillCost": 2, "baseDmg": 30, "ability": "thorns", "evolvesFrom": "seed" },
-    "seed_type1_2_0": { "name": "パラサイト・イグドラシル", "type": "seed_type1_2", "image": "seed_type1_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 100, "skillName": "デッドリー・ルーツ", "skillCost": 5, "baseDmg": 60, "ability": "curse_death", "evolvesFrom": "seed_type1" },
-    "seed_type5_0": { "name": "ミスティック・ボンサイ", "type": "seed_type5", "image": "seed_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 60, "skillName": "侘び寂びの心", "skillCost": 1, "baseDmg": 10, "ability": "mana_refund", "evolvesFrom": "seed" },
-    "seed_type5_2_0": { "name": "ペトリファイド・ウッド", "type": "seed_type5_2", "image": "seed_type5_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 120, "skillName": "永遠の年輪", "skillCost": 3, "baseDmg": 30, "ability": "impregnable_armor", "evolvesFrom": "seed_type5" },
-    "seed_type3_0": { "name": "アーカイブ・ツリー", "type": "seed_type3", "image": "seed_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 50, "skillName": "歴史の葉擦れ", "skillCost": 2, "baseDmg": 20, "ability": "draw_card", "evolvesFrom": "seed" },
+    "seed_type1_0": { "name": "ペイン・アイビー", "type": "seed_type1", "image": "seed_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 50, "skillName": "ポイズン・ソーン", "skillCost": 2, "baseDmg": 30, "ability": "venom_strike", "evolvesFrom": "seed" },
+    "seed_type1_2_0": { "name": "パラサイト・イグドラシル", "type": "seed_type1_2", "image": "seed_type1_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 100, "skillName": "デッドリー・ルーツ", "skillCost": 5, "baseDmg": 60, "ability": "life_drain", "evolvesFrom": "seed_type1" },
+    "seed_type5_0": { "name": "ミスティック・ボンサイ", "type": "seed_type5", "image": "seed_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 60, "skillName": "侘び寂びの心", "skillCost": 1, "baseDmg": 30, "ability": "mana_refund", "evolvesFrom": "seed" },
+    "seed_type5_2_0": { "name": "ペトリファイド・ウッド", "type": "seed_type5_2", "image": "seed_type5_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 120, "skillName": "永遠の年輪", "skillCost": 3, "baseDmg": 50, "ability": "impregnable_armor", "evolvesFrom": "seed_type5" },
+    "seed_type3_0": { "name": "アーカイブ・ツリー", "type": "seed_type3", "image": "seed_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 4, "baseHp": 50, "skillName": "歴史の葉擦れ", "skillCost": 2, "baseDmg": 40, "ability": "draw_card", "evolvesFrom": "seed" },
     "seed_type3_2_0": { "name": "ニューロ・プラント", "type": "seed_type3_2", "image": "seed_type3_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 70, "skillName": "シナプス・リンク", "skillCost": 3, "baseDmg": 40, "ability": "spell_echo", "evolvesFrom": "seed_type3" },
-    "seed_type3_3_0": { "name": "アカシック・ツリー", "type": "seed_type3_3", "image": "seed_type3_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 10, "baseHp": 150, "skillName": "宇宙の理", "skillCost": 0, "baseDmg": 0, "ability": "mana_sovereign", "evolvesFrom": "seed_type3_2" },
-    "seed_type2_0": { "name": "アロマ・ブルーム", "type": "seed_type2", "image": "seed_type2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "魅惑の香り", "skillCost": 2, "baseDmg": 20, "ability": "charm_enemy", "evolvesFrom": "seed" },
-    "seed_type2_2_0": { "name": "エデン・ブロッサム", "type": "seed_type2_2", "image": "seed_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 80, "skillName": "パラダイス・ロスト", "skillCost": 4, "baseDmg": 40, "ability": "mass_charm", "evolvesFrom": "seed_type2" },
+    "seed_type3_3_0": { "name": "アカシック・ツリー", "type": "seed_type3_3", "image": "seed_type3_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 10, "baseHp": 150, "skillName": "宇宙の理", "skillCost": 0, "baseDmg": 50, "ability": "mana_sovereign", "evolvesFrom": "seed_type3_2" },
+    "seed_type2_0": { "name": "アロマ・ブルーム", "type": "seed_type2", "image": "seed_type2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 3, "baseHp": 40, "skillName": "魅惑の香り", "skillCost": 2, "baseDmg": 30, "ability": "charm_enemy", "evolvesFrom": "seed" },
+    "seed_type2_2_0": { "name": "エデン・ブロッサム", "type": "seed_type2_2", "image": "seed_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 100, "skillName": "パラダイス・ロスト", "skillCost": 4, "baseDmg": 50, "ability": "mass_charm", "evolvesFrom": "seed_type2" },
 
     // 🐲 ドラゴン (Dragon) 進化ライン
-    "dragon_type4_0": { "name": "グランド・ワイバーン", "type": "dragon_type4", "image": "dragon_type4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 80, "skillName": "エアロ・ブラスト", "skillCost": 4, "baseDmg": 70, "ability": "piercing_juggernaut", "evolvesFrom": "dragon" },
-    "dragon_type4_2_0": { "name": "ドレッド・バハムート", "type": "dragon_type4_2", "image": "dragon_type4_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 10, "baseHp": 150, "skillName": "メガフレア", "skillCost": 6, "baseDmg": 120, "ability": "cataclysm", "evolvesFrom": "dragon_type4" },
-    "dragon_type1_0": { "name": "カースド・ドレイク", "type": "dragon_type1", "image": "dragon_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 70, "skillName": "ミアズマ・ブレス", "skillCost": 3, "baseDmg": 50, "ability": "burn_field", "evolvesFrom": "dragon" },
-    "dragon_type1_2_0": { "name": "アビス・ウロボロス", "type": "dragon_type1_2", "image": "dragon_type1_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 120, "skillName": "エンドレス・ヴォイド", "skillCost": 5, "baseDmg": 90, "ability": "void_counter", "evolvesFrom": "dragon_type1" },
-    "dragon_type5_0": { "name": "エンシェント・ヴルム", "type": "dragon_type5", "image": "dragon_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 100, "skillName": "アース・クエイク", "skillCost": 4, "baseDmg": 40, "ability": "absolute_sanctuary", "evolvesFrom": "dragon" },
-    "dragon_type5_2_0": { "name": "ジオ・ククルカン", "type": "dragon_type5_2", "image": "dragon_type5_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 160, "skillName": "星の息吹", "skillCost": 5, "baseDmg": 60, "ability": "fossilize", "evolvesFrom": "dragon_type5" },
-    "dragon_type3_0": { "name": "アーク・リヴァイアサン", "type": "dragon_type3", "image": "dragon_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 90, "skillName": "ハイドロ・カノン", "skillCost": 4, "baseDmg": 60, "ability": "time_manipulation", "evolvesFrom": "dragon" },
-    "dragon_type3_2_0": { "name": "ギャラクシー・ノヴァ", "type": "dragon_type3_2", "image": "dragon_type3_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 10, "baseHp": 130, "skillName": "スーパーノヴァ", "skillCost": 6, "baseDmg": 100, "ability": "nova_burst", "evolvesFrom": "dragon_type3" },
-    "dragon_type2_0": { "name": "クリスタル・オーレリア", "type": "dragon_type2", "image": "dragon_type2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 70, "skillName": "ジュエル・ブレス", "skillCost": 3, "baseDmg": 40, "ability": "charm_enemy", "evolvesFrom": "dragon" },
-    "dragon_type2_2_0": { "name": "セラフィック・応龍", "type": "dragon_type2_2", "image": "dragon_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 110, "skillName": "神々の裁き", "skillCost": 5, "baseDmg": 70, "ability": "pure_aegis", "evolvesFrom": "dragon_type2" },
-    "dragon_type2_3_0": { "name": "プリズマティカ", "type": "dragon_type2_3", "image": "dragon_type2_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 90, "skillName": "オーロラ・レイ", "skillCost": 4, "baseDmg": 60, "ability": "magic_reflect", "evolvesFrom": "dragon_type2" },
+    "dragon_type4_0": { "name": "グランド・ワイバーン", "type": "dragon_type4", "image": "dragon_type4_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 90, "skillName": "エアロ・ブラスト", "skillCost": 4, "baseDmg": 70, "ability": "piercing_juggernaut", "evolvesFrom": "dragon" },
+    "dragon_type4_2_0": { "name": "ドレッド・バハムート", "type": "dragon_type4_2", "image": "dragon_type4_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 10, "baseHp": 180, "skillName": "メガフレア", "skillCost": 6, "baseDmg": 120, "ability": "cataclysm", "evolvesFrom": "dragon_type4" },
+    "dragon_type1_0": { "name": "カースド・ドレイク", "type": "dragon_type1", "image": "dragon_type1_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 70, "skillName": "ミアズマ・ブレス", "skillCost": 3, "baseDmg": 50, "ability": "roar", "evolvesFrom": "dragon" },
+    "dragon_type1_2_0": { "name": "アビス・ウロボロス", "type": "dragon_type1_2", "image": "dragon_type1_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 140, "skillName": "エンドレス・ヴォイド", "skillCost": 5, "baseDmg": 100, "ability": "void_counter", "evolvesFrom": "dragon_type1" },
+    "dragon_type5_0": { "name": "エンシェント・ヴルム", "type": "dragon_type5", "image": "dragon_type5_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 6, "baseHp": 100, "skillName": "アース・クエイク", "skillCost": 4, "baseDmg": 60, "ability": "absolute_sanctuary", "evolvesFrom": "dragon" },
+    "dragon_type5_2_0": { "name": "ジオ・ククルカン", "type": "dragon_type5_2", "image": "dragon_type5_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 160, "skillName": "星の息吹", "skillCost": 5, "baseDmg": 80, "ability": "wrath", "evolvesFrom": "dragon_type5" },
+    "dragon_type3_0": { "name": "アーク・リヴァイアサン", "type": "dragon_type3", "image": "dragon_type3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 7, "baseHp": 100, "skillName": "ハイドロ・カノン", "skillCost": 4, "baseDmg": 60, "ability": "time_manipulation", "evolvesFrom": "dragon" },
+    "dragon_type3_2_0": { "name": "ギャラクシー・ノヴァ", "type": "dragon_type3_2", "image": "dragon_type3_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 10, "baseHp": 150, "skillName": "スーパーノヴァ", "skillCost": 6, "baseDmg": 100, "ability": "nova_burst", "evolvesFrom": "dragon_type3" },
+    "dragon_type2_0": { "name": "クリスタル・オーレリア", "type": "dragon_type2", "image": "dragon_type2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 5, "baseHp": 70, "skillName": "ジュエル・ブレス", "skillCost": 3, "baseDmg": 50, "ability": "charm_enemy", "evolvesFrom": "dragon" },
+    "dragon_type2_2_0": { "name": "セラフィック・応龍", "type": "dragon_type2_2", "image": "dragon_type2_2_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 9, "baseHp": 130, "skillName": "神々の裁き", "skillCost": 5, "baseDmg": 80, "ability": "pure_aegis", "evolvesFrom": "dragon_type2" },
+    "dragon_type2_3_0": { "name": "プリズマティカ", "type": "dragon_type2_3", "image": "dragon_type2_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 110, "skillName": "オーロラ・レイ", "skillCost": 4, "baseDmg": 70, "ability": "magic_reflect", "evolvesFrom": "dragon_type2" },
 
     // 🎒 サポートカード
     'support_0': { name: "鉄鉱石の塊", type: "item", image: "support_card.png", imageIndex: 0, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 1, baseHp: 0, skillName: "錬成", skillCost: 0, baseDmg: 0, ability: "mana_ramp" },
@@ -3692,6 +2622,16 @@ window.checkDeath = function(card, owner, htmlId, enemyOwner = null) {
                 window.showVFX(enemyOwner === window.TCG_BATTLE.cpu ? 'cpu-face' : 'player-face', 'damage', 50);
                 window.showBattleMessage(`💀 【死の呪い】\n敵リーダーに怨念のダメージ！`);
             }
+            if (card.ability === "death_bomb" && enemyOwner) {
+                enemyOwner.hp -= 20;
+                const faceId = enemyOwner === window.TCG_BATTLE.cpu ? 'cpu-face' : 'player-face';
+                window.showVFX(faceId, 'slash'); window.showVFX(faceId, 'damage', 20);
+                window.showBattleMessage(`💣 【誘爆】\n敵リーダーに20ダメージ！`, false, 2000, !isPlayerOwner, true);
+                
+                // 画面揺れ演出
+                const ui = document.getElementById('tcg-battle-ui'); 
+                if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
+            }
             if (card.ability === "burst_spores") {
                 owner.field.forEach((ac, idx) => {
                     if(!ac.isDead) { 
@@ -3831,6 +2771,9 @@ window.renderCardHTML = function(card) {
             "draw_card": "【ドロー】(山札からカードを引く)",
             "flight": "【飛行】(かばうを無視して攻撃できる)",
             "mana_ramp": "【成長】(自分の最大マナを+1する)",
+            "haste": "【速攻】(場に出たターンにすぐ攻撃できる)",
+            "trample": "【貫通】(敵を倒した時、超過ダメージをリーダーに与える)",
+            "death_bomb": "【誘爆】(破壊された時、相手リーダーに20ダメージ)",
             "pierce_recoil": "【暴走回路】(かばう無視・攻撃時自身にダメ)",
             "aoe_heal_play": "【全体回復】(登場時、味方全員を回復)",
             "start_draw": "【超演算】(自ターン開始時、1枚ドロー)",
@@ -4663,11 +3606,12 @@ window.renderBattleBoard = function() {
     // ==========================================
     let fieldHtml = p.field.map((card, index) => {
         const isReady = card.canAttack && card.status !== 'stunned';
-        const isAttackerSelected = window.TCG_BATTLE.selectedAttackerIndex === index;
+        // ★修正：相手ターン中は、味方カードは「自分が攻撃で選ばれている」と勘違いしないようにする
+        const isAttackerSelected = (!window.TCG_BATTLE.isEnemyTurn && window.TCG_BATTLE.selectedAttackerIndex === index);
         let isEvoTarget = false;
         if (isEvoMode) {
             const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
-            isEvoTarget = card.type === evoCard.evolvesFrom;
+            isEvoTarget = window.checkCanEvolve(card, evoCard); // ★新しい判定に変更
         }
 
         let filter = "grayscale(50%) opacity(70%)";
@@ -4684,8 +3628,9 @@ window.renderBattleBoard = function() {
             cursor = "pointer";
         }
 
-        const isDefending = card.isDefending || card.ability === "taunt";
-        if (card.isDefending) filter = "drop-shadow(0 0 15px #2196F3)";
+        // ★修正1：純真の盾も「守護」の変数としてまとめる
+        const isDefending = card.isDefending || card.ability === "taunt" || card.ability === "pure_aegis";
+        if (isDefending) filter = "drop-shadow(0 0 15px #2196F3)"; // ★ついでに、元からかばうを持っているカードも青く光るように修正！
         
         let left = pFieldL ? pFieldL.startX + index * pFieldL.stepW : 0;
         let scale = pFieldL ? pFieldL.scale : 0.65;
@@ -4699,13 +3644,13 @@ window.renderBattleBoard = function() {
         const animStyle = card.isDead ? "animation: cardDestroy 0.6s ease-out forwards; pointer-events: none;" : "";
 
         return `
-        <div id="p-card-${index}" class="tcg-card-wrap" style="left: ${left}px; bottom: 10px; transform: scale(${currentScale}) translateY(${yOffset}); transform-origin: bottom center; cursor: ${cursor}; filter: ${filter}; z-index: ${isAttackerSelected || isEvoTarget ? 100 : index}; ${animStyle}; width: 180px; height: 260px;"
-             onmouseover="if((${isReady} && !${isAttackerSelected} && !${isEvoMode}) || ${isEvoTarget}) { this.style.transform='scale(${hoverScale}) translateY(-15px)'; }"
-             onmouseout="if((${isReady} && !${isAttackerSelected} && !${isEvoMode}) || ${isEvoTarget}) { this.style.transform='scale(${scale}) translateY(0)'; }"
+        <div id="p-card-${index}" class="tcg-card-wrap" style="position: absolute; left: ${left}px; bottom: 10px; transform: scale(${currentScale}) translateY(${yOffset}); transform-origin: bottom center; cursor: ${cursor}; filter: ${filter}; z-index: ${isAttackerSelected || isEvoTarget ? 100 : index}; ${animStyle}; width: 180px; height: 260px; transition: all 0.2s cubic-bezier(0.2, 0.8, 0.4, 1);"
+             onmouseover="if(this.style.cursor==='pointer') { this.style.transform='scale(${hoverScale}) translateY(-15px)'; this.style.zIndex=1000; }"
+             onmouseout="this.style.transform='scale(${currentScale}) translateY(${yOffset})'; this.style.zIndex=${isAttackerSelected || isEvoTarget ? 100 : index}; "
              onclick="window.selectPlayerCard(${index})">
             ${window.renderCardHTML(card)}
             ${isDefending && !card.isDead ? `<div style="position:absolute; top:-20px; left:30%; background:#f44336; color:white; padding:2px 10px; border-radius:10px; font-weight:bold; border:2px solid #fff; z-index:10; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">🛡️ 守護</div>` : ''}
-            ${!isReady && !isAttackerSelected && !card.isDead && !isEvoMode && !isDefending && card.status !== 'stunned' ? `<div style="position:absolute; top:40%; left:10%; background:rgba(0,0,0,0.8); color:white; padding:5px 10px; border-radius:4px; font-weight:bold; font-size:24px; transform:rotate(-15deg);">行動済み</div>` : ''}
+            ${!isReady && !isAttackerSelected && !card.isDead && !isEvoMode && !card.isDefending && card.ability !== 'taunt' && card.ability !== 'pure_aegis' && card.status !== 'stunned' ? `<div style="position:absolute; top:40%; left:10%; background:rgba(0,0,0,0.8); color:white; padding:5px 10px; border-radius:4px; font-weight:bold; font-size:24px; transform:rotate(-15deg);">行動済み</div>` : ''}
             ${isEvoTarget ? `<div style="position:absolute; top:40%; left:15%; background:#E91E63; color:white; padding:5px 10px; border-radius:4px; font-weight:bold; font-size:22px; transform:rotate(-10deg); box-shadow:0 0 10px #000;">進化可能!</div>` : ''}
             <div onclick="event.stopPropagation(); window.showCardDetailModal('player', ${index});" style="position:absolute; top:-10px; right:-10px; background:#222; color:#00BCD4; border:2px solid #00BCD4; border-radius:50%; width:36px; height:36px; display:flex; justify-content:center; align-items:center; font-size:18px; font-weight:bold; cursor:pointer; box-shadow:0 2px 5px rgba(0,0,0,0.8); z-index:20;" title="詳細を見る">🔍</div>
         </div>`;
@@ -4716,7 +3661,7 @@ window.renderBattleBoard = function() {
     // CPUフィールドのHTML生成 (絶対配置)
     // ==========================================
     let cpuFieldHtml = cpu.field.map((card, index) => {
-        const isTaunt = card.ability === "taunt" || card.isDefending; 
+        const isTaunt = card.ability === "taunt" || card.ability === "pure_aegis" || card.isDefending;
         const isStealth = card.ability === "stealth";
         const filter = isTargeting && !isStealth ? (isTaunt ? "drop-shadow(0 0 20px #FF5252)" : "drop-shadow(0 0 10px #FF9800)") : "none";
         const cursor = isTargeting && !isStealth ? "crosshair" : "default";
@@ -4840,7 +3785,45 @@ window.triggerPlayEffect = function(card, isPlayer) {
             owner.hand.push(owner.deck.shift());
             window.showBattleMessage(`🎴 【ドロー】\n${card.name} の効果で引きました！`, false, 2000, !isPlayer);
         }
-    } else if (card.ability === "mana_ramp") {
+    }
+    // ▼▼▼ 風の加護 ▼▼▼
+    else if (card.ability === "wind_blessing") {
+        owner.field.forEach((c, idx) => {
+            if (c !== card && !c.isDead) {
+                c.damage += 10;
+                window.showVFX(`${ownerPrefix}-card-${idx}`, 'heal', '攻撃UP');
+            }
+        });
+        window.showBattleMessage(`🍃 【風の加護】\n他の味方全員の攻撃力が上がった！`, false, 2000, !isPlayer, true);
+    }
+    // ▼▼▼ 咆哮 ▼▼▼
+    else if (card.ability === "roar") {
+        const enemyObj = isPlayer ? window.TCG_BATTLE.cpu : window.TCG_BATTLE.player;
+        const enemyPrefix = isPlayer ? 'c' : 'p';
+        let hit = false;
+        enemyObj.field.forEach((c, idx) => {
+            if (!c.isDead) {
+                c.hp -= 20;
+                window.showVFX(`${enemyPrefix}-card-${idx}`, 'damage', 20);
+                window.checkDeath(c, enemyObj, `${enemyPrefix}-card-${idx}`, owner);
+                hit = true;
+            }
+        });
+        if (hit) {
+            window.showBattleMessage(`🐉 【咆哮】\n強烈な咆哮で敵全体に20ダメージ！`, false, 2000, !isPlayer, true);
+            const ui = document.getElementById('tcg-battle-ui'); 
+            if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
+        }
+    }
+    // ▼▼▼ 忘却 ▼▼▼
+    else if (card.ability === "discard_hand") {
+        if (enemy.hand.length > 0) {
+            enemy.hand.splice(Math.floor(Math.random() * enemy.hand.length), 1);
+            window.showBattleMessage(`🧠 【忘却】\n相手の手札を1枚破壊した！`, false, 2000, !isPlayer);
+            window.showVFX(enemyFace, 'slash', '忘却');
+        }
+    }
+    else if (card.ability === "mana_ramp") {
         if (owner.maxMana < 10) { owner.maxMana++; window.showBattleMessage(`💎 【成長】\n最大マナが1増えました！`, false, 2000, !isPlayer); }
     } else if (card.ability === "heal_self") {
         owner.hp += 10; window.showVFX(targetFace, 'heal', 10);
@@ -5029,148 +4012,6 @@ window.selectPlayerCard = function(index) {
     window.renderBattleBoard();
 };
 
-window.executeAttack = function(targetType, enemyIndex) {
-    const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
-    const isPlayer = window.TCG_BATTLE.isEnemyTurn === false;
-    const owner = isPlayer ? p : cpu;
-    const enemy = isPlayer ? cpu : p;
-    const ownerPrefix = isPlayer ? 'p' : 'c';
-    const enemyPrefix = isPlayer ? 'c' : 'p';
-    
-    const attackerIndex = window.TCG_BATTLE.selectedAttackerIndex; 
-    if (attackerIndex === -1) return;
-    const attackerCard = owner.field[attackerIndex];
-
-    const isPierce = attackerCard.ability === "pierce_recoil" || attackerCard.ability === "flight" || attackerCard.ability === "god_strike" || attackerCard.ability === "dimension_drill" || attackerCard.ability === "piercing_juggernaut";
-    const hasTaunt = enemy.field.some(c => c.ability === "taunt" || c.isDefending);
-    
-    if (hasTaunt && !isPierce) {
-        if (targetType === 'cpu' || targetType === 'player' || (targetType === 'card' && enemy.field[enemyIndex].ability !== "taunt" && !enemy.field[enemyIndex].isDefending)) {
-            if(isPlayer) window.showBattleMessage("🛡️ 敵の場に【かばう】を持つカードがいます！\n先にそちらを攻撃してください", true); return;
-        }
-    }
-    if (targetType === 'card' && enemy.field[enemyIndex].ability === "stealth") {
-        if(isPlayer) window.showBattleMessage("🌫️ この敵は【潜伏】しています！\n攻撃対象に選べません！", true); return;
-    }
-
-    // ★追加：攻撃開始のログ
-    window.showBattleMessage(`⚔️ ${attackerCard.name} の攻撃！`, false, 1500, !isPlayer);
-
-    if (attackerCard.ability === "piercing_juggernaut") {
-        attackerCard.damage += 10;
-        window.showVFX(`${ownerPrefix}-card-${attackerIndex}`, 'heal', '火力UP');
-    }
-    
-    let dmgToTarget = attackerCard.damage; 
-    let dmgToAttacker = 0; 
-    const attackerHtmlId = `${ownerPrefix}-card-${attackerIndex}`;
-    
-    let targetDied = false;
-    let target = null;
-    let targetHtmlId = null;
-
-    if (targetType === 'cpu' || targetType === 'player') {
-        enemy.hp -= dmgToTarget; 
-        window.showVFX(isPlayer ? 'cpu-face' : 'player-face', 'slash'); 
-        window.showVFX(isPlayer ? 'cpu-face' : 'player-face', 'damage', dmgToTarget);
-        
-        // ★追加：リーダーへのダメージログ
-        window.showBattleMessage(`🔥 ${isPlayer ? '敵' : '味方'}リーダーに ${dmgToTarget} ダメージ！`, false, 2000, !isPlayer);
-
-        if (attackerCard.ability === "soul_reap") {
-            enemy.hp -= 20; window.showVFX(isPlayer ? 'cpu-face' : 'player-face', 'damage', 20);
-        }
-    } else if (targetType === 'card') {
-        target = enemy.field[enemyIndex]; 
-        targetHtmlId = `${enemyPrefix}-card-${enemyIndex}`;
-        dmgToAttacker = target.damage;
-
-        if (target.ability === "absolute_field") dmgToTarget = 1;
-        if (attackerCard.ability === "absolute_field") dmgToAttacker = 1;
-        if (target.ability === "absolute_fortress") dmgToTarget = Math.max(0, dmgToTarget - 20);
-        if (attackerCard.ability === "absolute_fortress") dmgToAttacker = Math.max(0, dmgToAttacker - 20);
-        
-        if (target.ability === "absolute_evasion" && Math.random() < 0.5) {
-            dmgToTarget = 0; window.showVFX(targetHtmlId, 'heal', '回避');
-        }
-        if (target.ability === "impregnable_armor" && dmgToTarget <= 30) {
-            dmgToTarget = 0; window.showVFX(targetHtmlId, 'heal', '無効化');
-        }
-        if (target.ability === "void_counter" && !target._void_used) {
-            target._void_used = true; dmgToAttacker += dmgToTarget * 2; dmgToTarget = 0;
-            window.showVFX(targetHtmlId, 'slash', '倍返し');
-        }
-        if (target.ability === "magic_reflect") {
-            dmgToAttacker += Math.floor(dmgToTarget / 2); dmgToTarget = Math.floor(dmgToTarget / 2);
-            window.showVFX(targetHtmlId, 'slash', '反射');
-        }
-        if (target.ability === "thorns") {
-            dmgToAttacker += Math.floor(dmgToTarget / 2); 
-            window.showVFX(targetHtmlId, 'slash', '棘');
-        }
-        if (attackerCard.ability === "soul_reap") {
-            target.maxHp = Math.max(1, target.maxHp - 20); 
-            dmgToTarget += 20; 
-        }
-
-        target.hp -= dmgToTarget; 
-        window.showVFX(targetHtmlId, 'slash'); window.showVFX(targetHtmlId, 'damage', dmgToTarget);
-        if(target.hp <= 0 && !target.isDead) targetDied = true;
-        window.checkDeath(target, enemy, targetHtmlId, owner);
-        if (target.ability === "stealth") target.ability = null;
-    }
-
-    if (attackerCard.ability === "soul_drain" && dmgToTarget > 0) {
-        let heal = Math.floor(dmgToTarget / 2);
-        attackerCard.hp += heal; window.showVFX(attackerHtmlId, 'heal', heal);
-    }
-    if (targetDied) {
-        if (attackerCard.ability === "devour") {
-            attackerCard.maxHp = (attackerCard.maxHp||attackerCard.hp) + 20;
-            attackerCard.hp += 20; attackerCard.damage += 10;
-            window.showVFX(attackerHtmlId, 'heal', '捕食');
-        }
-        if (attackerCard.ability === "apex_predator") {
-            attackerCard.maxHp = (attackerCard.maxHp||attackerCard.hp) * 2;
-            attackerCard.hp = attackerCard.maxHp; attackerCard.damage *= 2;
-            window.showVFX(attackerHtmlId, 'heal', '超捕食');
-        }
-    }
-
-    if (attackerCard.ability === "god_strike") {
-        const otherEnemies = enemy.field.filter((c, idx) => (!c.isDead && (targetType !== 'card' || idx !== enemyIndex)));
-        if (otherEnemies.length > 0) {
-            let tCard = otherEnemies[Math.floor(Math.random() * otherEnemies.length)];
-            tCard.hp = 0; window.checkDeath(tCard, enemy, `${enemyPrefix}-card-${enemy.field.indexOf(tCard)}`, owner);
-            window.showBattleMessage("⚔️ 【神の一撃】が別の敵を葬り去った！", false, 1500, !isPlayer);
-        }
-    }
-    if (attackerCard.ability === "dimension_drill" && targetType === 'card') {
-        enemy.hp -= dmgToTarget; window.showVFX(isPlayer?'cpu-face':'player-face', 'damage', dmgToTarget); 
-        window.showBattleMessage("🌪️ 【次元穿孔】敵リーダーも貫いた！", false, 1500, !isPlayer);
-    }
-    if (attackerCard.ability === "pierce_recoil") { dmgToAttacker += 10; }
-
-    if (dmgToAttacker > 0) {
-        setTimeout(() => {
-            attackerCard.hp -= dmgToAttacker; window.showVFX(attackerHtmlId, 'slash'); window.showVFX(attackerHtmlId, 'damage', dmgToAttacker);
-            window.checkDeath(attackerCard, owner, attackerHtmlId, enemy); window.renderBattleBoard();
-        }, 200);
-    }
-    
-    if (attackerCard.ability === "stealth") attackerCard.ability = null;
-    attackerCard.canAttack = false; 
-    if(isPlayer) window.TCG_BATTLE.selectedAttackerIndex = -1; 
-    window.renderBattleBoard();
-
-    setTimeout(() => {
-        p.field = p.field.filter(c => !c.isDead); cpu.field = cpu.field.filter(c => !c.isDead);
-        if (cpu.hp <= 0) { cpu.hp = 0; window.renderBattleBoard(); window.showBattleMessage("🎉 YOU WIN!!\n相手のHPを0にしました！", false, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
-        if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
-        window.renderBattleBoard();
-    }, 800);
-};
-
 // ==========================================
 // 10. ターン開始・終了処理（新アビリティ対応）
 // ==========================================
@@ -5190,7 +4031,7 @@ window.startPlayerTurn = function(isFirstTurn = false) {
         p.hand.push(p.deck.shift()); drewCard = true;
     }
     
-    p.field.forEach(card => card.canAttack = true);
+    p.field.forEach(card => { card.canAttack = true; card._has_attacked_once = false; });
     window.renderBattleBoard();
 
     window.showTurnCutin(`TURN ${window.TCG_BATTLE.turn}\nYOUR TURN`, "#4CAF50", () => {
@@ -5366,7 +4207,21 @@ window.executeRealEndTurn = function() {
     p.field.forEach((c, i) => {
         if (c.isDead) return;
         c.status = null; // 状態異常クリア
+
+        // ▼▼▼ 自然治癒・プレイヤー側 ▼▼▼
+        if (c.ability === "regeneration" && c.hp < c.maxHp) {
+            let heal = c.maxHp - c.hp; 
+            c.hp = c.maxHp; 
+            window.showVFX(`p-card-${i}`, 'heal', heal);
+        }
         
+        // ▼▼▼ 霊障・プレイヤー側 ▼▼▼
+        if (c.ability === "haunt") {
+            cpu.hp -= 20; 
+            window.showVFX('cpu-face', 'damage', 20);
+            window.showBattleMessage(`👻 【霊障】\n${c.name}の呪いでリーダーに20ダメージ！`, false, 1500, false, true);
+        }
+
         if (c.ability === "burn_field" || c.ability === "cataclysm") {
             let dmg = c.ability === "cataclysm" ? 20 : 10;
             cpu.field.forEach((ec, eidx) => { if(!ec.isDead) { ec.hp -= dmg; window.showVFX(`c-card-${eidx}`, 'damage', dmg); window.checkDeath(ec, cpu, `c-card-${eidx}`, p); } });
@@ -5390,13 +4245,18 @@ window.executeRealEndTurn = function() {
         }
     });
     p.field = p.field.filter(c => !c.isDead); cpu.field = cpu.field.filter(c => !c.isDead);
+
+    // ▼▼▼ ターン終了時ダメージでの勝敗判定 ▼▼▼
+    if (cpu.hp <= 0) { cpu.hp = 0; window.renderBattleBoard(); window.showBattleMessage("🎉 YOU WIN!!\n相手のHPを0にしました！", false, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
+    if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
+
     window.showTurnCutin("ENEMY TURN", "#ff5252", () => { window.executeCPUTurn(false); });
 };
 
 window.endTurn = function() {
     window.TCG_BATTLE.selectedAttackerIndex = -1; window.TCG_BATTLE.player.actionUsed = false; window.renderBattleBoard();
     if (window.TCG_BATTLE.player.currentMana >= 1 && !window.TCG_BATTLE._skipDefendHint) {
-        const canDefendCard = window.TCG_BATTLE.player.field.find(c => (!c.canAttack || c.damage <= 0) && !c.isDefending && c.ability !== "taunt");
+        const canDefendCard = window.TCG_BATTLE.player.field.find(c => !c.isDefending && c.ability !== "taunt" && c.ability !== "pure_aegis" && !c.isDead && c.status !== "stunned");
         if (canDefendCard) { window.showDefendHintModal(window.executeRealEndTurn); return; }
     }
     window.executeRealEndTurn();
@@ -5479,7 +4339,7 @@ window.TCG_BATTLE_AUTO_LOOP = setInterval(() => {
     if (attackerIndex !== -1) {
         window.TCG_BATTLE.selectedAttackerIndex = attackerIndex;
         let targetType = 'cpu'; let enemyIndex = 0;
-        const tauntTargets = cpu.field.filter(c => (c.ability === "taunt" || c.isDefending) && !c.isDead);
+        const tauntTargets = cpu.field.filter(c => (c.ability === "taunt" || c.ability === "pure_aegis" || c.isDefending) && !c.isDead);
         const validTargets = cpu.field.filter(c => c.ability !== "stealth" && !c.isDead); 
         const attackerCard = p.field[attackerIndex];
         const isPierce = attackerCard.ability === "pierce_recoil" || attackerCard.ability === "flight" || attackerCard.ability === "god_strike" || attackerCard.ability === "dimension_drill" || attackerCard.ability === "piercing_juggernaut";
@@ -5528,7 +4388,7 @@ window.TCG_BATTLE_AUTO_LOOP = setInterval(() => {
     }
 
     // ③ 防御
-    let defIndex = p.field.findIndex(c => (!c.canAttack || c.damage <= 0) && !c.isDefending && c.ability !== "taunt" && !c.isDead && c.status !== "stunned");
+    let defIndex = p.field.findIndex(c => (!c.canAttack || c.damage <= 0) && !c.isDefending && c.ability !== "taunt" && c.ability !== "pure_aegis" && !c.isDead && c.status !== "stunned");
     if (defIndex !== -1 && p.currentMana >= 1) {
         lockAnimation();
         window.selectPlayerCard(defIndex);
@@ -6292,153 +5152,6 @@ window.showDeckDetailModal = function(deckIndex) {
     modal.style.display = 'flex';
 };
 
-// ⑤ カード同士のダメージログと破壊ログを完全上書き！
-window.executeAttack = function(targetType, enemyIndex) {
-    const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
-    const isPlayer = window.TCG_BATTLE.isEnemyTurn === false;
-    const owner = isPlayer ? p : cpu;
-    const enemy = isPlayer ? cpu : p;
-    const ownerPrefix = isPlayer ? 'p' : 'c';
-    const enemyPrefix = isPlayer ? 'c' : 'p';
-    
-    const attackerIndex = window.TCG_BATTLE.selectedAttackerIndex; 
-    if (attackerIndex === -1) return;
-    const attackerCard = owner.field[attackerIndex];
-
-    const isPierce = attackerCard.ability === "pierce_recoil" || attackerCard.ability === "flight" || attackerCard.ability === "god_strike" || attackerCard.ability === "dimension_drill" || attackerCard.ability === "piercing_juggernaut";
-    const hasTaunt = enemy.field.some(c => c.ability === "taunt" || c.isDefending);
-    
-    if (hasTaunt && !isPierce) {
-        if (targetType === 'cpu' || targetType === 'player' || (targetType === 'card' && enemy.field[enemyIndex].ability !== "taunt" && !enemy.field[enemyIndex].isDefending)) {
-            if(isPlayer) window.showBattleMessage("🛡️ 敵の場に【かばう】を持つカードがいます！\n先にそちらを攻撃してください", true); return;
-        }
-    }
-    if (targetType === 'card' && enemy.field[enemyIndex].ability === "stealth") {
-        if(isPlayer) window.showBattleMessage("🌫️ この敵は【潜伏】しています！\n攻撃対象に選べません！", true); return;
-    }
-
-    // 攻撃宣言ログ
-    window.showBattleMessage(`⚔️ ${attackerCard.name} の攻撃！`, false, 1500, !isPlayer);
-
-    if (attackerCard.ability === "piercing_juggernaut") {
-        attackerCard.damage += 10;
-        window.showVFX(`${ownerPrefix}-card-${attackerIndex}`, 'heal', '火力UP');
-    }
-    
-    let dmgToTarget = attackerCard.damage; 
-    let dmgToAttacker = 0; 
-    const attackerHtmlId = `${ownerPrefix}-card-${attackerIndex}`;
-    
-    let targetDied = false;
-    let target = null;
-    let targetHtmlId = null;
-
-    if (targetType === 'cpu' || targetType === 'player') {
-        enemy.hp -= dmgToTarget; 
-        window.showVFX(isPlayer ? 'cpu-face' : 'player-face', 'slash'); 
-        window.showVFX(isPlayer ? 'cpu-face' : 'player-face', 'damage', dmgToTarget);
-        
-        // リーダーへのダメージログ
-        window.showBattleMessage(`🔥 ${isPlayer ? '敵' : '味方'}リーダーに ${dmgToTarget} ダメージ！`, false, 2000, !isPlayer);
-
-        if (attackerCard.ability === "soul_reap") {
-            enemy.hp -= 20; window.showVFX(isPlayer ? 'cpu-face' : 'player-face', 'damage', 20);
-        }
-    } else if (targetType === 'card') {
-        target = enemy.field[enemyIndex]; 
-        targetHtmlId = `${enemyPrefix}-card-${enemyIndex}`;
-        dmgToAttacker = target.damage;
-
-        if (target.ability === "absolute_field") dmgToTarget = 1;
-        if (attackerCard.ability === "absolute_field") dmgToAttacker = 1;
-        if (target.ability === "absolute_fortress") dmgToTarget = Math.max(0, dmgToTarget - 20);
-        if (attackerCard.ability === "absolute_fortress") dmgToAttacker = Math.max(0, dmgToAttacker - 20);
-        
-        if (target.ability === "absolute_evasion" && Math.random() < 0.5) {
-            dmgToTarget = 0; window.showVFX(targetHtmlId, 'heal', '回避');
-        }
-        if (target.ability === "impregnable_armor" && dmgToTarget <= 30) {
-            dmgToTarget = 0; window.showVFX(targetHtmlId, 'heal', '無効化');
-        }
-        if (target.ability === "void_counter" && !target._void_used) {
-            target._void_used = true; dmgToAttacker += dmgToTarget * 2; dmgToTarget = 0;
-            window.showVFX(targetHtmlId, 'slash', '倍返し');
-        }
-        if (target.ability === "magic_reflect") {
-            dmgToAttacker += Math.floor(dmgToTarget / 2); dmgToTarget = Math.floor(dmgToTarget / 2);
-            window.showVFX(targetHtmlId, 'slash', '反射');
-        }
-        if (target.ability === "thorns") {
-            dmgToAttacker += Math.floor(dmgToTarget / 2); 
-            window.showVFX(targetHtmlId, 'slash', '棘');
-        }
-        if (attackerCard.ability === "soul_reap") {
-            target.maxHp = Math.max(1, target.maxHp - 20); 
-            dmgToTarget += 20; 
-        }
-
-        target.hp -= dmgToTarget; 
-        window.showVFX(targetHtmlId, 'slash'); window.showVFX(targetHtmlId, 'damage', dmgToTarget);
-        
-        // ★追加：モンスター同士のダメージログ
-        window.showBattleMessage(`💥 ${target.name} に ${dmgToTarget} ダメージ！`, false, 1500, !isPlayer, true);
-
-        if(target.hp <= 0 && !target.isDead) targetDied = true;
-        window.checkDeath(target, enemy, targetHtmlId, owner);
-        if (target.ability === "stealth") target.ability = null;
-    }
-
-    if (attackerCard.ability === "soul_drain" && dmgToTarget > 0) {
-        let heal = Math.floor(dmgToTarget / 2);
-        attackerCard.hp += heal; window.showVFX(attackerHtmlId, 'heal', heal);
-    }
-    if (targetDied) {
-        if (attackerCard.ability === "devour") {
-            attackerCard.maxHp = (attackerCard.maxHp||attackerCard.hp) + 20;
-            attackerCard.hp += 20; attackerCard.damage += 10;
-            window.showVFX(attackerHtmlId, 'heal', '捕食');
-        }
-        if (attackerCard.ability === "apex_predator") {
-            attackerCard.maxHp = (attackerCard.maxHp||attackerCard.hp) * 2;
-            attackerCard.hp = attackerCard.maxHp; attackerCard.damage *= 2;
-            window.showVFX(attackerHtmlId, 'heal', '超捕食');
-        }
-    }
-
-    if (attackerCard.ability === "god_strike") {
-        const otherEnemies = enemy.field.filter((c, idx) => (!c.isDead && (targetType !== 'card' || idx !== enemyIndex)));
-        if (otherEnemies.length > 0) {
-            let tCard = otherEnemies[Math.floor(Math.random() * otherEnemies.length)];
-            tCard.hp = 0; window.checkDeath(tCard, enemy, `${enemyPrefix}-card-${enemy.field.indexOf(tCard)}`, owner);
-            window.showBattleMessage("⚔️ 【神の一撃】が別の敵を葬り去った！", false, 1500, !isPlayer);
-        }
-    }
-    if (attackerCard.ability === "dimension_drill" && targetType === 'card') {
-        enemy.hp -= dmgToTarget; window.showVFX(isPlayer?'cpu-face':'player-face', 'damage', dmgToTarget); 
-        window.showBattleMessage("🌪️ 【次元穿孔】敵リーダーも貫いた！", false, 1500, !isPlayer);
-    }
-    if (attackerCard.ability === "pierce_recoil") { dmgToAttacker += 10; }
-
-    if (dmgToAttacker > 0) {
-        setTimeout(() => {
-            attackerCard.hp -= dmgToAttacker; window.showVFX(attackerHtmlId, 'slash'); window.showVFX(attackerHtmlId, 'damage', dmgToAttacker);
-            window.checkDeath(attackerCard, owner, attackerHtmlId, enemy); window.renderBattleBoard();
-        }, 200);
-    }
-    
-    if (attackerCard.ability === "stealth") attackerCard.ability = null;
-    attackerCard.canAttack = false; 
-    if(isPlayer) window.TCG_BATTLE.selectedAttackerIndex = -1; 
-    window.renderBattleBoard();
-
-    setTimeout(() => {
-        p.field = p.field.filter(c => !c.isDead); cpu.field = cpu.field.filter(c => !c.isDead);
-        if (cpu.hp <= 0) { cpu.hp = 0; window.renderBattleBoard(); window.showBattleMessage("🎉 YOU WIN!!\n相手のHPを0にしました！", false, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
-        if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
-        window.renderBattleBoard();
-    }, 800);
-};
-
 // ⑥ 死亡処理の上書き（破壊ログを出す）
 window.checkDeath = function(card, owner, htmlId, enemyOwner = null) {
     if (card.hp <= 0 && !card.isDead) {
@@ -6471,6 +5184,16 @@ window.checkDeath = function(card, owner, htmlId, enemyOwner = null) {
                 window.showVFX(enemyOwner === window.TCG_BATTLE.cpu ? 'cpu-face' : 'player-face', 'slash');
                 window.showVFX(enemyOwner === window.TCG_BATTLE.cpu ? 'cpu-face' : 'player-face', 'damage', 50);
                 window.showBattleMessage(`💀 【死の呪い】\n敵リーダーに怨念のダメージ！`);
+            }
+            if (card.ability === "death_bomb" && enemyOwner) {
+                enemyOwner.hp -= 20;
+                const faceId = enemyOwner === window.TCG_BATTLE.cpu ? 'cpu-face' : 'player-face';
+                window.showVFX(faceId, 'slash'); window.showVFX(faceId, 'damage', 20);
+                window.showBattleMessage(`💣 【誘爆】\n敵リーダーに20ダメージ！`, false, 2000, !isPlayerOwner, true);
+                
+                // 画面揺れ演出
+                const ui = document.getElementById('tcg-battle-ui'); 
+                if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
             }
             if (card.ability === "burst_spores") {
                 owner.field.forEach((ac, idx) => {
@@ -6866,6 +5589,10 @@ window.executeCPUTurn = function(isFirstTurn = false) {
                 }
             });
             p.field = p.field.filter(c => !c.isDead); cpu.field = cpu.field.filter(c => !c.isDead);
+
+            // ▼▼▼ お互いのHPをチェック ▼▼▼
+            if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
+            if (cpu.hp <= 0) { cpu.hp = 0; window.renderBattleBoard(); window.showBattleMessage("🎉 YOU WIN!!\n相手のHPを0にしました！", false, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
 
             window.startPlayerTurn(false);
 
@@ -7291,9 +6018,9 @@ window.playCard = function(handIndex) {
     if (card.type === 'action' && p.actionUsed) { window.showBattleMessage("⚠️ アクションカードは1ターンに1回までしか使えません！", true); return; }
     
     if (card.evolvesFrom) {
-        const canEvolve = p.field.some(c => c.type === card.evolvesFrom);
+        const canEvolve = p.field.some(c => window.checkCanEvolve(c, card)); // ★新しい判定に変更
         if (!canEvolve) {
-            const evoName = window.getEvolvesFromName(card.evolvesFrom);
+            const evoName = window.getEvolvesFromName(card); // ★引数もカードそのものに変更
             window.showBattleMessage(`⚠️ 盤面に進化元の\n「${evoName}」がいません！`, true); return;
         }
         if (window.TCG_BATTLE.selectedHandCardIndex === handIndex) {
@@ -7321,7 +6048,7 @@ window.playCard = function(handIndex) {
             p.graveyard.push(card);
             window.triggerPlayEffect(card, true); 
         } else { 
-            card.canAttack = false; p.field.push(card); 
+            card.canAttack = (card.ability === "haste"); p.field.push(card); 
             window.triggerPlayEffect(card, true); 
         }
         if (window.TCG_BATTLE.cpu.hp <= 0) { setTimeout(() => { alert("🎉 YOU WIN!! 相手のHPを0にしました！"); document.getElementById('tcg-battle-ui').style.display = 'none'; }, 1000); }
@@ -7385,207 +6112,6 @@ window.selectPlayerCard = function(index) {
         }
     }
     window.renderBattleBoard();
-};
-
-// ==========================================
-// ★ ダイレクトアタック（直接攻撃）演出の超絶強化パッチ
-// ==========================================
-window.executeAttack = function(targetType, enemyIndex) {
-    const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
-    const isPlayer = window.TCG_BATTLE.isEnemyTurn === false;
-    const owner = isPlayer ? p : cpu;
-    const enemy = isPlayer ? cpu : p;
-    const ownerPrefix = isPlayer ? 'p' : 'c';
-    const enemyPrefix = isPlayer ? 'c' : 'p';
-    
-    const attackerIndex = window.TCG_BATTLE.selectedAttackerIndex; 
-    if (attackerIndex === -1) return;
-    const attackerCard = owner.field[attackerIndex];
-
-    const isPierce = attackerCard.ability === "pierce_recoil" || attackerCard.ability === "flight" || attackerCard.ability === "god_strike" || attackerCard.ability === "dimension_drill" || attackerCard.ability === "piercing_juggernaut";
-    const hasTaunt = enemy.field.some(c => c.ability === "taunt" || c.isDefending);
-    
-    if (hasTaunt && !isPierce) {
-        if (targetType === 'cpu' || targetType === 'player' || (targetType === 'card' && enemy.field[enemyIndex].ability !== "taunt" && !enemy.field[enemyIndex].isDefending)) {
-            if(isPlayer) window.showBattleMessage("🛡️ 敵の場に【かばう】を持つカードがいます！\n先にそちらを攻撃してください", true); return;
-        }
-    }
-    if (targetType === 'card' && enemy.field[enemyIndex].ability === "stealth") {
-        if(isPlayer) window.showBattleMessage("🌫️ この敵は【潜伏】しています！\n攻撃対象に選べません！", true); return;
-    }
-
-    // 攻撃宣言ログ
-    window.showBattleMessage(`⚔️ ${attackerCard.name} の攻撃！`, false, 1500, !isPlayer);
-
-    if (attackerCard.ability === "piercing_juggernaut") {
-        attackerCard.damage += 10;
-        window.showVFX(`${ownerPrefix}-card-${attackerIndex}`, 'heal', '火力UP');
-    }
-    
-    let dmgToTarget = attackerCard.damage; 
-    let dmgToAttacker = 0; 
-    const attackerHtmlId = `${ownerPrefix}-card-${attackerIndex}`;
-    
-    let targetDied = false;
-    let target = null;
-    let targetHtmlId = null;
-
-    if (targetType === 'cpu' || targetType === 'player') {
-        const faceId = isPlayer ? 'cpu-face' : 'player-face';
-        
-        // ★追加：ダイレクトアタックの超リッチ演出！
-        // 1. 画面揺れ
-        const ui = document.getElementById('tcg-battle-ui'); 
-        if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
-        
-        // 2. カッコいいカットインメッセージ
-        window.showBattleMessage(`💥 ダイレクトアタック！！`, !isPlayer, 2000, !isPlayer, false);
-
-        // 3. VFX (斬撃とダメージ数値)
-        window.showVFX(faceId, 'slash'); 
-        window.showVFX(faceId, 'damage', dmgToTarget);
-        
-        // 裏のログに記録
-        window.showBattleMessage(`🔥 ${isPlayer ? '敵' : '味方'}リーダーに ${dmgToTarget} ダメージ！`, false, 2000, !isPlayer, true);
-
-        // 内部HP減算
-        enemy.hp -= dmgToTarget; 
-        if (attackerCard.ability === "soul_reap") {
-            enemy.hp -= 20; window.showVFX(faceId, 'damage', 20);
-        }
-
-        // 4. 少し遅れてHPゲージが赤く光りながらガクッと減る演出
-        setTimeout(() => {
-            const hpSpan = isPlayer ? document.querySelector('#cpu-face span') : document.querySelector('#player-face div:nth-child(2)');
-            if (hpSpan) {
-                // アニメーション用にCSS transitionを追加して数字を変える
-                hpSpan.style.transition = "all 0.1s";
-                hpSpan.innerText = `HP: ${enemy.hp}`;
-                hpSpan.style.color = '#ff5252';
-                hpSpan.style.transform = 'scale(1.4)';
-                // 0.3秒後に元の色とサイズに戻す
-                setTimeout(() => {
-                    hpSpan.style.color = isPlayer ? '#ff5252' : '#4CAF50';
-                    hpSpan.style.transform = 'scale(1)';
-                }, 300);
-            }
-        }, 500);
-
-    } else if (targetType === 'card') {
-        target = enemy.field[enemyIndex]; 
-        targetHtmlId = `${enemyPrefix}-card-${enemyIndex}`;
-        dmgToAttacker = target.damage;
-
-        if (target.ability === "absolute_field") dmgToTarget = 1;
-        if (attackerCard.ability === "absolute_field") dmgToAttacker = 1;
-        if (target.ability === "absolute_fortress") dmgToTarget = Math.max(0, dmgToTarget - 20);
-        if (attackerCard.ability === "absolute_fortress") dmgToAttacker = Math.max(0, dmgToAttacker - 20);
-        
-        if (target.ability === "absolute_evasion" && Math.random() < 0.5) {
-            dmgToTarget = 0; window.showVFX(targetHtmlId, 'heal', '回避');
-        }
-        if (target.ability === "impregnable_armor" && dmgToTarget <= 30) {
-            dmgToTarget = 0; window.showVFX(targetHtmlId, 'heal', '無効化');
-        }
-        if (target.ability === "void_counter" && !target._void_used) {
-            target._void_used = true; dmgToAttacker += dmgToTarget * 2; dmgToTarget = 0;
-            window.showVFX(targetHtmlId, 'slash', '倍返し');
-        }
-        if (target.ability === "magic_reflect") {
-            dmgToAttacker += Math.floor(dmgToTarget / 2); dmgToTarget = Math.floor(dmgToTarget / 2);
-            window.showVFX(targetHtmlId, 'slash', '反射');
-        }
-        if (target.ability === "thorns") {
-            dmgToAttacker += Math.floor(dmgToTarget / 2); 
-            window.showVFX(targetHtmlId, 'slash', '棘');
-        }
-        if (attackerCard.ability === "soul_reap") {
-            target.maxHp = Math.max(1, target.maxHp - 20); 
-            dmgToTarget += 20; 
-        }
-
-        target.hp -= dmgToTarget; 
-        window.showVFX(targetHtmlId, 'slash'); window.showVFX(targetHtmlId, 'damage', dmgToTarget);
-        
-        window.showBattleMessage(`💥 ${target.name} に ${dmgToTarget} ダメージ！`, false, 1500, !isPlayer, true);
-
-        if(target.hp <= 0 && !target.isDead) targetDied = true;
-        window.checkDeath(target, enemy, targetHtmlId, owner);
-        if (target.ability === "stealth") target.ability = null;
-    }
-
-    if (attackerCard.ability === "soul_drain" && dmgToTarget > 0) {
-        let heal = Math.floor(dmgToTarget / 2);
-        attackerCard.hp += heal; window.showVFX(attackerHtmlId, 'heal', heal);
-    }
-    if (targetDied) {
-        if (attackerCard.ability === "devour") {
-            attackerCard.maxHp = (attackerCard.maxHp||attackerCard.hp) + 20;
-            attackerCard.hp += 20; attackerCard.damage += 10;
-            window.showVFX(attackerHtmlId, 'heal', '捕食');
-        }
-        if (attackerCard.ability === "apex_predator") {
-            attackerCard.maxHp = (attackerCard.maxHp||attackerCard.hp) * 2;
-            attackerCard.hp = attackerCard.maxHp; attackerCard.damage *= 2;
-            window.showVFX(attackerHtmlId, 'heal', '超捕食');
-        }
-    }
-
-    if (attackerCard.ability === "god_strike") {
-        const otherEnemies = enemy.field.filter((c, idx) => (!c.isDead && (targetType !== 'card' || idx !== enemyIndex)));
-        if (otherEnemies.length > 0) {
-            let tCard = otherEnemies[Math.floor(Math.random() * otherEnemies.length)];
-            tCard.hp = 0; window.checkDeath(tCard, enemy, `${enemyPrefix}-card-${enemy.field.indexOf(tCard)}`, owner);
-            window.showBattleMessage("⚔️ 【神の一撃】が別の敵を葬り去った！", false, 1500, !isPlayer);
-        }
-    }
-    if (attackerCard.ability === "dimension_drill" && targetType === 'card') {
-        // ★貫通ダメージ時もダイレクトアタック演出を入れる
-        const faceId = isPlayer ? 'cpu-face' : 'player-face';
-        const ui = document.getElementById('tcg-battle-ui'); 
-        if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
-        
-        window.showBattleMessage(`💥 ダイレクトアタック！！（貫通）`, !isPlayer, 2000, !isPlayer, false);
-        window.showVFX(faceId, 'damage', dmgToTarget); 
-        window.showBattleMessage(`🌪️ 【次元穿孔】敵リーダーも貫いた！`, false, 1500, !isPlayer, true);
-        
-        enemy.hp -= dmgToTarget;
-        
-        setTimeout(() => {
-            const hpSpan = isPlayer ? document.querySelector('#cpu-face span') : document.querySelector('#player-face div:nth-child(2)');
-            if (hpSpan) {
-                hpSpan.style.transition = "all 0.1s";
-                hpSpan.innerText = `HP: ${enemy.hp}`;
-                hpSpan.style.color = '#ff5252';
-                hpSpan.style.transform = 'scale(1.4)';
-                setTimeout(() => {
-                    hpSpan.style.color = isPlayer ? '#ff5252' : '#4CAF50';
-                    hpSpan.style.transform = 'scale(1)';
-                }, 300);
-            }
-        }, 500);
-    }
-    if (attackerCard.ability === "pierce_recoil") { dmgToAttacker += 10; }
-
-    if (dmgToAttacker > 0) {
-        setTimeout(() => {
-            attackerCard.hp -= dmgToAttacker; window.showVFX(attackerHtmlId, 'slash'); window.showVFX(attackerHtmlId, 'damage', dmgToAttacker);
-            window.checkDeath(attackerCard, owner, attackerHtmlId, enemy); window.renderBattleBoard();
-        }, 200);
-    }
-    
-    if (attackerCard.ability === "stealth") attackerCard.ability = null;
-    attackerCard.canAttack = false; 
-    if(isPlayer) window.TCG_BATTLE.selectedAttackerIndex = -1; 
-
-    // ★演出が終わってから画面を更新するように少し待機を伸ばす（800ms -> 1100ms）
-    setTimeout(() => {
-        window.renderBattleBoard();
-        p.field = p.field.filter(c => !c.isDead); cpu.field = cpu.field.filter(c => !c.isDead);
-        if (cpu.hp <= 0) { cpu.hp = 0; window.renderBattleBoard(); window.showBattleMessage("🎉 YOU WIN!!\n相手のHPを0にしました！", false, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
-        if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
-        window.renderBattleBoard();
-    }, 1100);
 };
 
 // ==========================================
@@ -7662,194 +6188,6 @@ window.showDirectAttackCutin = function(isPlayer, isPierce) {
     }, 1000);
 };
 
-// ③ 攻撃処理を上書きしてダイレクトアタック演出を組み込む
-window.executeAttack = function(targetType, enemyIndex) {
-    const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
-    const isPlayer = window.TCG_BATTLE.isEnemyTurn === false;
-    const owner = isPlayer ? p : cpu;
-    const enemy = isPlayer ? cpu : p;
-    const ownerPrefix = isPlayer ? 'p' : 'c';
-    const enemyPrefix = isPlayer ? 'c' : 'p';
-    
-    const attackerIndex = window.TCG_BATTLE.selectedAttackerIndex; 
-    if (attackerIndex === -1) return;
-    const attackerCard = owner.field[attackerIndex];
-
-    const isPierce = attackerCard.ability === "pierce_recoil" || attackerCard.ability === "flight" || attackerCard.ability === "god_strike" || attackerCard.ability === "dimension_drill" || attackerCard.ability === "piercing_juggernaut";
-    const hasTaunt = enemy.field.some(c => c.ability === "taunt" || c.isDefending);
-    
-    if (hasTaunt && !isPierce) {
-        if (targetType === 'cpu' || targetType === 'player' || (targetType === 'card' && enemy.field[enemyIndex].ability !== "taunt" && !enemy.field[enemyIndex].isDefending)) {
-            if(isPlayer) window.showBattleMessage("🛡️ 敵の場に【かばう】を持つカードがいます！\n先にそちらを攻撃してください", true); return;
-        }
-    }
-    if (targetType === 'card' && enemy.field[enemyIndex].ability === "stealth") {
-        if(isPlayer) window.showBattleMessage("🌫️ この敵は【潜伏】しています！\n攻撃対象に選べません！", true); return;
-    }
-
-    window.showBattleMessage(`⚔️ ${attackerCard.name} の攻撃！`, false, 1500, !isPlayer);
-
-    if (attackerCard.ability === "piercing_juggernaut") {
-        attackerCard.damage += 10;
-        window.showVFX(`${ownerPrefix}-card-${attackerIndex}`, 'heal', '火力UP');
-    }
-    
-    let dmgToTarget = attackerCard.damage; 
-    let dmgToAttacker = 0; 
-    const attackerHtmlId = `${ownerPrefix}-card-${attackerIndex}`;
-    
-    let targetDied = false;
-    let target = null;
-    let targetHtmlId = null;
-
-    if (targetType === 'cpu' || targetType === 'player') {
-        const faceId = isPlayer ? 'cpu-face' : 'player-face';
-        
-        // ★修正：ダイレクトアタックの超リッチ演出！
-        const ui = document.getElementById('tcg-battle-ui'); 
-        if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
-        
-        window.showDirectAttackCutin(isPlayer, false);
-
-        window.showVFX(faceId, 'slash'); 
-        window.showVFX(faceId, 'damage', dmgToTarget);
-        window.showBattleMessage(`🔥 ${isPlayer ? '敵' : '味方'}リーダーに ${dmgToTarget} ダメージ！`, false, 2000, !isPlayer, true);
-
-        enemy.hp -= dmgToTarget; 
-        if (attackerCard.ability === "soul_reap") {
-            enemy.hp -= 20; window.showVFX(faceId, 'damage', 20);
-        }
-
-        setTimeout(() => {
-            const hpSpan = isPlayer ? document.querySelector('#cpu-face span') : document.querySelector('#player-face div:nth-child(2)');
-            if (hpSpan) {
-                hpSpan.style.transition = "all 0.1s";
-                hpSpan.innerText = `HP: ${enemy.hp}`;
-                hpSpan.style.color = '#ff5252';
-                hpSpan.style.transform = 'scale(1.4)';
-                setTimeout(() => {
-                    hpSpan.style.color = isPlayer ? '#ff5252' : '#4CAF50';
-                    hpSpan.style.transform = 'scale(1)';
-                }, 300);
-            }
-        }, 500);
-
-    } else if (targetType === 'card') {
-        target = enemy.field[enemyIndex]; 
-        targetHtmlId = `${enemyPrefix}-card-${enemyIndex}`;
-        dmgToAttacker = target.damage;
-
-        if (target.ability === "absolute_field") dmgToTarget = 1;
-        if (attackerCard.ability === "absolute_field") dmgToAttacker = 1;
-        if (target.ability === "absolute_fortress") dmgToTarget = Math.max(0, dmgToTarget - 20);
-        if (attackerCard.ability === "absolute_fortress") dmgToAttacker = Math.max(0, dmgToAttacker - 20);
-        
-        if (target.ability === "absolute_evasion" && Math.random() < 0.5) {
-            dmgToTarget = 0; window.showVFX(targetHtmlId, 'heal', '回避');
-        }
-        if (target.ability === "impregnable_armor" && dmgToTarget <= 30) {
-            dmgToTarget = 0; window.showVFX(targetHtmlId, 'heal', '無効化');
-        }
-        if (target.ability === "void_counter" && !target._void_used) {
-            target._void_used = true; dmgToAttacker += dmgToTarget * 2; dmgToTarget = 0;
-            window.showVFX(targetHtmlId, 'slash', '倍返し');
-        }
-        if (target.ability === "magic_reflect") {
-            dmgToAttacker += Math.floor(dmgToTarget / 2); dmgToTarget = Math.floor(dmgToTarget / 2);
-            window.showVFX(targetHtmlId, 'slash', '反射');
-        }
-        if (target.ability === "thorns") {
-            dmgToAttacker += Math.floor(dmgToTarget / 2); 
-            window.showVFX(targetHtmlId, 'slash', '棘');
-        }
-        if (attackerCard.ability === "soul_reap") {
-            target.maxHp = Math.max(1, target.maxHp - 20); 
-            dmgToTarget += 20; 
-        }
-
-        target.hp -= dmgToTarget; 
-        window.showVFX(targetHtmlId, 'slash'); window.showVFX(targetHtmlId, 'damage', dmgToTarget);
-        
-        window.showBattleMessage(`💥 ${target.name} に ${dmgToTarget} ダメージ！`, false, 1500, !isPlayer, true);
-
-        if(target.hp <= 0 && !target.isDead) targetDied = true;
-        window.checkDeath(target, enemy, targetHtmlId, owner);
-        if (target.ability === "stealth") target.ability = null;
-    }
-
-    if (attackerCard.ability === "soul_drain" && dmgToTarget > 0) {
-        let heal = Math.floor(dmgToTarget / 2);
-        attackerCard.hp += heal; window.showVFX(attackerHtmlId, 'heal', heal);
-    }
-    if (targetDied) {
-        if (attackerCard.ability === "devour") {
-            attackerCard.maxHp = (attackerCard.maxHp||attackerCard.hp) + 20;
-            attackerCard.hp += 20; attackerCard.damage += 10;
-            window.showVFX(attackerHtmlId, 'heal', '捕食');
-        }
-        if (attackerCard.ability === "apex_predator") {
-            attackerCard.maxHp = (attackerCard.maxHp||attackerCard.hp) * 2;
-            attackerCard.hp = attackerCard.maxHp; attackerCard.damage *= 2;
-            window.showVFX(attackerHtmlId, 'heal', '超捕食');
-        }
-    }
-
-    if (attackerCard.ability === "god_strike") {
-        const otherEnemies = enemy.field.filter((c, idx) => (!c.isDead && (targetType !== 'card' || idx !== enemyIndex)));
-        if (otherEnemies.length > 0) {
-            let tCard = otherEnemies[Math.floor(Math.random() * otherEnemies.length)];
-            tCard.hp = 0; window.checkDeath(tCard, enemy, `${enemyPrefix}-card-${enemy.field.indexOf(tCard)}`, owner);
-            window.showBattleMessage("⚔️ 【神の一撃】が別の敵を葬り去った！", false, 1500, !isPlayer);
-        }
-    }
-    if (attackerCard.ability === "dimension_drill" && targetType === 'card') {
-        const faceId = isPlayer ? 'cpu-face' : 'player-face';
-        const ui = document.getElementById('tcg-battle-ui'); 
-        if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
-        
-        // ★修正：貫通ダメージ時もダイレクトアタック演出を入れる
-        window.showDirectAttackCutin(isPlayer, true);
-        window.showVFX(faceId, 'damage', dmgToTarget); 
-        window.showBattleMessage(`🌪️ 【次元穿孔】敵リーダーも貫いた！`, false, 1500, !isPlayer, true);
-        
-        enemy.hp -= dmgToTarget;
-        
-        setTimeout(() => {
-            const hpSpan = isPlayer ? document.querySelector('#cpu-face span') : document.querySelector('#player-face div:nth-child(2)');
-            if (hpSpan) {
-                hpSpan.style.transition = "all 0.1s";
-                hpSpan.innerText = `HP: ${enemy.hp}`;
-                hpSpan.style.color = '#ff5252';
-                hpSpan.style.transform = 'scale(1.4)';
-                setTimeout(() => {
-                    hpSpan.style.color = isPlayer ? '#ff5252' : '#4CAF50';
-                    hpSpan.style.transform = 'scale(1)';
-                }, 300);
-            }
-        }, 500);
-    }
-    if (attackerCard.ability === "pierce_recoil") { dmgToAttacker += 10; }
-
-    if (dmgToAttacker > 0) {
-        setTimeout(() => {
-            attackerCard.hp -= dmgToAttacker; window.showVFX(attackerHtmlId, 'slash'); window.showVFX(attackerHtmlId, 'damage', dmgToAttacker);
-            window.checkDeath(attackerCard, owner, attackerHtmlId, enemy); window.renderBattleBoard();
-        }, 200);
-    }
-    
-    if (attackerCard.ability === "stealth") attackerCard.ability = null;
-    attackerCard.canAttack = false; 
-    if(isPlayer) window.TCG_BATTLE.selectedAttackerIndex = -1; 
-    window.renderBattleBoard();
-
-    setTimeout(() => {
-        p.field = p.field.filter(c => !c.isDead); cpu.field = cpu.field.filter(c => !c.isDead);
-        if (cpu.hp <= 0) { cpu.hp = 0; window.renderBattleBoard(); window.showBattleMessage("🎉 YOU WIN!!\n相手のHPを0にしました！", false, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
-        if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
-        window.renderBattleBoard();
-    }, 1100);
-};
-
 // ==========================================
 // ★ 進化バッジ修正 ＆ 攻撃演出の完全修復パッチ
 // ==========================================
@@ -7922,196 +6260,6 @@ window.showDirectAttackCutin = function(isPlayer, isPierce) {
             setTimeout(() => daText.remove(), 300); 
         }, 1000);
     } catch (e) { console.error("Cutin Error:", e); }
-};
-
-// ③ 攻撃処理の完全版（エラーを回避し、全てのVFXを確実に発動）
-window.executeAttack = function(targetType, enemyIndex) {
-    try {
-        const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
-        const isPlayer = window.TCG_BATTLE.isEnemyTurn === false;
-        const owner = isPlayer ? p : cpu;
-        const enemy = isPlayer ? cpu : p;
-        const ownerPrefix = isPlayer ? 'p' : 'c';
-        const enemyPrefix = isPlayer ? 'c' : 'p';
-        
-        const attackerIndex = window.TCG_BATTLE.selectedAttackerIndex; 
-        if (attackerIndex === -1) return;
-        const attackerCard = owner.field[attackerIndex];
-
-        const isPierce = attackerCard.ability === "pierce_recoil" || attackerCard.ability === "flight" || attackerCard.ability === "god_strike" || attackerCard.ability === "dimension_drill" || attackerCard.ability === "piercing_juggernaut";
-        const hasTaunt = enemy.field.some(c => c.ability === "taunt" || c.isDefending);
-        
-        if (hasTaunt && !isPierce) {
-            if (targetType === 'cpu' || targetType === 'player' || (targetType === 'card' && enemy.field[enemyIndex].ability !== "taunt" && !enemy.field[enemyIndex].isDefending)) {
-                if(isPlayer) window.showBattleMessage("🛡️ 敵の場に【かばう】を持つカードがいます！\n先にそちらを攻撃してください", true); return;
-            }
-        }
-        if (targetType === 'card' && enemy.field[enemyIndex].ability === "stealth") {
-            if(isPlayer) window.showBattleMessage("🌫️ この敵は【潜伏】しています！\n攻撃対象に選べません！", true); return;
-        }
-
-        window.showBattleMessage(`⚔️ ${attackerCard.name} の攻撃！`, false, 1500, !isPlayer);
-
-        if (attackerCard.ability === "piercing_juggernaut") {
-            attackerCard.damage += 10;
-            window.showVFX(`${ownerPrefix}-card-${attackerIndex}`, 'heal', '火力UP');
-        }
-        
-        let dmgToTarget = attackerCard.damage; 
-        let dmgToAttacker = 0; 
-        const attackerHtmlId = `${ownerPrefix}-card-${attackerIndex}`;
-        
-        let targetDied = false;
-        let target = null;
-        let targetHtmlId = null;
-
-        if (targetType === 'cpu' || targetType === 'player') {
-            const faceId = isPlayer ? 'cpu-face' : 'player-face';
-            
-            const ui = document.getElementById('tcg-battle-ui'); 
-            if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
-            
-            window.showDirectAttackCutin(isPlayer, false);
-
-            window.showVFX(faceId, 'slash'); 
-            window.showVFX(faceId, 'damage', dmgToTarget);
-            window.showBattleMessage(`🔥 ${isPlayer ? '敵' : '味方'}リーダーに ${dmgToTarget} ダメージ！`, false, 2000, !isPlayer, true);
-
-            enemy.hp -= dmgToTarget; 
-            if (attackerCard.ability === "soul_reap") {
-                enemy.hp -= 20; window.showVFX(faceId, 'damage', 20);
-            }
-
-            setTimeout(() => {
-                const hpSpan = isPlayer ? document.querySelector('#cpu-face span') : document.querySelector('#player-face div:nth-child(2)');
-                if (hpSpan) {
-                    hpSpan.style.transition = "all 0.1s";
-                    hpSpan.innerText = `HP: ${enemy.hp}`;
-                    hpSpan.style.color = '#ff5252';
-                    hpSpan.style.transform = 'scale(1.4)';
-                    setTimeout(() => {
-                        hpSpan.style.color = isPlayer ? '#ff5252' : '#4CAF50';
-                        hpSpan.style.transform = 'scale(1)';
-                    }, 300);
-                }
-            }, 500);
-
-        } else if (targetType === 'card') {
-            target = enemy.field[enemyIndex]; 
-            targetHtmlId = `${enemyPrefix}-card-${enemyIndex}`;
-            dmgToAttacker = target.damage;
-
-            if (target.ability === "absolute_field") dmgToTarget = 1;
-            if (attackerCard.ability === "absolute_field") dmgToAttacker = 1;
-            if (target.ability === "absolute_fortress") dmgToTarget = Math.max(0, dmgToTarget - 20);
-            if (attackerCard.ability === "absolute_fortress") dmgToAttacker = Math.max(0, dmgToAttacker - 20);
-            
-            if (target.ability === "absolute_evasion" && Math.random() < 0.5) {
-                dmgToTarget = 0; window.showVFX(targetHtmlId, 'heal', '回避');
-            }
-            if (target.ability === "impregnable_armor" && dmgToTarget <= 30) {
-                dmgToTarget = 0; window.showVFX(targetHtmlId, 'heal', '無効化');
-            }
-            if (target.ability === "void_counter" && !target._void_used) {
-                target._void_used = true; dmgToAttacker += dmgToTarget * 2; dmgToTarget = 0;
-                window.showVFX(targetHtmlId, 'slash', '倍返し');
-            }
-            if (target.ability === "magic_reflect") {
-                dmgToAttacker += Math.floor(dmgToTarget / 2); dmgToTarget = Math.floor(dmgToTarget / 2);
-                window.showVFX(targetHtmlId, 'slash', '反射');
-            }
-            if (target.ability === "thorns") {
-                dmgToAttacker += Math.floor(dmgToTarget / 2); 
-                window.showVFX(targetHtmlId, 'slash', '棘');
-            }
-            if (attackerCard.ability === "soul_reap") {
-                target.maxHp = Math.max(1, target.maxHp - 20); 
-                dmgToTarget += 20; 
-            }
-
-            target.hp -= dmgToTarget; 
-            window.showVFX(targetHtmlId, 'slash'); window.showVFX(targetHtmlId, 'damage', dmgToTarget);
-            
-            window.showBattleMessage(`💥 ${target.name} に ${dmgToTarget} ダメージ！`, false, 1500, !isPlayer, true);
-
-            if(target.hp <= 0 && !target.isDead) targetDied = true;
-            window.checkDeath(target, enemy, targetHtmlId, owner);
-            if (target.ability === "stealth") target.ability = null;
-        }
-
-        if (attackerCard.ability === "soul_drain" && dmgToTarget > 0) {
-            let heal = Math.floor(dmgToTarget / 2);
-            attackerCard.hp += heal; window.showVFX(attackerHtmlId, 'heal', heal);
-        }
-        if (targetDied) {
-            if (attackerCard.ability === "devour") {
-                attackerCard.maxHp = (attackerCard.maxHp||attackerCard.hp) + 20;
-                attackerCard.hp += 20; attackerCard.damage += 10;
-                window.showVFX(attackerHtmlId, 'heal', '捕食');
-            }
-            if (attackerCard.ability === "apex_predator") {
-                attackerCard.maxHp = (attackerCard.maxHp||attackerCard.hp) * 2;
-                attackerCard.hp = attackerCard.maxHp; attackerCard.damage *= 2;
-                window.showVFX(attackerHtmlId, 'heal', '超捕食');
-            }
-        }
-
-        if (attackerCard.ability === "god_strike") {
-            const otherEnemies = enemy.field.filter((c, idx) => (!c.isDead && (targetType !== 'card' || idx !== enemyIndex)));
-            if (otherEnemies.length > 0) {
-                let tCard = otherEnemies[Math.floor(Math.random() * otherEnemies.length)];
-                tCard.hp = 0; window.checkDeath(tCard, enemy, `${enemyPrefix}-card-${enemy.field.indexOf(tCard)}`, owner);
-                window.showBattleMessage("⚔️ 【神の一撃】が別の敵を葬り去った！", false, 1500, !isPlayer);
-            }
-        }
-        if (attackerCard.ability === "dimension_drill" && targetType === 'card') {
-            const faceId = isPlayer ? 'cpu-face' : 'player-face';
-            const ui = document.getElementById('tcg-battle-ui'); 
-            if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
-            
-            window.showDirectAttackCutin(isPlayer, true);
-            window.showVFX(faceId, 'damage', dmgToTarget); 
-            window.showBattleMessage(`🌪️ 【次元穿孔】敵リーダーも貫いた！`, false, 1500, !isPlayer, true);
-            
-            enemy.hp -= dmgToTarget;
-            
-            setTimeout(() => {
-                const hpSpan = isPlayer ? document.querySelector('#cpu-face span') : document.querySelector('#player-face div:nth-child(2)');
-                if (hpSpan) {
-                    hpSpan.style.transition = "all 0.1s";
-                    hpSpan.innerText = `HP: ${enemy.hp}`;
-                    hpSpan.style.color = '#ff5252';
-                    hpSpan.style.transform = 'scale(1.4)';
-                    setTimeout(() => {
-                        hpSpan.style.color = isPlayer ? '#ff5252' : '#4CAF50';
-                        hpSpan.style.transform = 'scale(1)';
-                    }, 300);
-                }
-            }, 500);
-        }
-        if (attackerCard.ability === "pierce_recoil") { dmgToAttacker += 10; }
-
-        if (dmgToAttacker > 0) {
-            setTimeout(() => {
-                attackerCard.hp -= dmgToAttacker; window.showVFX(attackerHtmlId, 'slash'); window.showVFX(attackerHtmlId, 'damage', dmgToAttacker);
-                window.checkDeath(attackerCard, owner, attackerHtmlId, enemy); window.renderBattleBoard();
-            }, 200);
-        }
-        
-        if (attackerCard.ability === "stealth") attackerCard.ability = null;
-        attackerCard.canAttack = false; 
-        if(isPlayer) window.TCG_BATTLE.selectedAttackerIndex = -1; 
-
-        setTimeout(() => {
-            window.renderBattleBoard();
-            p.field = p.field.filter(c => !c.isDead); cpu.field = cpu.field.filter(c => !c.isDead);
-            if (cpu.hp <= 0) { cpu.hp = 0; window.renderBattleBoard(); window.showBattleMessage("🎉 YOU WIN!!\n相手のHPを0にしました！", false, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
-            if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
-            window.renderBattleBoard();
-        }, 1100);
-    } catch (e) {
-        console.error("Attack Execution Error: ", e);
-    }
 };
 
 // ==========================================
@@ -8452,9 +6600,29 @@ window.renderCardHTML = function(card) {
             "taunt": "【かばう】(相手の攻撃を代わりに受ける)", "stealth": "【潜伏】(攻撃するまでターゲットにされない)",
             "heal_self": "【修復】(自分のHPを小回復する)", "draw_card": "【ドロー】(山札からカードを引く)",
             "flight": "【飛行】(かばうを無視して攻撃できる)", "mana_ramp": "【成長】(自分の最大マナを+1する)",
+            "haste": "【速攻】(場に出たターンにすぐ攻撃できる)",
+            "trample": "【貫通】(敵を倒した時、超過ダメージをリーダーに与える)",
+            "death_bomb": "【誘爆】(破壊された時、相手リーダーに20ダメージ)",
+            "burst_damage": "【破裂】(ダメージを受けた時、攻撃者に20ダメージを返す)",
+            "debuff_attack": "【弱体化】(攻撃した相手の攻撃力を強制的に半分にする)",
+            "venom_strike": "【猛毒】(ダメージを与えた敵モンスターを即死させる)",
+            "discard_hand": "【忘却】(場に出た時、相手の手札をランダムに1枚破壊する)",
+            "haunt": "【霊障】(ターン終了時、敵リーダーに20ダメージを与える)",
+            "counter_attack": "【迎撃】(攻撃を受けた時、自身の攻撃力分のダメージを相手に返す)",
+            "heavy_strike": "【重撃】(ダメージを与えた敵モンスターを「化石化(スタン)」させる)",
+            "double_strike": "【連撃】(1ターンに2回攻撃できる)",
+            "evasion": "【見切り】(敵からの攻撃を50%の確率で回避して無効化する)",
+            "splash_damage": "【範囲魔法】(攻撃時、対象以外の全ての敵に10ダメージを与える)",
+            "silence": "【沈黙】(ダメージを与えた相手の能力を無効化する)",
+            "wind_blessing": "【風の加護】(場に出た時、自分以外の味方全員の攻撃力を+10する)",
+            "regeneration": "【自然治癒】(ターン終了時、自身のHPを全回復する)",
+            "self_destruct": "【自爆】(破壊された時、相手のリーダーに30ダメージを与える)",
+            "roar": "【咆哮】(場に出た時、敵モンスター全体に20ダメージを与える)",
+            "wrath": "【逆鱗】(ダメージを受けた時、自身の攻撃力が+20される)",
+            "life_drain": "【吸収】(ダメージを与えた時、その分リーダーのHPを回復する)",
             "pierce_recoil": "【暴走回路】(かばう無視・攻撃時自身にダメ)", "aoe_heal_play": "【全体回復】(登場時、味方全員を回復)",
             "start_draw": "【超演算】(自ターン開始時、1枚ドロー)", "aura_action_cost": "【万能魔法】(場にいる間、アクションコスト-1)",
-            "heavy_armor": "【重装甲】(受けるダメージを常に-10)", "snipe_play": "【殲滅】(登場時、ランダムな敵にダメージ)",
+            "heavy_armor": "【重装甲】(攻撃される時、受けるダメージを常に20軽減する)", "snipe_play": "【殲滅】(登場時、ランダムな敵にダメージ)",
             "end_heal": "【悠久の風化】(ターン終了時、自身のHP回復)", "god_strike": "【神の一撃】(貫通・攻撃時敵1体即死)",
             "cyber_miracle": "【電脳の奇跡】(ターン終了時、味方全回復)", "dimension_hack": "【超次元ハック】(登場時、敵手札破壊＆ドロー)",
             "all_zero_cost": "【森羅万象】(場にいる間、アクションのコスト0)", "absolute_field": "【絶対領域】(受けるあらゆるダメージを1にする)",
@@ -8502,7 +6670,7 @@ window.renderCardHTML = function(card) {
     }
     const costColor = displayCost < card.cost ? "#4CAF50" : "#FFD700";
     
-    // ★ 複数バッジ情報の取得（配列になって返ってくる）
+    // ★ 複数バッジ情報の取得
     const badges = window.getCardBadgeInfo(card);
     let badgesHtml = badges.map(b => `<span style="font-size: 11px; background: rgba(0,0,0,0.6); color: ${b.color}; padding: 2px 5px; border-radius: 4px; border: 1px solid ${b.color}; white-space: nowrap;">${b.text}</span>`).join('');
 
@@ -8543,7 +6711,6 @@ window.renderCardHTML = function(card) {
         html += `<div style="width: 100%; height: 120px; ${imgStyle} border-bottom: 3px solid #444;">${!imgPath ? 'NO IMAGE' : ''}</div>`;
     }
 
-    // ★ ここで複数バッジを描画
     html += `
         <div style="padding: 4px 8px; font-weight: bold; font-size: 14px; background: linear-gradient(to right, #444, #222); border-bottom: 2px solid #111; text-shadow: 1px 1px 2px #000; display: flex; justify-content: space-between; align-items: center;">
             <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1;">${card.name}</span>
@@ -8604,190 +6771,602 @@ window.showDirectAttackCutin = function(isPlayer, isPierce) {
 };
 
 // ⑥ 攻撃処理を上書きしてダイレクトアタック演出を組み込む
+// window.executeAttack = function(targetType, enemyIndex) {
+//     const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
+//     const isPlayer = window.TCG_BATTLE.isEnemyTurn === false;
+//     const owner = isPlayer ? p : cpu;
+//     const enemy = isPlayer ? cpu : p;
+//     const ownerPrefix = isPlayer ? 'p' : 'c';
+//     const enemyPrefix = isPlayer ? 'c' : 'p';
+    
+//     const attackerIndex = window.TCG_BATTLE.selectedAttackerIndex; 
+//     if (attackerIndex === -1) return;
+//     const attackerCard = owner.field[attackerIndex];
+
+//     const isPierce = attackerCard.ability === "pierce_recoil" || attackerCard.ability === "flight" || attackerCard.ability === "god_strike" || attackerCard.ability === "dimension_drill" || attackerCard.ability === "piercing_juggernaut";
+//     const hasTaunt = enemy.field.some(c => c.ability === "taunt" || c.ability === "pure_aegis" || c.isDefending);
+    
+//     if (hasTaunt && !isPierce) {
+//         if (targetType === 'cpu' || targetType === 'player' || (targetType === 'card' && enemy.field[enemyIndex].ability !== "taunt" && enemy.field[enemyIndex].ability !== "pure_aegis" && !enemy.field[enemyIndex].isDefending)) {
+//             if(isPlayer) window.showBattleMessage("🛡️ 敵の場に【かばう】を持つカードがいます！\n先にそちらを攻撃してください", true); return;
+//         }
+//     }
+//     if (targetType === 'card' && enemy.field[enemyIndex].ability === "stealth") {
+//         if(isPlayer) window.showBattleMessage("🌫️ この敵は【潜伏】しています！\n攻撃対象に選べません！", true); return;
+//     }
+
+//     window.showBattleMessage(`⚔️ ${attackerCard.name} の攻撃！`, false, 1500, !isPlayer);
+
+//     if (attackerCard.ability === "piercing_juggernaut") {
+//         attackerCard.damage += 10;
+//         window.showVFX(`${ownerPrefix}-card-${attackerIndex}`, 'heal', '火力UP');
+//     }
+    
+//     let dmgToTarget = attackerCard.damage; 
+//     let dmgToAttacker = 0; 
+//     const attackerHtmlId = `${ownerPrefix}-card-${attackerIndex}`;
+    
+//     let targetDied = false;
+//     let target = null;
+//     let targetHtmlId = null;
+
+//     if (targetType === 'cpu' || targetType === 'player') {
+//         const faceId = isPlayer ? 'cpu-face' : 'player-face';
+        
+//         // ダイレクトアタック演出
+//         const ui = document.getElementById('tcg-battle-ui'); 
+//         if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
+        
+//         window.showDirectAttackCutin(isPlayer, false);
+
+//         window.showVFX(faceId, 'slash'); 
+//         window.showVFX(faceId, 'damage', dmgToTarget);
+//         window.showBattleMessage(`🔥 ${isPlayer ? '敵' : '味方'}リーダーに ${dmgToTarget} ダメージ！`, false, 2000, !isPlayer, true);
+
+//         enemy.hp -= dmgToTarget; 
+//         if (attackerCard.ability === "soul_reap") {
+//             enemy.hp -= 20; window.showVFX(faceId, 'damage', 20);
+//         }
+
+//         setTimeout(() => {
+//             const hpSpan = isPlayer ? document.querySelector('#cpu-face span') : document.querySelector('#player-face div:nth-child(2)');
+//             if (hpSpan) {
+//                 hpSpan.style.transition = "all 0.1s";
+//                 hpSpan.innerText = `HP: ${enemy.hp}`;
+//                 hpSpan.style.color = '#ff5252';
+//                 hpSpan.style.transform = 'scale(1.4)';
+//                 setTimeout(() => {
+//                     hpSpan.style.color = isPlayer ? '#ff5252' : '#4CAF50';
+//                     hpSpan.style.transform = 'scale(1)';
+//                 }, 300);
+//             }
+//         }, 500);
+
+//     } else if (targetType === 'card') {
+//         target = enemy.field[enemyIndex]; 
+//         targetHtmlId = `${enemyPrefix}-card-${enemyIndex}`;
+//         dmgToAttacker = target.damage;
+
+//         // ▼▼▼ 迎撃 ▼▼▼
+//         if (target.ability === "counter_attack") {
+//             dmgToAttacker += target.damage; // 元々の反撃ダメージ（target.damage）に、迎撃分としてさらに同等のダメージを加算！
+//             window.showVFX(targetHtmlId, 'slash', '迎撃');
+//         }
+
+//         if (target.ability === "absolute_field") dmgToTarget = 1;
+//         if (attackerCard.ability === "absolute_field") dmgToAttacker = 1;
+//         if (target.ability === "absolute_fortress") dmgToTarget = Math.max(0, dmgToTarget - 20);
+//         if (attackerCard.ability === "absolute_fortress") dmgToAttacker = Math.max(0, dmgToAttacker - 20);
+        
+//         if (target.ability === "absolute_evasion" && Math.random() < 0.5) {
+//             dmgToTarget = 0; window.showVFX(targetHtmlId, 'heal', '回避');
+//         }
+//         if (target.ability === "evasion" && Math.random() < 0.5) {
+//             dmgToTarget = 0; window.showVFX(targetHtmlId, 'heal', '回避');
+//         }
+//         if (target.ability === "impregnable_armor" && dmgToTarget <= 30) {
+//             dmgToTarget = 0; window.showVFX(targetHtmlId, 'heal', '無効化');
+//         }
+//         if (target.ability === "void_counter" && !target._void_used) {
+//             target._void_used = true; dmgToAttacker += dmgToTarget * 2; dmgToTarget = 0;
+//             window.showVFX(targetHtmlId, 'slash', '倍返し');
+//         }
+//         if (target.ability === "magic_reflect") {
+//             dmgToAttacker += Math.floor(dmgToTarget / 2); dmgToTarget = Math.floor(dmgToTarget / 2);
+//             window.showVFX(targetHtmlId, 'slash', '反射');
+//         }
+//         if (target.ability === "thorns") {
+//             dmgToAttacker += Math.floor(dmgToTarget / 2); 
+//             window.showVFX(targetHtmlId, 'slash', '棘');
+//         }
+//         if (attackerCard.ability === "soul_reap") {
+//             target.maxHp = Math.max(1, target.maxHp - 20); 
+//             dmgToTarget += 20; 
+//         }
+
+//         target.hp -= dmgToTarget; 
+//         window.showVFX(targetHtmlId, 'slash'); window.showVFX(targetHtmlId, 'damage', dmgToTarget);
+        
+//         window.showBattleMessage(`💥 ${target.name} に ${dmgToTarget} ダメージ！`, false, 1500, !isPlayer, true);
+
+//         // ▼▼▼ 猛毒処理 ▼▼▼
+//         if (attackerCard.ability === "venom_strike" && target.hp > 0 && dmgToTarget > 0) {
+//             target.hp = 0;
+//             window.showVFX(targetHtmlId, 'slash', '猛毒');
+//             window.showBattleMessage(`☠️ 【猛毒】${target.name} は毒に侵され即死した！`, false, 2000, !isPlayer, true);
+//         }
+
+//         // ▼▼▼ 重撃 ▼▼▼
+//         if (attackerCard.ability === "heavy_strike" && target.hp > 0 && dmgToTarget > 0) {
+//             target.status = "stunned";
+//             window.showVFX(targetHtmlId, 'damage', '化石化');
+//             window.showBattleMessage(`🪨 【重撃】${target.name} は重い一撃でスタンした！`, false, 2000, !isPlayer, true);
+//         }
+
+//         // ★ 破裂（カウンターダメージ）
+//         if (target.ability === "burst_damage") {
+//             attackerCard.hp -= 20;
+//             window.showVFX(attackerHtmlId, 'slash'); window.showVFX(attackerHtmlId, 'damage', 20);
+//             window.showBattleMessage(`🎈 【破裂】${target.name}の破片で 20ダメージ！`, false, 1500, !isPlayer, true);
+//             if(attackerCard.hp <= 0 && !attackerCard.isDead) {
+//                 window.checkDeath(attackerCard, owner, attackerHtmlId, enemy);
+//             }
+//         }
+        
+//         // ★ デバフ（攻撃力半減）
+//         if (attackerCard.ability === "debuff_attack" && target.hp > 0 && !target.isDead) {
+//             target.damage = Math.floor(target.damage / 2);
+//             window.showVFX(targetHtmlId, 'heal', '攻撃ダウン');
+//             window.showBattleMessage(`📉 【弱体化】${target.name} の攻撃力が半減した！`, false, 2000, !isPlayer, true);
+//         }
+
+//         // ★追加：トランプル（貫通）処理
+//         if (attackerCard.ability === "trample" && target.hp < 0) {
+//             let excess = -target.hp;
+//             enemy.hp -= excess;
+//             const faceId = isPlayer ? 'cpu-face' : 'player-face';
+//             window.showVFX(faceId, 'damage', excess);
+//             const ui = document.getElementById('tcg-battle-ui'); 
+//             if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
+//             window.showBattleMessage(`💥 【貫通】超過した ${excess} ダメージがリーダーに直撃！`, false, 2000, !isPlayer, true);
+//         }
+
+//         if(target.hp <= 0 && !target.isDead) targetDied = true;
+//         window.checkDeath(target, enemy, targetHtmlId, owner);
+//         if (target.ability === "stealth") target.ability = null;
+//     }
+
+//     if (attackerCard.ability === "soul_drain" && dmgToTarget > 0) {
+//         let heal = Math.floor(dmgToTarget / 2);
+//         attackerCard.hp += heal; window.showVFX(attackerHtmlId, 'heal', heal);
+//     }
+
+//     // ▼▼▼ 吸収処理 ▼▼▼
+//     if (attackerCard.ability === "life_drain" && dmgToTarget > 0) {
+//         owner.hp += dmgToTarget;
+//         const faceId = isPlayer ? 'player-face' : 'cpu-face';
+//         window.showVFX(faceId, 'heal', dmgToTarget);
+//         window.showBattleMessage(`💖 【吸収】リーダーのHPが ${dmgToTarget} 回復した！`, false, 1500, !isPlayer, true);
+//     }
+
+//     if (targetDied) {
+//         if (attackerCard.ability === "devour") {
+//             attackerCard.maxHp = (attackerCard.maxHp||attackerCard.hp) + 20;
+//             attackerCard.hp += 20; attackerCard.damage += 10;
+//             window.showVFX(attackerHtmlId, 'heal', '捕食');
+//         }
+//         if (attackerCard.ability === "apex_predator") {
+//             attackerCard.maxHp = (attackerCard.maxHp||attackerCard.hp) * 2;
+//             attackerCard.hp = attackerCard.maxHp; attackerCard.damage *= 2;
+//             window.showVFX(attackerHtmlId, 'heal', '超捕食');
+//         }
+//     }
+
+//     if (attackerCard.ability === "god_strike") {
+//         const otherEnemies = enemy.field.filter((c, idx) => (!c.isDead && (targetType !== 'card' || idx !== enemyIndex)));
+//         if (otherEnemies.length > 0) {
+//             let tCard = otherEnemies[Math.floor(Math.random() * otherEnemies.length)];
+//             tCard.hp = 0; window.checkDeath(tCard, enemy, `${enemyPrefix}-card-${enemy.field.indexOf(tCard)}`, owner);
+//             window.showBattleMessage("⚔️ 【神の一撃】が別の敵を葬り去った！", false, 1500, !isPlayer);
+//         }
+//     }
+//     if (attackerCard.ability === "dimension_drill" && targetType === 'card') {
+//         const faceId = isPlayer ? 'cpu-face' : 'player-face';
+//         const ui = document.getElementById('tcg-battle-ui'); 
+//         if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
+        
+//         window.showDirectAttackCutin(isPlayer, true);
+//         window.showVFX(faceId, 'damage', dmgToTarget); 
+//         window.showBattleMessage(`🌪️ 【次元穿孔】敵リーダーも貫いた！`, false, 1500, !isPlayer, true);
+        
+//         enemy.hp -= dmgToTarget;
+        
+//         setTimeout(() => {
+//             const hpSpan = isPlayer ? document.querySelector('#cpu-face span') : document.querySelector('#player-face div:nth-child(2)');
+//             if (hpSpan) {
+//                 hpSpan.style.transition = "all 0.1s";
+//                 hpSpan.innerText = `HP: ${enemy.hp}`;
+//                 hpSpan.style.color = '#ff5252';
+//                 hpSpan.style.transform = 'scale(1.4)';
+//                 setTimeout(() => {
+//                     hpSpan.style.color = isPlayer ? '#ff5252' : '#4CAF50';
+//                     hpSpan.style.transform = 'scale(1)';
+//                 }, 300);
+//             }
+//         }, 500);
+//     }
+//     if (attackerCard.ability === "pierce_recoil") { dmgToAttacker += 10; }
+
+//     if (dmgToAttacker > 0) {
+//         setTimeout(() => {
+//             attackerCard.hp -= dmgToAttacker; window.showVFX(attackerHtmlId, 'slash'); window.showVFX(attackerHtmlId, 'damage', dmgToAttacker);
+//             window.checkDeath(attackerCard, owner, attackerHtmlId, enemy); window.renderBattleBoard();
+//         }, 200);
+//     }
+    
+//     if (attackerCard.ability === "stealth") attackerCard.ability = null;
+//     attackerCard.canAttack = false; 
+
+//     // ▼▼▼ 連撃の処理 ▼▼▼
+//     if (attackerCard.ability === "double_strike" && !attackerCard._has_attacked_once) {
+//         attackerCard._has_attacked_once = true;
+//         window.showBattleMessage(`🌪️ 【連撃】${attackerCard.name} はもう一度攻撃できる！`, false, 1500, !isPlayer, true);
+//     } else {
+//         attackerCard.canAttack = false; 
+//         attackerCard._has_attacked_once = false;
+//     }
+
+//     if(isPlayer) window.TCG_BATTLE.selectedAttackerIndex = -1; 
+
+//     setTimeout(() => {
+//         window.renderBattleBoard();
+//         p.field = p.field.filter(c => !c.isDead); cpu.field = cpu.field.filter(c => !c.isDead);
+//         if (cpu.hp <= 0) { cpu.hp = 0; window.renderBattleBoard(); window.showBattleMessage("🎉 YOU WIN!!\n相手のHPを0にしました！", false, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
+//         if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
+//         window.renderBattleBoard();
+//     }, 1100);
+// };
+
+// ==========================================
+// ★ 攻撃処理の完全版（全アビリティ・連撃バグ修正済）
+// ==========================================
 window.executeAttack = function(targetType, enemyIndex) {
-    const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
-    const isPlayer = window.TCG_BATTLE.isEnemyTurn === false;
-    const owner = isPlayer ? p : cpu;
-    const enemy = isPlayer ? cpu : p;
-    const ownerPrefix = isPlayer ? 'p' : 'c';
-    const enemyPrefix = isPlayer ? 'c' : 'p';
-    
-    const attackerIndex = window.TCG_BATTLE.selectedAttackerIndex; 
-    if (attackerIndex === -1) return;
-    const attackerCard = owner.field[attackerIndex];
-
-    const isPierce = attackerCard.ability === "pierce_recoil" || attackerCard.ability === "flight" || attackerCard.ability === "god_strike" || attackerCard.ability === "dimension_drill" || attackerCard.ability === "piercing_juggernaut";
-    const hasTaunt = enemy.field.some(c => c.ability === "taunt" || c.isDefending);
-    
-    if (hasTaunt && !isPierce) {
-        if (targetType === 'cpu' || targetType === 'player' || (targetType === 'card' && enemy.field[enemyIndex].ability !== "taunt" && !enemy.field[enemyIndex].isDefending)) {
-            if(isPlayer) window.showBattleMessage("🛡️ 敵の場に【かばう】を持つカードがいます！\n先にそちらを攻撃してください", true); return;
-        }
-    }
-    if (targetType === 'card' && enemy.field[enemyIndex].ability === "stealth") {
-        if(isPlayer) window.showBattleMessage("🌫️ この敵は【潜伏】しています！\n攻撃対象に選べません！", true); return;
-    }
-
-    window.showBattleMessage(`⚔️ ${attackerCard.name} の攻撃！`, false, 1500, !isPlayer);
-
-    if (attackerCard.ability === "piercing_juggernaut") {
-        attackerCard.damage += 10;
-        window.showVFX(`${ownerPrefix}-card-${attackerIndex}`, 'heal', '火力UP');
-    }
-    
-    let dmgToTarget = attackerCard.damage; 
-    let dmgToAttacker = 0; 
-    const attackerHtmlId = `${ownerPrefix}-card-${attackerIndex}`;
-    
-    let targetDied = false;
-    let target = null;
-    let targetHtmlId = null;
-
-    if (targetType === 'cpu' || targetType === 'player') {
-        const faceId = isPlayer ? 'cpu-face' : 'player-face';
+    try {
+        const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
+        const isPlayer = window.TCG_BATTLE.isEnemyTurn === false;
+        const owner = isPlayer ? p : cpu;
+        const enemy = isPlayer ? cpu : p;
+        const ownerPrefix = isPlayer ? 'p' : 'c';
+        const enemyPrefix = isPlayer ? 'c' : 'p';
         
-        // ダイレクトアタック演出
-        const ui = document.getElementById('tcg-battle-ui'); 
-        if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
+        const attackerIndex = window.TCG_BATTLE.selectedAttackerIndex; 
+        if (attackerIndex === -1) return;
+        const attackerCard = owner.field[attackerIndex];
+
+        const isPierce = attackerCard.ability === "pierce_recoil" || attackerCard.ability === "flight" || attackerCard.ability === "god_strike" || attackerCard.ability === "dimension_drill" || attackerCard.ability === "piercing_juggernaut";
+        const hasTaunt = enemy.field.some(c => c.ability === "taunt" || c.ability === "pure_aegis" || c.isDefending);
         
-        window.showDirectAttackCutin(isPlayer, false);
-
-        window.showVFX(faceId, 'slash'); 
-        window.showVFX(faceId, 'damage', dmgToTarget);
-        window.showBattleMessage(`🔥 ${isPlayer ? '敵' : '味方'}リーダーに ${dmgToTarget} ダメージ！`, false, 2000, !isPlayer, true);
-
-        enemy.hp -= dmgToTarget; 
-        if (attackerCard.ability === "soul_reap") {
-            enemy.hp -= 20; window.showVFX(faceId, 'damage', 20);
-        }
-
-        setTimeout(() => {
-            const hpSpan = isPlayer ? document.querySelector('#cpu-face span') : document.querySelector('#player-face div:nth-child(2)');
-            if (hpSpan) {
-                hpSpan.style.transition = "all 0.1s";
-                hpSpan.innerText = `HP: ${enemy.hp}`;
-                hpSpan.style.color = '#ff5252';
-                hpSpan.style.transform = 'scale(1.4)';
-                setTimeout(() => {
-                    hpSpan.style.color = isPlayer ? '#ff5252' : '#4CAF50';
-                    hpSpan.style.transform = 'scale(1)';
-                }, 300);
+        if (hasTaunt && !isPierce) {
+            if (targetType === 'cpu' || targetType === 'player' || (targetType === 'card' && enemy.field[enemyIndex].ability !== "taunt" && enemy.field[enemyIndex].ability !== "pure_aegis" && !enemy.field[enemyIndex].isDefending)) {
+                if(isPlayer) window.showBattleMessage("🛡️ 敵の場に【かばう】を持つカードがいます！\n先にそちらを攻撃してください", true); return;
             }
-        }, 500);
+        }
+        if (targetType === 'card' && enemy.field[enemyIndex].ability === "stealth") {
+            if(isPlayer) window.showBattleMessage("🌫️ この敵は【潜伏】しています！\n攻撃対象に選べません！", true); return;
+        }
 
-    } else if (targetType === 'card') {
-        target = enemy.field[enemyIndex]; 
-        targetHtmlId = `${enemyPrefix}-card-${enemyIndex}`;
-        dmgToAttacker = target.damage;
+        window.showBattleMessage(`⚔️ ${attackerCard.name} の攻撃！`, false, 1500, !isPlayer);
 
-        if (target.ability === "absolute_field") dmgToTarget = 1;
-        if (attackerCard.ability === "absolute_field") dmgToAttacker = 1;
-        if (target.ability === "absolute_fortress") dmgToTarget = Math.max(0, dmgToTarget - 20);
-        if (attackerCard.ability === "absolute_fortress") dmgToAttacker = Math.max(0, dmgToAttacker - 20);
+        if (attackerCard.ability === "piercing_juggernaut") {
+            attackerCard.damage += 10;
+            window.showVFX(`${ownerPrefix}-card-${attackerIndex}`, 'heal', '火力UP');
+        }
         
-        if (target.ability === "absolute_evasion" && Math.random() < 0.5) {
-            dmgToTarget = 0; window.showVFX(targetHtmlId, 'heal', '回避');
-        }
-        if (target.ability === "impregnable_armor" && dmgToTarget <= 30) {
-            dmgToTarget = 0; window.showVFX(targetHtmlId, 'heal', '無効化');
-        }
-        if (target.ability === "void_counter" && !target._void_used) {
-            target._void_used = true; dmgToAttacker += dmgToTarget * 2; dmgToTarget = 0;
-            window.showVFX(targetHtmlId, 'slash', '倍返し');
-        }
-        if (target.ability === "magic_reflect") {
-            dmgToAttacker += Math.floor(dmgToTarget / 2); dmgToTarget = Math.floor(dmgToTarget / 2);
-            window.showVFX(targetHtmlId, 'slash', '反射');
-        }
-        if (target.ability === "thorns") {
-            dmgToAttacker += Math.floor(dmgToTarget / 2); 
-            window.showVFX(targetHtmlId, 'slash', '棘');
-        }
-        if (attackerCard.ability === "soul_reap") {
-            target.maxHp = Math.max(1, target.maxHp - 20); 
-            dmgToTarget += 20; 
-        }
-
-        target.hp -= dmgToTarget; 
-        window.showVFX(targetHtmlId, 'slash'); window.showVFX(targetHtmlId, 'damage', dmgToTarget);
+        let dmgToTarget = attackerCard.damage; 
+        let dmgToAttacker = 0; 
+        const attackerHtmlId = `${ownerPrefix}-card-${attackerIndex}`;
         
-        window.showBattleMessage(`💥 ${target.name} に ${dmgToTarget} ダメージ！`, false, 1500, !isPlayer, true);
+        let targetDied = false;
+        let target = null;
+        let targetHtmlId = null;
 
-        if(target.hp <= 0 && !target.isDead) targetDied = true;
-        window.checkDeath(target, enemy, targetHtmlId, owner);
-        if (target.ability === "stealth") target.ability = null;
-    }
+        if (targetType === 'cpu' || targetType === 'player') {
+            const faceId = isPlayer ? 'cpu-face' : 'player-face';
+            
+            const ui = document.getElementById('tcg-battle-ui'); 
+            if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
+            
+            window.showDirectAttackCutin(isPlayer, false);
 
-    if (attackerCard.ability === "soul_drain" && dmgToTarget > 0) {
-        let heal = Math.floor(dmgToTarget / 2);
-        attackerCard.hp += heal; window.showVFX(attackerHtmlId, 'heal', heal);
-    }
-    if (targetDied) {
-        if (attackerCard.ability === "devour") {
-            attackerCard.maxHp = (attackerCard.maxHp||attackerCard.hp) + 20;
-            attackerCard.hp += 20; attackerCard.damage += 10;
-            window.showVFX(attackerHtmlId, 'heal', '捕食');
-        }
-        if (attackerCard.ability === "apex_predator") {
-            attackerCard.maxHp = (attackerCard.maxHp||attackerCard.hp) * 2;
-            attackerCard.hp = attackerCard.maxHp; attackerCard.damage *= 2;
-            window.showVFX(attackerHtmlId, 'heal', '超捕食');
-        }
-    }
+            window.showVFX(faceId, 'slash'); 
+            window.showVFX(faceId, 'damage', dmgToTarget);
+            window.showBattleMessage(`🔥 ${isPlayer ? '敵' : '味方'}リーダーに ${dmgToTarget} ダメージ！`, false, 2000, !isPlayer, true);
 
-    if (attackerCard.ability === "god_strike") {
-        const otherEnemies = enemy.field.filter((c, idx) => (!c.isDead && (targetType !== 'card' || idx !== enemyIndex)));
-        if (otherEnemies.length > 0) {
-            let tCard = otherEnemies[Math.floor(Math.random() * otherEnemies.length)];
-            tCard.hp = 0; window.checkDeath(tCard, enemy, `${enemyPrefix}-card-${enemy.field.indexOf(tCard)}`, owner);
-            window.showBattleMessage("⚔️ 【神の一撃】が別の敵を葬り去った！", false, 1500, !isPlayer);
-        }
-    }
-    if (attackerCard.ability === "dimension_drill" && targetType === 'card') {
-        const faceId = isPlayer ? 'cpu-face' : 'player-face';
-        const ui = document.getElementById('tcg-battle-ui'); 
-        if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
-        
-        window.showDirectAttackCutin(isPlayer, true);
-        window.showVFX(faceId, 'damage', dmgToTarget); 
-        window.showBattleMessage(`🌪️ 【次元穿孔】敵リーダーも貫いた！`, false, 1500, !isPlayer, true);
-        
-        enemy.hp -= dmgToTarget;
-        
-        setTimeout(() => {
-            const hpSpan = isPlayer ? document.querySelector('#cpu-face span') : document.querySelector('#player-face div:nth-child(2)');
-            if (hpSpan) {
-                hpSpan.style.transition = "all 0.1s";
-                hpSpan.innerText = `HP: ${enemy.hp}`;
-                hpSpan.style.color = '#ff5252';
-                hpSpan.style.transform = 'scale(1.4)';
-                setTimeout(() => {
-                    hpSpan.style.color = isPlayer ? '#ff5252' : '#4CAF50';
-                    hpSpan.style.transform = 'scale(1)';
-                }, 300);
+            enemy.hp -= dmgToTarget; 
+            if (attackerCard.ability === "soul_reap") {
+                enemy.hp -= 20; window.showVFX(faceId, 'damage', 20);
             }
-        }, 500);
-    }
-    if (attackerCard.ability === "pierce_recoil") { dmgToAttacker += 10; }
 
-    if (dmgToAttacker > 0) {
+            setTimeout(() => {
+                const hpSpan = isPlayer ? document.querySelector('#cpu-face span') : document.querySelector('#player-face div:nth-child(2)');
+                if (hpSpan) {
+                    hpSpan.style.transition = "all 0.1s";
+                    hpSpan.innerText = `HP: ${enemy.hp}`;
+                    hpSpan.style.color = '#ff5252';
+                    hpSpan.style.transform = 'scale(1.4)';
+                    setTimeout(() => {
+                        hpSpan.style.color = isPlayer ? '#ff5252' : '#4CAF50';
+                        hpSpan.style.transform = 'scale(1)';
+                    }, 300);
+                }
+            }, 500);
+
+        } else if (targetType === 'card') {
+            target = enemy.field[enemyIndex]; 
+            targetHtmlId = `${enemyPrefix}-card-${enemyIndex}`;
+            dmgToAttacker = target.damage;
+
+            // 迎撃
+            if (target.ability === "counter_attack") {
+                dmgToAttacker += target.damage;
+                window.showVFX(targetHtmlId, 'slash', '迎撃');
+            }
+
+            // ▼▼▼ 重装甲 ▼▼▼
+            if (target.ability === "heavy_armor") {
+                dmgToTarget = Math.max(0, dmgToTarget - 20);
+                window.showVFX(targetHtmlId, 'heal', '装甲化');
+            }
+
+            if (target.ability === "absolute_field") dmgToTarget = 1;
+            if (attackerCard.ability === "absolute_field") dmgToAttacker = 1;
+            if (target.ability === "absolute_fortress") dmgToTarget = Math.max(0, dmgToTarget - 20);
+            if (attackerCard.ability === "absolute_fortress") dmgToAttacker = Math.max(0, dmgToAttacker - 20);
+            
+            // 見切り＆絶対回避
+            if ((target.ability === "evasion" || target.ability === "absolute_evasion") && Math.random() < 0.5) {
+                dmgToTarget = 0; window.showVFX(targetHtmlId, 'heal', '回避');
+            }
+            if (target.ability === "impregnable_armor" && dmgToTarget <= 30) {
+                dmgToTarget = 0; window.showVFX(targetHtmlId, 'heal', '無効化');
+            }
+            if (target.ability === "void_counter" && !target._void_used) {
+                target._void_used = true; dmgToAttacker += dmgToTarget * 2; dmgToTarget = 0;
+                window.showVFX(targetHtmlId, 'slash', '倍返し');
+            }
+            if (target.ability === "magic_reflect") {
+                dmgToAttacker += Math.floor(dmgToTarget / 2); dmgToTarget = Math.floor(dmgToTarget / 2);
+                window.showVFX(targetHtmlId, 'slash', '反射');
+            }
+            if (target.ability === "thorns") {
+                dmgToAttacker += Math.floor(dmgToTarget / 2); 
+                window.showVFX(targetHtmlId, 'slash', '棘');
+            }
+            if (attackerCard.ability === "soul_reap") {
+                target.maxHp = Math.max(1, target.maxHp - 20); 
+                dmgToTarget += 20; 
+            }
+
+            target.hp -= dmgToTarget; 
+            window.showVFX(targetHtmlId, 'slash'); window.showVFX(targetHtmlId, 'damage', dmgToTarget);
+            
+            window.showBattleMessage(`💥 ${target.name} に ${dmgToTarget} ダメージ！`, false, 1500, !isPlayer, true);
+
+            // ▼▼▼ 沈黙 ▼▼▼
+            if (attackerCard.ability === "silence" && target && target.ability) {
+                target.ability = null; // 相手の能力を消去
+                window.showVFX(targetHtmlId, 'slash', '沈黙');
+                window.showBattleMessage(`🔇 【沈黙】${target.name} の能力が封じられた！`, false, 2000, !isPlayer, true);
+            }
+
+            // 猛毒
+            if (attackerCard.ability === "venom_strike" && target.hp > 0 && dmgToTarget > 0) {
+                target.hp = 0;
+                window.showVFX(targetHtmlId, 'slash', '猛毒');
+                window.showBattleMessage(`☠️ 【猛毒】${target.name} は毒に侵され即死した！`, false, 2000, !isPlayer, true);
+            }
+
+            // 重撃
+            if (attackerCard.ability === "heavy_strike" && target.hp > 0 && dmgToTarget > 0) {
+                target.status = "stunned";
+                window.showVFX(targetHtmlId, 'damage', '化石化');
+                window.showBattleMessage(`🪨 【重撃】${target.name} は重い一撃でスタンした！`, false, 2000, !isPlayer, true);
+            }
+
+            // 破裂
+            if (target.ability === "burst_damage") {
+                attackerCard.hp -= 20;
+                window.showVFX(attackerHtmlId, 'slash'); window.showVFX(attackerHtmlId, 'damage', 20);
+                window.showBattleMessage(`🎈 【破裂】${target.name}の破片で 20ダメージ！`, false, 1500, !isPlayer, true);
+            }
+
+            // 貫通
+            if (attackerCard.ability === "trample" && target.hp < 0) {
+                let excess = -target.hp;
+                enemy.hp -= excess;
+                const faceId = isPlayer ? 'cpu-face' : 'player-face';
+                window.showVFX(faceId, 'damage', excess);
+                const ui = document.getElementById('tcg-battle-ui'); 
+                if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
+                window.showBattleMessage(`💥 【貫通】超過した ${excess} ダメージがリーダーに直撃！`, false, 2000, !isPlayer, true);
+            }
+
+            if(target.hp <= 0 && !target.isDead) targetDied = true;
+            window.checkDeath(target, enemy, targetHtmlId, owner);
+
+            // ▼▼▼ 修正＆追加（ターゲット側の自爆） ▼▼▼
+            let targetWasAlive = !target.isDead;
+            if(target.hp <= 0 && !target.isDead) targetDied = true;
+            window.checkDeath(target, enemy, targetHtmlId, owner);
+
+            // ダメージを受けて生き残っていれば逆鱗発動！
+            if (targetWasAlive && !target.isDead && target.ability === "wrath" && dmgToTarget > 0) {
+                target.damage += 20;
+                window.showVFX(targetHtmlId, 'heal', '逆鱗(攻+20)');
+                window.showBattleMessage(`💢 【逆鱗】${target.name} の攻撃力が上がった！`, false, 1500, !isPlayer, true);
+            }
+            
+            // 死んだ瞬間に自爆発動！
+            if (targetWasAlive && target.isDead && target.ability === "self_destruct" && !target._has_self_destructed) {
+                target._has_self_destructed = true;
+                owner.hp -= 30; // 攻撃してきた側のリーダーにダメージ
+                const faceId = isPlayer ? 'player-face' : 'cpu-face';
+                window.showVFX(faceId, 'damage', 30);
+                window.showBattleMessage(`💥 【自爆】${target.name} の爆発でリーダーに30ダメージ！`, false, 1500, !isPlayer, true);
+                const ui = document.getElementById('tcg-battle-ui'); 
+                if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
+            }
+
+            if (target.ability === "stealth") target.ability = null;
+        }
+
+        // 魂吸収
+        if (attackerCard.ability === "soul_drain" && dmgToTarget > 0) {
+            let heal = Math.floor(dmgToTarget / 2);
+            attackerCard.hp += heal; window.showVFX(attackerHtmlId, 'heal', heal);
+        }
+
+        // 吸収
+        if (attackerCard.ability === "life_drain" && dmgToTarget > 0) {
+            owner.hp += dmgToTarget;
+            const faceId = isPlayer ? 'player-face' : 'cpu-face';
+            window.showVFX(faceId, 'heal', dmgToTarget);
+            window.showBattleMessage(`💖 【吸収】リーダーのHPが ${dmgToTarget} 回復した！`, false, 1500, !isPlayer, true);
+        }
+
+        // 捕食系
+        if (targetDied) {
+            if (attackerCard.ability === "devour") {
+                attackerCard.maxHp = (attackerCard.maxHp||attackerCard.hp) + 20;
+                attackerCard.hp += 20; attackerCard.damage += 10;
+                window.showVFX(attackerHtmlId, 'heal', '捕食');
+            }
+            if (attackerCard.ability === "apex_predator") {
+                attackerCard.maxHp = (attackerCard.maxHp||attackerCard.hp) * 2;
+                attackerCard.hp = attackerCard.maxHp; attackerCard.damage *= 2;
+                window.showVFX(attackerHtmlId, 'heal', '超捕食');
+            }
+        }
+
+        // 神の一撃
+        if (attackerCard.ability === "god_strike") {
+            const otherEnemies = enemy.field.filter((c, idx) => (!c.isDead && (targetType !== 'card' || idx !== enemyIndex)));
+            if (otherEnemies.length > 0) {
+                let tCard = otherEnemies[Math.floor(Math.random() * otherEnemies.length)];
+                tCard.hp = 0; window.checkDeath(tCard, enemy, `${enemyPrefix}-card-${enemy.field.indexOf(tCard)}`, owner);
+                window.showBattleMessage("⚔️ 【神の一撃】が別の敵を葬り去った！", false, 1500, !isPlayer);
+            }
+        }
+
+        // ▼▼▼ 範囲魔法 ▼▼▼
+        if (attackerCard.ability === "splash_damage") {
+            const otherEnemies = enemy.field.filter((c, idx) => (!c.isDead && (targetType !== 'card' || idx !== enemyIndex)));
+            if (otherEnemies.length > 0) {
+                otherEnemies.forEach(c => {
+                    c.hp -= 10;
+                    let idx = enemy.field.indexOf(c);
+                    let hId = `${enemyPrefix}-card-${idx}`;
+                    window.showVFX(hId, 'damage', 10);
+                    window.checkDeath(c, enemy, hId, owner);
+                });
+                window.showBattleMessage(`🔥 【範囲魔法】他の敵全員に 10 の巻き添えダメージ！`, false, 1500, !isPlayer, true);
+                
+                // 画面揺れ演出
+                const ui = document.getElementById('tcg-battle-ui'); 
+                if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
+            }
+        }
+
+        // 次元穿孔
+        if (attackerCard.ability === "dimension_drill" && targetType === 'card') {
+            const faceId = isPlayer ? 'cpu-face' : 'player-face';
+            const ui = document.getElementById('tcg-battle-ui'); 
+            if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
+            
+            window.showDirectAttackCutin(isPlayer, true);
+            window.showVFX(faceId, 'damage', dmgToTarget); 
+            window.showBattleMessage(`🌪️ 【次元穿孔】敵リーダーも貫いた！`, false, 1500, !isPlayer, true);
+            
+            enemy.hp -= dmgToTarget;
+            
+            setTimeout(() => {
+                const hpSpan = isPlayer ? document.querySelector('#cpu-face span') : document.querySelector('#player-face div:nth-child(2)');
+                if (hpSpan) {
+                    hpSpan.style.transition = "all 0.1s";
+                    hpSpan.innerText = `HP: ${enemy.hp}`;
+                    hpSpan.style.color = '#ff5252';
+                    hpSpan.style.transform = 'scale(1.4)';
+                    setTimeout(() => {
+                        hpSpan.style.color = isPlayer ? '#ff5252' : '#4CAF50';
+                        hpSpan.style.transform = 'scale(1)';
+                    }, 300);
+                }
+            }, 500);
+        }
+        
+        // デバフ
+        if (attackerCard.ability === "debuff_attack" && target && target.hp > 0 && !target.isDead) {
+            target.damage = Math.floor(target.damage / 2);
+            window.showVFX(targetHtmlId, 'heal', '攻撃ダウン');
+            window.showBattleMessage(`📉 【弱体化】${target.name} の攻撃力が半減した！`, false, 2000, !isPlayer, true);
+        }
+
+        if (attackerCard.ability === "pierce_recoil") { dmgToAttacker += 10; }
+
+        // 反撃ダメージの処理（200ms遅延）
+        if (dmgToAttacker > 0) {
+            setTimeout(() => {
+                attackerCard.hp -= dmgToAttacker; window.showVFX(attackerHtmlId, 'slash'); window.showVFX(attackerHtmlId, 'damage', dmgToAttacker);
+                
+                // ▼▼▼ 修正＆追加（アタッカー側の自爆） ▼▼▼
+                let attackerWasAlive = !attackerCard.isDead;
+                window.checkDeath(attackerCard, owner, attackerHtmlId, enemy); 
+
+                // ▼▼▼ 逆鱗・アタッカー側 ▼▼▼
+                if (attackerWasAlive && !attackerCard.isDead && attackerCard.ability === "wrath" && dmgToAttacker > 0) {
+                    attackerCard.damage += 20;
+                    window.showVFX(attackerHtmlId, 'heal', '逆鱗(攻+20)');
+                    window.showBattleMessage(`💢 【逆鱗】${attackerCard.name} の攻撃力が上がった！`, false, 1500, isPlayer, true);
+                }
+                
+                // 反撃で死んだ瞬間に自爆発動！
+                if (attackerWasAlive && attackerCard.isDead && attackerCard.ability === "self_destruct" && !attackerCard._has_self_destructed) {
+                    enemy.hp -= 30; // 迎撃してきた側のリーダーにダメージ
+                    const faceId = isPlayer ? 'cpu-face' : 'player-face';
+                    window.showVFX(faceId, 'damage', 30);
+                    window.showBattleMessage(`💥 【自爆】${attackerCard.name} の爆発でリーダーに30ダメージ！`, false, 1500, isPlayer, true);
+                    const ui = document.getElementById('tcg-battle-ui'); 
+                    if (ui) { ui.classList.remove('screen-shake-effect'); void ui.offsetWidth; ui.classList.add('screen-shake-effect'); }
+                } 
+                if (attackerCard.isDead) attackerCard.canAttack = false; // 死んだら攻撃不可
+                window.renderBattleBoard();
+            }, 200);
+        }
+        
+        if (attackerCard.ability === "stealth") attackerCard.ability = null;
+
+        // ★ 連撃の完全管理
+        if (attackerCard.ability === "double_strike" && !attackerCard._has_attacked_once && !attackerCard.isDead) {
+            attackerCard._has_attacked_once = true;
+            // canAttack は true のまま残す！
+            window.showBattleMessage(`🌪️ 【連撃】${attackerCard.name} はもう一度攻撃できる！`, false, 1500, !isPlayer, true);
+        } else {
+            attackerCard.canAttack = false; 
+            attackerCard._has_attacked_once = false;
+        }
+
+        if(isPlayer) window.TCG_BATTLE.selectedAttackerIndex = -1; 
+
         setTimeout(() => {
-            attackerCard.hp -= dmgToAttacker; window.showVFX(attackerHtmlId, 'slash'); window.showVFX(attackerHtmlId, 'damage', dmgToAttacker);
-            window.checkDeath(attackerCard, owner, attackerHtmlId, enemy); window.renderBattleBoard();
-        }, 200);
+            window.renderBattleBoard();
+            p.field = p.field.filter(c => !c.isDead); cpu.field = cpu.field.filter(c => !c.isDead);
+            if (cpu.hp <= 0) { cpu.hp = 0; window.renderBattleBoard(); window.showBattleMessage("🎉 YOU WIN!!\n相手のHPを0にしました！", false, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
+            if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
+            window.renderBattleBoard();
+        }, 1100);
+    } catch (e) {
+        console.error("Attack Execution Error: ", e);
     }
-    
-    if (attackerCard.ability === "stealth") attackerCard.ability = null;
-    attackerCard.canAttack = false; 
-    if(isPlayer) window.TCG_BATTLE.selectedAttackerIndex = -1; 
-
-    setTimeout(() => {
-        window.renderBattleBoard();
-        p.field = p.field.filter(c => !c.isDead); cpu.field = cpu.field.filter(c => !c.isDead);
-        if (cpu.hp <= 0) { cpu.hp = 0; window.renderBattleBoard(); window.showBattleMessage("🎉 YOU WIN!!\n相手のHPを0にしました！", false, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
-        if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
-        window.renderBattleBoard();
-    }, 1100);
 };
 
 // ==========================================
@@ -9055,6 +7634,21 @@ window.executeCPUTurn = function(isFirstTurn = false) {
                 cpu.field.forEach((c, i) => {
                     if (c.isDead) return;
                     c.status = null; 
+
+                    // ▼▼▼ 自然治癒・CPU側 ▼▼▼
+                    if (c.ability === "regeneration" && c.hp < c.maxHp) {
+                        let heal = c.maxHp - c.hp; 
+                        c.hp = c.maxHp; 
+                        window.showVFX(`c-card-${i}`, 'heal', heal);
+                    }
+
+                    // ▼▼▼ 霊障・CPU側 ▼▼▼
+                    if (c.ability === "haunt") {
+                        p.hp -= 20; 
+                        window.showVFX('player-face', 'damage', 20);
+                        window.showBattleMessage(`👻 【霊障】\n${c.name}の呪いでリーダーに20ダメージ！`, false, 1500, true, true);
+                    }
+
                     if (c.ability === "burn_field" || c.ability === "cataclysm") {
                         let dmg = c.ability === "cataclysm" ? 20 : 10;
                         p.field.forEach((ec, eidx) => { if(!ec.isDead) { ec.hp -= dmg; window.showVFX(`p-card-${eidx}`, 'damage', dmg); window.checkDeath(ec, p, `p-card-${eidx}`, cpu); } });
@@ -9244,15 +7838,25 @@ window.executeCPUTurn = function(isFirstTurn = false) {
     setTimeout(() => {
         let delay = 0;
         
+        // --- 攻撃フェーズ ---
         cpu.field.forEach((cpuCard, cpuIndex) => {
             if (!cpuCard.canAttack || cpuCard.damage <= 0) return;
             
+            // 魅了チェック
             if (cpuCard.status === "charmed") {
                 setTimeout(() => {
                     cpuCard.status = null; cpuCard.canAttack = false;
                     cpu.hp -= cpuCard.damage;
                     window.showVFX('cpu-face', 'slash'); window.showVFX('cpu-face', 'damage', cpuCard.damage);
+                    window.showBattleMessage(`💕 魅了により、敵が自滅攻撃！`, false, 2000, true);
                     window.renderBattleBoard();
+                    
+                    // ★追加：自滅によってHPが0になった場合の勝利判定
+                    if (cpu.hp <= 0) { 
+                        cpu.hp = 0; window.renderBattleBoard(); 
+                        window.showBattleMessage("🎉 YOU WIN!!\n相手のHPを0にしました！", false, 5000); 
+                        setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); 
+                    }
                 }, delay);
                 delay += 800;
                 return;
@@ -9299,14 +7903,29 @@ window.executeCPUTurn = function(isFirstTurn = false) {
             if (cardsToPlay.length > 0) window.renderBattleBoard(); 
 
             const playNextCard = (idx) => {
-                if (idx >= cardsToPlay.length) { finishCPUTurn(); return; }
+                if (idx >= cardsToPlay.length) {
+                    finishCPUTurn(); // すべて終わったらターン終了
+                    return;
+                }
                 
-                let playData = cardsToPlay[idx]; let card = playData.card;
+                let playData = cardsToPlay[idx];
+                let card = playData.card;
                 
                 window.animateCardPlay(card, false, () => {
                     if (playData.isEvo) {
                         let prevCard = cpu.field[playData.targetIndex];
                         let canAttackInherit = prevCard ? prevCard.canAttack : false;
+                        
+                        // ★追加：CPU側も進化前のステータス変動を引き継ぐ
+                        if (prevCard) {
+                            const hpDiff = prevCard.hp - prevCard.maxHp;
+                            const masterTarget = window.TCG_MASTER[prevCard.masterId];
+                            const dmgDiff = prevCard.damage - (masterTarget ? (masterTarget.baseDmg || 0) : 0);
+                            
+                            card.hp = Math.max(1, card.maxHp + hpDiff);
+                            if (card.hp > card.maxHp) card.maxHp = card.hp;
+                            card.damage = Math.max(0, card.damage + dmgDiff);
+                        }
                         
                         card.canAttack = canAttackInherit; 
                         cpu.field[playData.targetIndex] = card; 
@@ -9402,9 +8021,9 @@ window.showDefendHintModal = function(onConfirm) {
         <div style="background: #2a2a2a; border: 3px solid #00BCD4; border-radius: 12px; padding: 25px; width: 480px; color: white; font-family: sans-serif; box-shadow: 0 0 30px rgba(0, 188, 212, 0.5);">
             <h3 style="color: #00BCD4; margin-top: 0;">💡 マナが残っています！</h3>
             <p style="line-height: 1.6; font-size: 15px;">
-                行動済みのモンスターをクリックすると、<span style="color:#FFD700; font-weight:bold;">1マナ消費して「🛡️守護」の壁役にさせる</span>ことができます。<br>
-                （もう一度クリックで解除し、マナを戻せます）<br><br>
-                さらに、マナさえ残しておけば<span style="color:#ff5252; font-weight:bold;">相手のターン中であっても、敵の攻撃の瞬間に割り込んで瞬時に守護を立てる</span>ことが可能です！<br>
+                盤面のモンスターをクリックすると、<span style="color:#FFD700; font-weight:bold;">1マナ消費して「🛡️守護」の壁役にさせる</span>ことができます。<br>
+                <span style="font-size: 12px; color:#aaa;">※自分のターン中は「行動済み」のモンスターのみ指定可能ですが、<br>
+                マナさえ残しておけば、<span style="color:#ff5252; font-weight:bold;">相手のターン中の【割り込み】時に「未行動」のモンスターも守護にできます！</span></span><br><br>
                 あえてマナを残してターンを終了しますか？
             </p>
             <label style="display: flex; align-items: center; margin-bottom: 20px; cursor: pointer; font-size: 14px; color: #ddd; background: #111; padding: 10px; border-radius: 6px;">
@@ -10274,6 +8893,11 @@ window.executeCPUTurn = async function(isFirstTurn = false) {
         window.TCG_BATTLE.selectedAttackerIndex = -1; // 攻撃終了でハイライト解除
         window.executeAttack(targetType, tIndex);
         await window.tcgSleep(1500); 
+
+        // ▼▼▼ CPUの連撃対応 ▼▼▼
+        if (cpuCard.ability === "double_strike" && cpuCard.canAttack && !cpuCard.isDead) {
+            cpuIndex--; // 配列のインデックスを戻して、同じカードにもう一度攻撃させる
+        }
     }
 
     // --- 召喚＆進化フェーズ ---
@@ -10405,9 +9029,9 @@ window.renderBattleBoard = function() {
         
         // 割り込みUI表示中、クリックできる「守護」のカードを青く光らせる
         if (window.TCG_BATTLE.isIntercepting) {
-            if (window.TCG_BATTLE.interceptPhase === 'adding' && (!card.canAttack || card.damage <= 0) && !card.isDefending && card.ability !== "taunt" && card.status !== "stunned") {
-                filter = "drop-shadow(0 0 20px #FFD700) brightness(1.2)"; // 守護にできるカードは黄色く
-            } else if (window.TCG_BATTLE.interceptPhase === 'selecting' && (card.ability === 'taunt' || card.isDefending)) {
+            if (window.TCG_BATTLE.interceptPhase === 'adding' && !card.isDefending && card.ability !== "taunt" && card.ability !== "pure_aegis" && card.status !== "stunned") {
+                filter = "drop-shadow(0 0 20px #FFD700) brightness(1.2)";
+            } else if (window.TCG_BATTLE.interceptPhase === 'selecting' && (card.ability === 'taunt' || card.ability === 'pure_aegis' || card.isDefending)) {
                 filter = "drop-shadow(0 0 20px #00BCD4) brightness(1.2)"; // 身代わりにできるカードは青く
             } else {
                 filter = "grayscale(80%) opacity(40%)"; // それ以外は暗く
@@ -10458,7 +9082,7 @@ window.selectPlayerCard = function(index) {
             
             // フェーズ1：守護を追加するカードを選ぶ時
             if (window.TCG_BATTLE.interceptPhase === 'adding') {
-                if (p.currentMana >= 1 && (!targetCard.canAttack || targetCard.damage <= 0) && targetCard.ability !== "taunt" && !targetCard.isDefending) {
+                if (p.currentMana >= 1 && targetCard.ability !== "taunt" && targetCard.ability !== "pure_aegis" && !targetCard.isDefending) {
                     p.currentMana -= 1; targetCard.isDefending = true;
                     window.showVFX(`p-card-${index}`, 'heal', '防御!'); 
                     window.renderBattleBoard();
@@ -10469,7 +9093,7 @@ window.selectPlayerCard = function(index) {
             } 
             // フェーズ2：身代わりになる守護を選ぶ時
             else if (window.TCG_BATTLE.interceptPhase === 'selecting') {
-                if (targetCard.ability === "taunt" || targetCard.isDefending) {
+                if (targetCard.ability === "taunt" || targetCard.ability === "pure_aegis" || targetCard.isDefending) {
                     window.finishIntercept('card', index); // 攻撃対象として決定！
                 } else {
                     window.showBattleMessage("⚠️ 守護モンスターを選んでください！", true);
@@ -10483,19 +9107,31 @@ window.selectPlayerCard = function(index) {
     if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
         const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
         const actualCost = window.getActualCost(p, evoCard);
-        if (targetCard.type === evoCard.evolvesFrom) {
+        if (window.checkCanEvolve(targetCard, evoCard)) {
             const canAttackInherit = targetCard.canAttack;
+            
+            // ★追加：進化前の「バフ/デバフ・ダメージ」を計算して引き継ぐ
+            const hpDiff = targetCard.hp - targetCard.maxHp; 
+            const masterTarget = window.TCG_MASTER[targetCard.masterId];
+            const dmgDiff = targetCard.damage - (masterTarget ? (masterTarget.baseDmg || 0) : 0);
+
             p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
             window.renderBattleBoard();
             window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`, false, 1500, false, false);
             window.animateCardPlay(evoCard, true, () => {
                 evoCard.canAttack = canAttackInherit; 
+                
+                // ★追加：進化後カードにステータス変動を適用
+                evoCard.hp = Math.max(1, evoCard.maxHp + hpDiff); // ダメージやオーバーヒールを引き継ぐ
+                if (evoCard.hp > evoCard.maxHp) evoCard.maxHp = evoCard.hp; // オーバーヒールなら最大HPも更新
+                evoCard.damage = Math.max(0, evoCard.damage + dmgDiff); // 攻撃力の増減を引き継ぐ
+                
                 p.field[index] = evoCard;  
                 window.showVFX(`p-card-${index}`, 'heal', '進化!'); 
                 window.triggerPlayEffect(evoCard, true); 
             });
         } else {
-            const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
+            const evoName = window.getEvolvesFromName(evoCard); // ★引数変更
             window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
         }
         return;
@@ -10507,12 +9143,12 @@ window.selectPlayerCard = function(index) {
             p.currentMana += 1; targetCard.isDefending = false;
             window.showBattleMessage(`🛡️ 防御姿勢を解除し、1マナ戻りました。`, false, 1500); 
             window.renderBattleBoard();
-        } else if (targetCard.ability !== "taunt" && p.currentMana >= 1) {
-            p.currentMana -= 1; targetCard.isDefending = true; 
+        } else if (targetCard.ability !== "taunt" && targetCard.ability !== "pure_aegis" && p.currentMana >= 1) {
+            p.currentMana -= 1; targetCard.isDefending = true;
             window.showVFX(`p-card-${index}`, 'heal', '防御!'); 
             window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`, false, 1500); 
             window.renderBattleBoard();
-        } else if (targetCard.ability === "taunt") {
+        } else if (targetCard.ability === "taunt" || targetCard.ability === "pure_aegis") {
             window.showBattleMessage(`このカードは元々【かばう】を持っています。`, false, 1500);
         }
         return;
@@ -10566,7 +9202,7 @@ window.executeCPUTurn = async function(isFirstTurn = false) {
         }
     });
     
-    cpu.field.forEach(card => card.canAttack = true);
+    cpu.field.forEach(card => { card.canAttack = true; card._has_attacked_once = false; });
     window.renderBattleBoard();
     await window.tcgSleep(1000);
 
@@ -10598,8 +9234,8 @@ window.executeCPUTurn = async function(isFirstTurn = false) {
             // ★ プレイヤーの割り込み判断（フェーズ1：追加するか？ → フェーズ2：どれで受けるか？）
             let targetInfo = await new Promise(async resolve => {
                 
-                const getTaunts = () => p.field.filter(c => c.ability === "taunt" || c.isDefending);
-                const getCanTaunt = () => p.field.some(c => (!c.canAttack || c.damage <= 0) && !c.isDefending && c.ability !== "taunt" && !c.isDead && c.status !== "stunned");
+                const getTaunts = () => p.field.filter(c => c.ability === "taunt" || c.ability === "pure_aegis" || c.isDefending);
+                const getCanTaunt = () => p.field.some(c => !c.isDefending && c.ability !== "taunt" && c.ability !== "pure_aegis" && !c.isDead && c.status !== "stunned");
                 
                 let taunts = getTaunts();
                 let canTaunt = getCanTaunt();
@@ -10715,7 +9351,7 @@ window.executeCPUTurn = async function(isFirstTurn = false) {
         if (cpu.currentMana >= actualCost) {
             if (card.type === 'action' && cpu.actionUsed) continue;
             if (card.evolvesFrom) {
-                let targetIndex = cpu.field.findIndex(c => c.type === card.evolvesFrom);
+                let targetIndex = cpu.field.findIndex(c => window.checkCanEvolve(c, card)); // ★新しい判定に変更
                 if (targetIndex !== -1) {
                     cardsToPlay.push({ handIndex: i, card: card, cost: actualCost, isEvo: true, targetIndex: targetIndex });
                     cpu.currentMana -= actualCost; cpu.hand.splice(i, 1);
@@ -10748,7 +9384,7 @@ window.executeCPUTurn = async function(isFirstTurn = false) {
                         window.showBattleMessage(`✨ 敵が ${card.name} を使用！`, false, 2000, true);
                         window.triggerPlayEffect(card, false); 
                     } else { 
-                        card.canAttack = false; cpu.field.push(card); 
+                        card.canAttack = (card.ability === "haste"); cpu.field.push(card); 
                         window.showBattleMessage(`🛡️ 敵が ${card.name} を配置！`, false, 2000, true);
                         window.triggerPlayEffect(card, false); 
                     }
@@ -10784,4 +9420,246 @@ window.executeCPUTurn = async function(isFirstTurn = false) {
     if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); return; }
 
     window.startPlayerTurn(false);
+};
+
+// ==========================================
+// ★ 開発者モード用：TCGテストツール群
+// ==========================================
+
+// ① 全カードリセット
+window.tcgDevResetAllCards = function() {
+    if(confirm('本当に全カードとデッキをリセットしますか？\n（所持カード、デッキ、解放履歴がすべて消去されます）')) {
+        window.TCG = { 
+            myCollection: [], 
+            decks: [[], [], []], 
+            unlockedHistory: {}, 
+            deckNames: ["デッキ 1", "デッキ 2", "デッキ 3"], 
+            currentDeckIndex: 0 
+        };
+        window.saveTCGData();
+        alert('TCGデータを完全にリセットしました！真っ更な状態です。');
+    }
+};
+
+// ② カジノ強制オープン（60枚制限を無視）
+window.tcgDevOpenCasino = function() {
+    // もし myCollection が未定義なら初期化
+    if (!window.TCG) window.TCG = { myCollection: [], decks: [[],[],[]] };
+    if (!window.TCG.myCollection) window.TCG.myCollection = [];
+    
+    // 一時的に60枚制限を突破するためのダミーフラグを持たせてカジノを開く
+    const originalLength = window.TCG.myCollection.length;
+    
+    // もし0枚なら、エラーを防ぐためにダミーを1枚だけ入れる（あとで消します）
+    let dummyAdded = false;
+    if (originalLength === 0) {
+        window.TCG.myCollection.push({ dummy: true });
+        dummyAdded = true;
+    }
+
+    // カジノオープン用のハック（既存のopenCasino関数を強引に実行）
+    const tempCollection = window.TCG.myCollection;
+    Object.defineProperty(window.TCG, 'myCollection', {
+        get: function() { return { length: 999, forEach: tempCollection.forEach.bind(tempCollection), filter: tempCollection.filter.bind(tempCollection) }; },
+        configurable: true
+    });
+
+    try {
+        window.openCasino();
+    } catch(e) {
+        console.error(e);
+        alert("カジノのオープンに失敗しました。");
+    }
+
+    // ハックをもとに戻す
+    Object.defineProperty(window.TCG, 'myCollection', { value: tempCollection, configurable: true, writable: true });
+    if (dummyAdded) window.TCG.myCollection.pop();
+};
+
+// ③ 好きなカードを指定枚数追加するリッチUIツール
+window.tcgDevAddCardPrompt = function() {
+    let existingModal = document.getElementById('tcg-dev-card-adder-modal');
+    if (existingModal) existingModal.remove();
+
+    let modal = document.createElement('div');
+    modal.id = 'tcg-dev-card-adder-modal';
+    modal.style.cssText = `position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:60000; display:flex; justify-content:center; align-items:center; font-family:sans-serif;`;
+    
+    let raceOptions = [
+        {val: 'beetle', label: '🪲 カブトムシ系'},
+        {val: 'dragon', label: '🐉 ドラゴン系'},
+        {val: 'magician', label: '🧙 魔法使い系'},
+        {val: 'spirit', label: '🍃 精霊系'},
+        {val: 'stone', label: '🪨 ゴーレム系'},
+        {val: 'machine', label: '⚙️ ぜんまい系'},
+        {val: 'ghost', label: '👻 ゴースト系'},
+        {val: 'bird', label: '🐦 鳥系'},
+        {val: 'seed', label: '🌱 つぼみ系'},
+        {val: 'balloon', label: '🎈 風船系'},
+        {val: 'robot', label: '🤖 ロボット系'},
+        {val: 'support', label: '🎒 サポート(魔法/罠等)'}
+    ].map(opt => `<option value="${opt.val}">${opt.label}</option>`).join('');
+
+    // カードリストのHTML生成
+    let listHtml = Object.keys(window.TCG_MASTER).map(key => {
+        let master = window.TCG_MASTER[key];
+        let typeName = window.getCardTypeName(master.type);
+        return `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px; background:#222; border-radius:6px; border:1px solid #444;">
+                <div style="display:flex; flex-direction:column; text-align:left;">
+                    <span style="color:#00BCD4; font-size:10px;">ID: ${key}</span>
+                    <span style="color:#FFF; font-size:14px; font-weight:bold;">${master.name} <span style="font-size:10px; color:#aaa;">(${typeName})</span></span>
+                </div>
+                <div style="display:flex; gap:5px;">
+                    <button onclick="window._devAddCards('${key}', 1)" style="padding:6px 12px; background:#4CAF50; color:white; border:none; border-radius:4px; font-weight:bold; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='#45a049'" onmouseout="this.style.background='#4CAF50'">+1枚</button>
+                    <button onclick="window._devAddCards('${key}', 4)" style="padding:6px 12px; background:#2196F3; color:white; border:none; border-radius:4px; font-weight:bold; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='#1e88e5'" onmouseout="this.style.background='#2196F3'">+4枚</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    modal.innerHTML = `
+        <div style="background:#1a1a1a; border:3px solid #4CAF50; border-radius:12px; padding:20px; width:600px; max-width:95%; height:80vh; display:flex; flex-direction:column; box-shadow:0 10px 30px rgba(0,0,0,0.8);">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #444; padding-bottom:10px; margin-bottom:15px;">
+                <h2 style="color:#4CAF50; margin:0;">➕ テスト用カード追加</h2>
+                <button onclick="document.getElementById('tcg-dev-card-adder-modal').remove()" style="background:#f44336; color:#fff; border:none; padding:8px 15px; border-radius:6px; font-weight:bold; cursor:pointer;">閉じる ✖</button>
+            </div>
+            
+            <div style="background:#2a2a2a; padding:15px; border-radius:8px; margin-bottom:15px; border:1px solid #444;">
+                <h3 style="color:#FFC107; margin:0 0 10px 0; font-size:16px;">📦 種族一括追加（全進化形態を含む）</h3>
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <select id="dev-bulk-race-select" style="padding:8px; background:#111; color:white; border:1px solid #555; border-radius:4px; flex:1;">
+                        ${raceOptions}
+                    </select>
+                    <input type="number" id="dev-bulk-count" value="4" min="1" max="10" style="width:60px; padding:8px; background:#111; color:white; border:1px solid #555; border-radius:4px; text-align:center;"> 枚ずつ
+                    <button onclick="window._devAddBulkCards()" style="padding:8px 20px; background:#FF9800; color:white; border:none; border-radius:6px; font-weight:bold; cursor:pointer; transition:0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">一括追加</button>
+                </div>
+            </div>
+
+            <h3 style="color:#00BCD4; margin:0 0 10px 0; font-size:16px;">📝 個別追加リスト</h3>
+            <div style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px; padding-right:10px; border-top:1px dashed #444; padding-top:10px;">
+                ${listHtml}
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+};
+
+// 内部の追加処理用関数（トースト通知付き）
+window._devAddCards = function(cardId, count, isSilent = false) {
+    if(!window.TCG_MASTER[cardId]) return;
+    if (!window.TCG.myCollection) window.TCG.myCollection = [];
+    for(let i = 0; i < count; i++) {
+        let master = window.TCG_MASTER[cardId];
+        window.TCG.myCollection.push({
+            uid: 'dev_' + cardId + '_' + Date.now() + '_' + i,
+            masterId: cardId, 
+            name: master.name, 
+            type: master.type,
+            cost: master.baseCost, 
+            hp: master.baseHp, 
+            maxHp: master.baseHp,
+            skillName: master.skillName, 
+            skillCost: master.skillCost,
+            damage: master.baseDmg || 0, 
+            ability: master.ability,
+            image: master.image, 
+            imageIndex: master.imageIndex,
+            sx: master.sx, sy: master.sy, sw: master.sw, sh: master.sh,
+            scaleX: master.scaleX, scaleY: master.scaleY,
+            evolvesFrom: master.evolvesFrom
+        });
+    }
+    window.saveTCGData();
+    
+    if(!isSilent) {
+        let toast = document.createElement('div');
+        toast.innerHTML = `✅ ${window.TCG_MASTER[cardId].name} を ${count}枚 追加しました`;
+        toast.style.cssText = `position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:rgba(76,175,80,0.9); color:white; padding:10px 20px; border-radius:8px; z-index:65000; font-weight:bold; box-shadow:0 4px 10px rgba(0,0,0,0.5); pointer-events:none; transition: opacity 0.5s;`;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 500); }, 1500);
+    }
+};
+
+window._devAddBulkCards = function() {
+    let racePrefix = document.getElementById('dev-bulk-race-select').value;
+    let count = parseInt(document.getElementById('dev-bulk-count').value);
+    if(isNaN(count) || count <= 0) return;
+
+    let keys = Object.keys(window.TCG_MASTER).filter(k => k.startsWith(racePrefix));
+    if (keys.length === 0) return;
+
+    keys.forEach(k => window._devAddCards(k, count, true));
+    alert(`${racePrefix} 系の全カード（${keys.length}種）をそれぞれ ${count}枚ずつ 追加しました！\n（現在の総所持数: ${window.TCG.myCollection.length}枚）`);
+};
+
+// ==========================================
+// ★ 柔軟な進化判定パッチ（分岐進化対応）
+// ==========================================
+window.checkCanEvolve = function(targetCard, evoCard) {
+    if (!evoCard.evolvesFrom) return false;
+    
+    // ① 完全一致（基本種 -> 第1形態、または直系の進化）
+    if (targetCard.type === evoCard.evolvesFrom) return true;
+
+    // ② 柔軟判定（同じ種族・同じ属性なら、第1形態 -> 第2形態 への進化を全て許可）
+    let evoBase = evoCard.type.split('_')[0]; // 例: "seed"
+    let targetBase = targetCard.type.split('_')[0]; 
+    
+    let evoAttrMatch = evoCard.type.match(/type\d/); // 例: "type3"
+    let targetAttrMatch = targetCard.type.match(/type\d/);
+
+    if (evoBase === targetBase && evoAttrMatch && targetAttrMatch && evoAttrMatch[0] === targetAttrMatch[0]) {
+        // マスターデータから進化段階（深さ）を確認
+        const targetMaster = Object.values(window.TCG_MASTER).find(m => m.type === targetCard.type);
+        const evoMaster = Object.values(window.TCG_MASTER).find(m => m.type === evoCard.type);
+        
+        if (targetMaster && evoMaster) {
+            // targetCardが第1形態（evolvesFromが基本種）で、evoCardが第2形態（evolvesFromが_typeを含む）なら進化OK！
+            let isTargetStage1 = targetMaster.evolvesFrom === targetBase;
+            let isEvoStage2 = evoMaster.evolvesFrom && evoMaster.evolvesFrom.includes('_type');
+            if (isTargetStage1 && isEvoStage2) return true;
+        }
+    }
+    return false;
+};
+
+// エラーメッセージの表示名を親切にするパッチ
+window.getEvolvesFromName = function(evoCard) {
+    let baseEvolves = evoCard.evolvesFrom;
+    
+    // 進化元が "_type" を含む（＝第2形態へ進化しようとしている）場合
+    if (baseEvolves && baseEvolves.includes('_type')) {
+        let attrMap = { 'type1': '闇', 'type2': '美', 'type3': '賢', 'type4': '活', 'type5': '老' };
+        let attrMatch = baseEvolves.match(/type\d/);
+        if (attrMatch && attrMap[attrMatch[0]]) {
+            return `同種族の【${attrMap[attrMatch[0]]}属性】のモンスター`;
+        }
+    }
+    
+    // 基本種族からの進化の場合の汎用名マップ
+    const baseRaceMap = {
+        'robot': '基本のロボット',
+        'dragon': '基本のドラゴン',
+        'magician': '基本の魔法使い',
+        'ghost': '基本のゴースト',
+        'seed': '基本のつぼみ',
+        'spirit': '基本の精霊',
+        'stone': '基本のゴーレム',
+        'machine': '基本のぜんまい',
+        'bird': '基本の鳥',
+        'beetle': '基本のかぶとむし',
+        'balloon': '基本の風船'
+    };
+
+    if (baseRaceMap[baseEvolves]) {
+        return baseRaceMap[baseEvolves] + "モンスター";
+    }
+
+    // 万が一の保険
+    const parentKey = Object.keys(window.TCG_MASTER).find(k => window.TCG_MASTER[k].type === baseEvolves);
+    if (parentKey) return window.TCG_MASTER[parentKey].name;
+    
+    return baseEvolves;
 };
