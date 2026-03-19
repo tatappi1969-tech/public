@@ -368,7 +368,7 @@ window.TCG_MASTER = {
     'support_3': { name: "建築用の木材", type: "item", image: "support_card.png", imageIndex: 3, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 2, baseHp: 0, skillName: "拠点補修", skillCost: 0, baseDmg: 0, ability: "item_taunt" },
     'support_6': { name: "三種の霊薬", type: "item", image: "support_card.png", imageIndex: 6, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 3, baseHp: 0, skillName: "ガブ飲み", skillCost: 0, baseDmg: 0, ability: "item_heal_cleanse" },
     'support_9': { name: "古の魔導書", type: "item", image: "support_card.png", imageIndex: 9, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 3, baseHp: 0, skillName: "知識の探求", skillCost: 0, baseDmg: 0, ability: "item_draw" },
-    'support_12': { name: "輝くクリスタル", type: "item", image: "support_card.png", imageIndex: 12, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 2, baseHp: 0, skillName: "マナ抽出", skillCost: 0, baseDmg: 0, ability: "item_mana_boost" },
+    'support_12': { name: "輝くクリスタル", type: "item", image: "support_card.png", imageIndex: 12, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 0, baseHp: 0, skillName: "マナ抽出", skillCost: 0, baseDmg: 0, ability: "item_mana_boost" },
     'support_1': { name: "静寂の森の小屋", type: "field", image: "support_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 2, baseHp: 20, skillName: "拠点防衛", skillCost: 0, baseDmg: 0, ability: "field_forest" },
     'support_4': { name: "栄華を極めた城", type: "field", image: "support_card.png", imageIndex: 4, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 5, baseHp: 50, skillName: "城壁", skillCost: 0, baseDmg: 0, ability: "field_castle" },
     'support_7': { name: "廃れたカジノ", type: "field", image: "support_card.png", imageIndex: 7, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 3, baseHp: 10, skillName: "一攫千金", skillCost: 0, baseDmg: 0, ability: "field_casino" },
@@ -2563,22 +2563,22 @@ window.getCardTypeName = function(type) {
     return map[type] || '無';
 };
 
-window.getEvolvesFromName = function(evolvesFromType) {
-    const map = {
-        'robot': '基本ロボット', 'robot_type1': 'キリング系', 'robot_type2': 'アイドル系', 'robot_type3': 'アナリティクス系', 'robot_type3_2': 'マザー系', 'robot_type4': 'タンク系', 'robot_type4_2': 'アサルト系', 'robot_type5': 'スクラップ系',
-        'dragon': '基本ドラゴン', 'dragon_type4': 'ワイバーン系', 'dragon_type1': '邪竜系', 'dragon_type5': '古竜系', 'dragon_type3': '水竜系', 'dragon_type2': '宝石竜系',
-        'magician': '基本魔法使い', 'magician_type4': '武闘派系', 'magician_type1': '魔女系', 'magician_type5': '老魔道士系', 'magician_type2': '幻術師系', 'magician_type3': '学者系',
-        'ghost': '基本ゴースト', 'ghost_type4': 'ポルターガイスト系', 'ghost_type5': '古霊系', 'ghost_type1': '悪霊系', 'ghost_type3': '学者幽霊系', 'ghost_type2': '聖霊系',
-        'seed': '基本つぼみ', 'seed_type4': '野生植物系', 'seed_type1': '毒草系', 'seed_type5': '老木系', 'seed_type3': '知識の葉系', 'seed_type2': 'アロマ系',
-        'spirit': '基本精霊', 'spirit_type4': 'ゴーレム系', 'spirit_type5': '枯葉系', 'spirit_type1': '毒キノコ系', 'spirit_type3': '記録精霊系', 'spirit_type2': '妖精系',
-        'stone': '基本ゴーレム', 'stone_type4': 'マグマ系', 'stone_type5': '遺跡系', 'stone_type1': 'ガーゴイル系', 'stone_type3': 'ルーン石系', 'stone_type2': 'クリスタル系',
-        'machine': '基本ぜんまい', 'machine_type4': 'スチーム系', 'machine_type5': 'アンティーク系', 'machine_type1': '呪い人形系', 'machine_type3': 'エンジン系', 'machine_type2': 'オルゴール系',
-        'bird': '基本鳥', 'bird_type4': '猛禽系', 'bird_type5': 'フクロウ系', 'bird_type1': 'カラス系', 'bird_type3': 'ルーン鳥系', 'bird_type2': '輝鳥系',
-        'beetle': '基本かぶとむし', 'beetle_type4': '巨角系', 'beetle_type5': '琥珀系', 'beetle_type1': '狂刃系', 'beetle_type3': '指揮官系', 'beetle_type2': '宝石虫系',
-        'balloon': '基本風船', 'balloon_type4': 'マッスル系', 'balloon_type1': 'スモッグ系', 'balloon_type5': 'デフレート系', 'balloon_type3': '気象系', 'balloon_type2': 'シャボン系'
-    };
-    return map[evolvesFromType] || evolvesFromType;
-};
+// window.getEvolvesFromName = function(evolvesFromType) {
+//     const map = {
+//         'robot': '基本ロボット', 'robot_type1': 'キリング系', 'robot_type2': 'アイドル系', 'robot_type3': 'アナリティクス系', 'robot_type3_2': 'マザー系', 'robot_type4': 'タンク系', 'robot_type4_2': 'アサルト系', 'robot_type5': 'スクラップ系',
+//         'dragon': '基本ドラゴン', 'dragon_type4': 'ワイバーン系', 'dragon_type1': '邪竜系', 'dragon_type5': '古竜系', 'dragon_type3': '水竜系', 'dragon_type2': '宝石竜系',
+//         'magician': '基本魔法使い', 'magician_type4': '武闘派系', 'magician_type1': '魔女系', 'magician_type5': '老魔道士系', 'magician_type2': '幻術師系', 'magician_type3': '学者系',
+//         'ghost': '基本ゴースト', 'ghost_type4': 'ポルターガイスト系', 'ghost_type5': '古霊系', 'ghost_type1': '悪霊系', 'ghost_type3': '学者幽霊系', 'ghost_type2': '聖霊系',
+//         'seed': '基本つぼみ', 'seed_type4': '野生植物系', 'seed_type1': '毒草系', 'seed_type5': '老木系', 'seed_type3': '知識の葉系', 'seed_type2': 'アロマ系',
+//         'spirit': '基本精霊', 'spirit_type4': 'ゴーレム系', 'spirit_type5': '枯葉系', 'spirit_type1': '毒キノコ系', 'spirit_type3': '記録精霊系', 'spirit_type2': '妖精系',
+//         'stone': '基本ゴーレム', 'stone_type4': 'マグマ系', 'stone_type5': '遺跡系', 'stone_type1': 'ガーゴイル系', 'stone_type3': 'ルーン石系', 'stone_type2': 'クリスタル系',
+//         'machine': '基本ぜんまい', 'machine_type4': 'スチーム系', 'machine_type5': 'アンティーク系', 'machine_type1': '呪い人形系', 'machine_type3': 'エンジン系', 'machine_type2': 'オルゴール系',
+//         'bird': '基本鳥', 'bird_type4': '猛禽系', 'bird_type5': 'フクロウ系', 'bird_type1': 'カラス系', 'bird_type3': 'ルーン鳥系', 'bird_type2': '輝鳥系',
+//         'beetle': '基本かぶとむし', 'beetle_type4': '巨角系', 'beetle_type5': '琥珀系', 'beetle_type1': '狂刃系', 'beetle_type3': '指揮官系', 'beetle_type2': '宝石虫系',
+//         'balloon': '基本風船', 'balloon_type4': 'マッスル系', 'balloon_type1': 'スモッグ系', 'balloon_type5': 'デフレート系', 'balloon_type3': '気象系', 'balloon_type2': 'シャボン系'
+//     };
+//     return map[evolvesFromType] || evolvesFromType;
+// };
 
 // ★ マナソヴリン（コスト半減）対応
 window.getActualCost = function(owner, card) {
@@ -3707,7 +3707,7 @@ window.renderBattleBoard = function() {
         if (fieldData && fieldData.owner === owner) {
             let cardHtml = window.renderCardHTML(fieldData.card);
             return `
-            <div style="margin-right: 20px; display:flex; flex-direction:column; align-items:center; flex-shrink: 0;" title="${fieldData.card.name}">
+            <div style="position: absolute; left: 20px; display:flex; flex-direction:column; align-items:center; z-index: 40;" title="${fieldData.card.name}">
                 <div style="transform: scale(0.55); transform-origin: top left; width: 99px; height: 143px; pointer-events:none; filter: drop-shadow(0 0 10px #4DB6AC); z-index:50;">
                     ${cardHtml}
                 </div>
@@ -3715,7 +3715,7 @@ window.renderBattleBoard = function() {
             </div>`;
         } else {
             return `
-            <div style="width: 100px; height: 140px; border: 2px dashed ${isPlayer ? '#00BCD4' : '#ff5252'}; border-radius: 8px; display: flex; justify-content: center; align-items: center; margin-right: 20px; background: rgba(0,0,0,0.3); flex-shrink: 0;">
+            <div style="position: absolute; left: 20px; width: 100px; height: 140px; border: 2px dashed ${isPlayer ? '#00BCD4' : '#ff5252'}; border-radius: 8px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.3); z-index: 40;">
                 <span style="color: ${isPlayer ? '#00BCD4' : '#ff5252'}; font-weight: bold; font-size: 12px; opacity: 0.5;">フィールド</span>
             </div>`;
         }
@@ -3947,94 +3947,94 @@ window.triggerPlayEffect = function(card, isPlayer) {
     setTimeout(() => { window.renderBattleBoard(); }, 800);
 };
 
-window.playCard = function(handIndex) {
-    const p = window.TCG_BATTLE.player; const card = p.hand[handIndex];
-    const actualCost = window.getActualCost(p, card);
+// window.playCard = function(handIndex) {
+//     const p = window.TCG_BATTLE.player; const card = p.hand[handIndex];
+//     const actualCost = window.getActualCost(p, card);
     
-    if (p.currentMana < actualCost) { window.showBattleMessage(`マナが足りません！\n(必要: ${actualCost} / 現在: ${p.currentMana})`, true); return; }
-    if (card.type === 'action' && p.actionUsed) { window.showBattleMessage("⚠️ アクションカードは1ターンに1回までしか使えません！", true); return; }
+//     if (p.currentMana < actualCost) { window.showBattleMessage(`マナが足りません！\n(必要: ${actualCost} / 現在: ${p.currentMana})`, true); return; }
+//     if (card.type === 'action' && p.actionUsed) { window.showBattleMessage("⚠️ アクションカードは1ターンに1回までしか使えません！", true); return; }
     
-    if (card.evolvesFrom) {
-        const canEvolve = p.field.some(c => c.type === card.evolvesFrom);
-        if (!canEvolve) {
-            const evoName = window.getEvolvesFromName(card.evolvesFrom);
-            window.showBattleMessage(`⚠️ 盤面に進化元の\n「${evoName}」がいません！`, true); return;
-        }
-        if (window.TCG_BATTLE.selectedHandCardIndex === handIndex) {
-            window.TCG_BATTLE.selectedHandCardIndex = -1; 
-        } else {
-            window.TCG_BATTLE.selectedHandCardIndex = handIndex; window.TCG_BATTLE.selectedAttackerIndex = -1; 
-            window.showBattleMessage("✨ 進化させるモンスターを選んでください！\n(もう一度押すとキャンセル)");
-        }
-        window.renderBattleBoard(); return;
-    }
+//     if (card.evolvesFrom) {
+//         const canEvolve = p.field.some(c => c.type === card.evolvesFrom);
+//         if (!canEvolve) {
+//             const evoName = window.getEvolvesFromName(card.evolvesFrom);
+//             window.showBattleMessage(`⚠️ 盤面に進化元の\n「${evoName}」がいません！`, true); return;
+//         }
+//         if (window.TCG_BATTLE.selectedHandCardIndex === handIndex) {
+//             window.TCG_BATTLE.selectedHandCardIndex = -1; 
+//         } else {
+//             window.TCG_BATTLE.selectedHandCardIndex = handIndex; window.TCG_BATTLE.selectedAttackerIndex = -1; 
+//             window.showBattleMessage("✨ 進化させるモンスターを選んでください！\n(もう一度押すとキャンセル)");
+//         }
+//         window.renderBattleBoard(); return;
+//     }
 
-    p.currentMana -= actualCost; p.hand.splice(handIndex, 1);
-    if (card.type === 'action') p.actionUsed = true;
-    if (card.type === 'item' || card.type === 'action') { window.showBattleMessage(`✨ ${card.name} を使用！`); window.triggerPlayEffect(card, true); } 
-    else { card.canAttack = false; p.field.push(card); window.showBattleMessage(`🛡️ ${card.name} を配置！`); window.triggerPlayEffect(card, true); }
+//     p.currentMana -= actualCost; p.hand.splice(handIndex, 1);
+//     if (card.type === 'action') p.actionUsed = true;
+//     if (card.type === 'item' || card.type === 'action') { window.showBattleMessage(`✨ ${card.name} を使用！`); window.triggerPlayEffect(card, true); } 
+//     else { card.canAttack = false; p.field.push(card); window.showBattleMessage(`🛡️ ${card.name} を配置！`); window.triggerPlayEffect(card, true); }
 
-    window.TCG_BATTLE.selectedHandCardIndex = -1; window.renderBattleBoard();
-    if (window.TCG_BATTLE.cpu.hp <= 0) { setTimeout(() => { alert("🎉 YOU WIN!! 相手のHPを0にしました！"); document.getElementById('tcg-battle-ui').style.display = 'none'; }, 1000); }
-};
+//     window.TCG_BATTLE.selectedHandCardIndex = -1; window.renderBattleBoard();
+//     if (window.TCG_BATTLE.cpu.hp <= 0) { setTimeout(() => { alert("🎉 YOU WIN!! 相手のHPを0にしました！"); document.getElementById('tcg-battle-ui').style.display = 'none'; }, 1000); }
+// };
 
-window.selectPlayerCard = function(index) {
-    const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
-    const targetCard = p.field[index];
+// window.selectPlayerCard = function(index) {
+//     const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
+//     const targetCard = p.field[index];
 
-    // スタンチェック
-    if (targetCard.status === "stunned") {
-        window.showBattleMessage("🪨 化石化して動けない！", true); return;
-    }
+//     // スタンチェック
+//     if (targetCard.status === "stunned") {
+//         window.showBattleMessage("🪨 化石化して動けない！", true); return;
+//     }
 
-    if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
-        const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
-        const actualCost = window.getActualCost(p, evoCard);
-        if (targetCard.type === evoCard.evolvesFrom) {
-            p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
-            evoCard.canAttack = false; p.field[index] = evoCard;  
-            window.showVFX(`p-card-${index}`, 'heal', '進化!'); window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`);
-            window.triggerPlayEffect(evoCard, true); window.renderBattleBoard();
-        } else {
-            const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
-            window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
-        }
-        return;
-    }
+//     if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
+//         const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
+//         const actualCost = window.getActualCost(p, evoCard);
+//         if (targetCard.type === evoCard.evolvesFrom) {
+//             p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
+//             evoCard.canAttack = false; p.field[index] = evoCard;  
+//             window.showVFX(`p-card-${index}`, 'heal', '進化!'); window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`);
+//             window.triggerPlayEffect(evoCard, true); window.renderBattleBoard();
+//         } else {
+//             const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
+//             window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
+//         }
+//         return;
+//     }
 
-    if (!targetCard.canAttack || targetCard.damage <= 0) {
-        if (!targetCard.isDefending && targetCard.ability !== "taunt" && p.currentMana >= 1) {
-            p.currentMana -= 1; targetCard.isDefending = true; 
-            window.showVFX(`p-card-${index}`, 'heal', '防御!'); window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`); window.renderBattleBoard();
-        } else if (targetCard.isDefending) { window.showBattleMessage(`このカードはすでに防御姿勢です。`); }
-        return;
-    }
+//     if (!targetCard.canAttack || targetCard.damage <= 0) {
+//         if (!targetCard.isDefending && targetCard.ability !== "taunt" && p.currentMana >= 1) {
+//             p.currentMana -= 1; targetCard.isDefending = true; 
+//             window.showVFX(`p-card-${index}`, 'heal', '防御!'); window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`); window.renderBattleBoard();
+//         } else if (targetCard.isDefending) { window.showBattleMessage(`このカードはすでに防御姿勢です。`); }
+//         return;
+//     }
 
-    if (window.TCG_BATTLE.selectedAttackerIndex === index) {
-        window.TCG_BATTLE.selectedAttackerIndex = -1;
-    } else {
-        window.TCG_BATTLE.selectedAttackerIndex = index;
+//     if (window.TCG_BATTLE.selectedAttackerIndex === index) {
+//         window.TCG_BATTLE.selectedAttackerIndex = -1;
+//     } else {
+//         window.TCG_BATTLE.selectedAttackerIndex = index;
         
-        // ★魅了チェック：もし魅了状態なら選択した瞬間に自分を攻撃してしまう！
-        if (targetCard.status === "charmed") {
-            window.TCG_BATTLE.selectedAttackerIndex = -1;
-            targetCard.status = null; // 攻撃したら正気に戻る
-            targetCard.canAttack = false;
+//         // ★魅了チェック：もし魅了状態なら選択した瞬間に自分を攻撃してしまう！
+//         if (targetCard.status === "charmed") {
+//             window.TCG_BATTLE.selectedAttackerIndex = -1;
+//             targetCard.status = null; // 攻撃したら正気に戻る
+//             targetCard.canAttack = false;
             
-            p.hp -= targetCard.damage;
-            window.showVFX('player-face', 'slash'); window.showVFX('player-face', 'damage', targetCard.damage);
-            window.showBattleMessage(`💕 魅了されていて、味方リーダーを攻撃してしまった！`, true, 2500);
+//             p.hp -= targetCard.damage;
+//             window.showVFX('player-face', 'slash'); window.showVFX('player-face', 'damage', targetCard.damage);
+//             window.showBattleMessage(`💕 魅了されていて、味方リーダーを攻撃してしまった！`, true, 2500);
             
-            // 魅了時も行動済みとしてUI更新
-            window.renderBattleBoard();
-            setTimeout(() => {
-                if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); }
-            }, 800);
-            return;
-        }
-    }
-    window.renderBattleBoard();
-};
+//             // 魅了時も行動済みとしてUI更新
+//             window.renderBattleBoard();
+//             setTimeout(() => {
+//                 if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); }
+//             }, 800);
+//             return;
+//         }
+//     }
+//     window.renderBattleBoard();
+// };
 
 // ==========================================
 // 10. ターン開始・終了処理（新アビリティ対応）
@@ -5441,46 +5441,46 @@ window.startBattle = function(enemyData = null, selectedDeckIndex = -1) {
 };
 
 // 2. プレイヤーのサポートカード（アイテム・アクション）墓地送りパッチ
-window.playCard = function(handIndex) {
-    const p = window.TCG_BATTLE.player; const card = p.hand[handIndex];
-    const actualCost = window.getActualCost(p, card);
+// window.playCard = function(handIndex) {
+//     const p = window.TCG_BATTLE.player; const card = p.hand[handIndex];
+//     const actualCost = window.getActualCost(p, card);
     
-    if (p.currentMana < actualCost) { window.showBattleMessage(`マナが足りません！\n(必要: ${actualCost} / 現在: ${p.currentMana})`, true); return; }
-    if (card.type === 'action' && p.actionUsed) { window.showBattleMessage("⚠️ アクションカードは1ターンに1回までしか使えません！", true); return; }
+//     if (p.currentMana < actualCost) { window.showBattleMessage(`マナが足りません！\n(必要: ${actualCost} / 現在: ${p.currentMana})`, true); return; }
+//     if (card.type === 'action' && p.actionUsed) { window.showBattleMessage("⚠️ アクションカードは1ターンに1回までしか使えません！", true); return; }
     
-    if (card.evolvesFrom) {
-        const canEvolve = p.field.some(c => c.type === card.evolvesFrom);
-        if (!canEvolve) {
-            const evoName = window.getEvolvesFromName(card.evolvesFrom);
-            window.showBattleMessage(`⚠️ 盤面に進化元の\n「${evoName}」がいません！`, true); return;
-        }
-        if (window.TCG_BATTLE.selectedHandCardIndex === handIndex) {
-            window.TCG_BATTLE.selectedHandCardIndex = -1; 
-        } else {
-            window.TCG_BATTLE.selectedHandCardIndex = handIndex; window.TCG_BATTLE.selectedAttackerIndex = -1; 
-            window.showBattleMessage("✨ 進化させるモンスターを選んでください！\n(もう一度押すとキャンセル)");
-        }
-        window.renderBattleBoard(); return;
-    }
+//     if (card.evolvesFrom) {
+//         const canEvolve = p.field.some(c => c.type === card.evolvesFrom);
+//         if (!canEvolve) {
+//             const evoName = window.getEvolvesFromName(card.evolvesFrom);
+//             window.showBattleMessage(`⚠️ 盤面に進化元の\n「${evoName}」がいません！`, true); return;
+//         }
+//         if (window.TCG_BATTLE.selectedHandCardIndex === handIndex) {
+//             window.TCG_BATTLE.selectedHandCardIndex = -1; 
+//         } else {
+//             window.TCG_BATTLE.selectedHandCardIndex = handIndex; window.TCG_BATTLE.selectedAttackerIndex = -1; 
+//             window.showBattleMessage("✨ 進化させるモンスターを選んでください！\n(もう一度押すとキャンセル)");
+//         }
+//         window.renderBattleBoard(); return;
+//     }
 
-    p.currentMana -= actualCost; p.hand.splice(handIndex, 1);
-    if (card.type === 'action') p.actionUsed = true;
+//     p.currentMana -= actualCost; p.hand.splice(handIndex, 1);
+//     if (card.type === 'action') p.actionUsed = true;
     
-    if (card.type === 'item' || card.type === 'action') { 
-        // ★修正：使ったカードは墓地へ送る
-        card.isDead = true;
-        p.graveyard.push(card);
-        window.showBattleMessage(`✨ ${card.name} を使用！`); 
-        window.triggerPlayEffect(card, true); 
-    } else { 
-        card.canAttack = false; p.field.push(card); 
-        window.showBattleMessage(`🛡️ ${card.name} を配置！`); 
-        window.triggerPlayEffect(card, true); 
-    }
+//     if (card.type === 'item' || card.type === 'action') { 
+//         // ★修正：使ったカードは墓地へ送る
+//         card.isDead = true;
+//         p.graveyard.push(card);
+//         window.showBattleMessage(`✨ ${card.name} を使用！`); 
+//         window.triggerPlayEffect(card, true); 
+//     } else { 
+//         card.canAttack = false; p.field.push(card); 
+//         window.showBattleMessage(`🛡️ ${card.name} を配置！`); 
+//         window.triggerPlayEffect(card, true); 
+//     }
 
-    window.TCG_BATTLE.selectedHandCardIndex = -1; window.renderBattleBoard();
-    if (window.TCG_BATTLE.cpu.hp <= 0) { setTimeout(() => { alert("🎉 YOU WIN!! 相手のHPを0にしました！"); document.getElementById('tcg-battle-ui').style.display = 'none'; }, 1000); }
-};
+//     window.TCG_BATTLE.selectedHandCardIndex = -1; window.renderBattleBoard();
+//     if (window.TCG_BATTLE.cpu.hp <= 0) { setTimeout(() => { alert("🎉 YOU WIN!! 相手のHPを0にしました！"); document.getElementById('tcg-battle-ui').style.display = 'none'; }, 1000); }
+// };
 
 // 3. CPUのサポートカード（アイテム・アクション）墓地送りパッチ
 window._executeCPUTurnPatch = window.executeCPUTurn;
@@ -5673,108 +5673,108 @@ window.animateCardPlay = function(card, isPlayer, onComplete) {
 };
 
 // ② プレイヤーが手札からカードを出した時の処理を上書き
-window.playCard = function(handIndex) {
-    const p = window.TCG_BATTLE.player; const card = p.hand[handIndex];
-    const actualCost = window.getActualCost(p, card);
+// window.playCard = function(handIndex) {
+//     const p = window.TCG_BATTLE.player; const card = p.hand[handIndex];
+//     const actualCost = window.getActualCost(p, card);
     
-    if (p.currentMana < actualCost) { window.showBattleMessage(`マナが足りません！\n(必要: ${actualCost} / 現在: ${p.currentMana})`, true); return; }
-    if (card.type === 'action' && p.actionUsed) { window.showBattleMessage("⚠️ アクションカードは1ターンに1回までしか使えません！", true); return; }
+//     if (p.currentMana < actualCost) { window.showBattleMessage(`マナが足りません！\n(必要: ${actualCost} / 現在: ${p.currentMana})`, true); return; }
+//     if (card.type === 'action' && p.actionUsed) { window.showBattleMessage("⚠️ アクションカードは1ターンに1回までしか使えません！", true); return; }
     
-    if (card.evolvesFrom) {
-        const canEvolve = p.field.some(c => c.type === card.evolvesFrom);
-        if (!canEvolve) {
-            const evoName = window.getEvolvesFromName(card.evolvesFrom);
-            window.showBattleMessage(`⚠️ 盤面に進化元の\n「${evoName}」がいません！`, true); return;
-        }
-        if (window.TCG_BATTLE.selectedHandCardIndex === handIndex) {
-            window.TCG_BATTLE.selectedHandCardIndex = -1; 
-        } else {
-            window.TCG_BATTLE.selectedHandCardIndex = handIndex; window.TCG_BATTLE.selectedAttackerIndex = -1; 
-            window.showBattleMessage("✨ 進化させるモンスターを選んでください！\n(もう一度押すとキャンセル)");
-        }
-        window.renderBattleBoard(); return;
-    }
+//     if (card.evolvesFrom) {
+//         const canEvolve = p.field.some(c => c.type === card.evolvesFrom);
+//         if (!canEvolve) {
+//             const evoName = window.getEvolvesFromName(card.evolvesFrom);
+//             window.showBattleMessage(`⚠️ 盤面に進化元の\n「${evoName}」がいません！`, true); return;
+//         }
+//         if (window.TCG_BATTLE.selectedHandCardIndex === handIndex) {
+//             window.TCG_BATTLE.selectedHandCardIndex = -1; 
+//         } else {
+//             window.TCG_BATTLE.selectedHandCardIndex = handIndex; window.TCG_BATTLE.selectedAttackerIndex = -1; 
+//             window.showBattleMessage("✨ 進化させるモンスターを選んでください！\n(もう一度押すとキャンセル)");
+//         }
+//         window.renderBattleBoard(); return;
+//     }
 
-    // ★手札から減らして画面を更新（カードが手札から中央に飛んでいくように見せる）
-    p.currentMana -= actualCost; p.hand.splice(handIndex, 1);
-    if (card.type === 'action') p.actionUsed = true;
-    window.TCG_BATTLE.selectedHandCardIndex = -1; 
-    window.renderBattleBoard(); 
+//     // ★手札から減らして画面を更新（カードが手札から中央に飛んでいくように見せる）
+//     p.currentMana -= actualCost; p.hand.splice(handIndex, 1);
+//     if (card.type === 'action') p.actionUsed = true;
+//     window.TCG_BATTLE.selectedHandCardIndex = -1; 
+//     window.renderBattleBoard(); 
 
-    // ★アニメーション関数を呼び出し、終わったら効果を発動！
-    window.animateCardPlay(card, true, () => {
-        if (card.type === 'item' || card.type === 'action') { 
-            card.isDead = true;
-            p.graveyard.push(card);
-            window.showBattleMessage(`✨ ${card.name} を使用！`); 
-            window.triggerPlayEffect(card, true); 
-        } else { 
-            card.canAttack = false; p.field.push(card); 
-            window.showBattleMessage(`🛡️ ${card.name} を配置！`); 
-            window.triggerPlayEffect(card, true); 
-        }
-        if (window.TCG_BATTLE.cpu.hp <= 0) { setTimeout(() => { alert("🎉 YOU WIN!! 相手のHPを0にしました！"); document.getElementById('tcg-battle-ui').style.display = 'none'; }, 1000); }
-    });
-};
+//     // ★アニメーション関数を呼び出し、終わったら効果を発動！
+//     window.animateCardPlay(card, true, () => {
+//         if (card.type === 'item' || card.type === 'action') { 
+//             card.isDead = true;
+//             p.graveyard.push(card);
+//             window.showBattleMessage(`✨ ${card.name} を使用！`); 
+//             window.triggerPlayEffect(card, true); 
+//         } else { 
+//             card.canAttack = false; p.field.push(card); 
+//             window.showBattleMessage(`🛡️ ${card.name} を配置！`); 
+//             window.triggerPlayEffect(card, true); 
+//         }
+//         if (window.TCG_BATTLE.cpu.hp <= 0) { setTimeout(() => { alert("🎉 YOU WIN!! 相手のHPを0にしました！"); document.getElementById('tcg-battle-ui').style.display = 'none'; }, 1000); }
+//     });
+// };
 
 // ③ 進化時の処理を上書き（進化もアニメーションさせる）
-window.selectPlayerCard = function(index) {
-    const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
-    const targetCard = p.field[index];
+// window.selectPlayerCard = function(index) {
+//     const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
+//     const targetCard = p.field[index];
 
-    if (targetCard.status === "stunned") {
-        window.showBattleMessage("🪨 化石化して動けない！", true); return;
-    }
+//     if (targetCard.status === "stunned") {
+//         window.showBattleMessage("🪨 化石化して動けない！", true); return;
+//     }
 
-    if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
-        const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
-        const actualCost = window.getActualCost(p, evoCard);
-        if (targetCard.type === evoCard.evolvesFrom) {
-            // ★手札から消して描画
-            p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
-            window.renderBattleBoard();
+//     if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
+//         const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
+//         const actualCost = window.getActualCost(p, evoCard);
+//         if (targetCard.type === evoCard.evolvesFrom) {
+//             // ★手札から消して描画
+//             p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
+//             window.renderBattleBoard();
 
-            // ★進化カードのカットイン演出
-            window.animateCardPlay(evoCard, true, () => {
-                evoCard.canAttack = false; p.field[index] = evoCard;  
-                window.showVFX(`p-card-${index}`, 'heal', '進化!'); 
-                window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`);
-                window.triggerPlayEffect(evoCard, true); 
-            });
-        } else {
-            const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
-            window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
-        }
-        return;
-    }
+//             // ★進化カードのカットイン演出
+//             window.animateCardPlay(evoCard, true, () => {
+//                 evoCard.canAttack = false; p.field[index] = evoCard;  
+//                 window.showVFX(`p-card-${index}`, 'heal', '進化!'); 
+//                 window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`);
+//                 window.triggerPlayEffect(evoCard, true); 
+//             });
+//         } else {
+//             const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
+//             window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
+//         }
+//         return;
+//     }
 
-    if (!targetCard.canAttack || targetCard.damage <= 0) {
-        if (!targetCard.isDefending && targetCard.ability !== "taunt" && p.currentMana >= 1) {
-            p.currentMana -= 1; targetCard.isDefending = true; 
-            window.showVFX(`p-card-${index}`, 'heal', '防御!'); window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`); window.renderBattleBoard();
-        } else if (targetCard.isDefending) { window.showBattleMessage(`このカードはすでに防御姿勢です。`); }
-        return;
-    }
+//     if (!targetCard.canAttack || targetCard.damage <= 0) {
+//         if (!targetCard.isDefending && targetCard.ability !== "taunt" && p.currentMana >= 1) {
+//             p.currentMana -= 1; targetCard.isDefending = true; 
+//             window.showVFX(`p-card-${index}`, 'heal', '防御!'); window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`); window.renderBattleBoard();
+//         } else if (targetCard.isDefending) { window.showBattleMessage(`このカードはすでに防御姿勢です。`); }
+//         return;
+//     }
 
-    if (window.TCG_BATTLE.selectedAttackerIndex === index) {
-        window.TCG_BATTLE.selectedAttackerIndex = -1;
-    } else {
-        window.TCG_BATTLE.selectedAttackerIndex = index;
-        if (targetCard.status === "charmed") {
-            window.TCG_BATTLE.selectedAttackerIndex = -1;
-            targetCard.status = null; targetCard.canAttack = false;
-            p.hp -= targetCard.damage;
-            window.showVFX('player-face', 'slash'); window.showVFX('player-face', 'damage', targetCard.damage);
-            window.showBattleMessage(`💕 魅了されていて、味方リーダーを攻撃してしまった！`, true, 2500);
-            window.renderBattleBoard();
-            setTimeout(() => {
-                if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); }
-            }, 800);
-            return;
-        }
-    }
-    window.renderBattleBoard();
-};
+//     if (window.TCG_BATTLE.selectedAttackerIndex === index) {
+//         window.TCG_BATTLE.selectedAttackerIndex = -1;
+//     } else {
+//         window.TCG_BATTLE.selectedAttackerIndex = index;
+//         if (targetCard.status === "charmed") {
+//             window.TCG_BATTLE.selectedAttackerIndex = -1;
+//             targetCard.status = null; targetCard.canAttack = false;
+//             p.hp -= targetCard.damage;
+//             window.showVFX('player-face', 'slash'); window.showVFX('player-face', 'damage', targetCard.damage);
+//             window.showBattleMessage(`💕 魅了されていて、味方リーダーを攻撃してしまった！`, true, 2500);
+//             window.renderBattleBoard();
+//             setTimeout(() => {
+//                 if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); }
+//             }, 800);
+//             return;
+//         }
+//     }
+//     window.renderBattleBoard();
+// };
 
 // ④ CPUのターン処理を完全上書き（順番にカードを出してアニメーションさせる）
 window.executeCPUTurn = function(isFirstTurn = false) {
@@ -5985,9 +5985,10 @@ window.showCardDetailModal = function(ownerType, index) {
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'tcg-card-detail-modal';
+        // ★修正：z-indexを 40000 から 60000 に上げて、墓地UIより手前に出します
         modal.style.cssText = `
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); z-index: 40000;
+            background: rgba(0,0,0,0.85); z-index: 60000;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
             cursor: pointer;
         `;
@@ -6035,17 +6036,220 @@ window.renderBattleBoard = function() {
 
 // ③ カードプレイ・進化時のメッセージ表示タイミングの分離
 // アニメーション開始時（1秒前）に「出した」宣言をして、アニメ完了時に「効果」を出すようにします。
+// window.playCard = function(handIndex) {
+//     // ▼▼▼ セーブデータの古いtypeを最新データで強制上書きするパッチ ▼▼▼
+//     const tempPlayer = window.TCG_BATTLE.player;
+//     if (window.TCG_MASTER[tempPlayer.hand[handIndex].masterId]) {
+//         tempPlayer.hand[handIndex].type = window.TCG_MASTER[tempPlayer.hand[handIndex].masterId].type;
+//     }
+//     if (window.TCG_BATTLE.isEnemyTurn || window.TCG_BATTLE.selectedAttackerIndex !== -1) return;
+    
+//     if (window.TCG_BATTLE.targetingHandIndex !== undefined && window.TCG_BATTLE.targetingHandIndex !== -1) {
+//         window.TCG_BATTLE.targetingHandIndex = -1; window.renderBattleBoard(); return;
+//     }
+
+//     const p = window.TCG_BATTLE.player; const card = p.hand[handIndex];
+//     const actualCost = window.getActualCost(p, card);
+    
+//     if (p.currentMana < actualCost) { window.showBattleMessage(`マナが足りません！\n(必要: ${actualCost} / 現在: ${p.currentMana})`, true); return; }
+//     if (card.type === 'action' && p.actionUsed) { window.showBattleMessage("⚠️ アクションカードは1ターンに1回までしか使えません！", true); return; }
+
+//     // ▼▼▼ フィールドカード ▼▼▼
+//     if (card.type === 'field') {
+//         p.currentMana -= actualCost; p.hand.splice(handIndex, 1);
+//         window.playFieldCard(card, true); 
+//         return;
+//     }
+
+//     // ▼▼▼ アイテム・アクションカード ▼▼▼
+//     if (card.type === 'item' || card.type === 'action') {
+//         if (window.requiresTarget && window.requiresTarget(card)) {
+//             if (p.field.length === 0) { window.showBattleMessage("対象にできる味方モンスターがいません", true); return; }
+//             window.TCG_BATTLE.targetingHandIndex = handIndex;
+//             window.showBattleMessage("🎯 対象にする味方モンスターを選んでください", false, 0);
+//             window.renderBattleBoard();
+//         } else {
+//             p.currentMana -= actualCost; if (card.type === 'action') p.actionUsed = true;
+//             p.hand.splice(handIndex, 1); 
+//             window.executeSupportCard(card, null, true);
+//         }
+//         return;
+//     }
+    
+//     // ▼▼▼ 進化モンスター ▼▼▼
+//     if (card.evolvesFrom) {
+//         const canEvolve = p.field.some(c => c.type === card.evolvesFrom);
+//         if (!canEvolve) {
+//             const evoName = window.getEvolvesFromName(card.evolvesFrom);
+//             window.showBattleMessage(`⚠️ 盤面に進化元の\n「${evoName}」がいません！`, true); return;
+//         }
+//         if (window.TCG_BATTLE.selectedHandCardIndex === handIndex) {
+//             window.TCG_BATTLE.selectedHandCardIndex = -1; 
+//         } else {
+//             window.TCG_BATTLE.selectedHandCardIndex = handIndex; window.TCG_BATTLE.selectedAttackerIndex = -1; 
+//             window.showBattleMessage("✨ 進化させるモンスターを選んでください！\n(もう一度押すとキャンセル)");
+//         }
+//         window.renderBattleBoard(); return;
+//     }
+
+//     // ▼▼▼ 通常モンスター ▼▼▼
+//     p.currentMana -= actualCost; p.hand.splice(handIndex, 1);
+    
+//     card.canAttack = (card.ability === "haste"); // 速攻チェック
+//     p.field.push(card); 
+//     window.showBattleMessage(`🛡️ ${card.name} を配置！`); 
+//     window.showVFX(`p-card-${p.field.length - 1}`, 'heal', '召喚!');
+//     window.triggerPlayEffect(card, true);
+
+//     // 森の加護チェック
+//     if (window.TCG_BATTLE.currentField && window.TCG_BATTLE.currentField.card.ability === "field_forest" && ["spirit", "seed", "beetle"].includes(card.type.split('_')[0])) {
+//         card.maxHp += 20; card.hp += 20;
+//     }
+
+//     window.TCG_BATTLE.selectedHandCardIndex = -1; window.renderBattleBoard();
+//     if (window.TCG_BATTLE.cpu.hp <= 0) { setTimeout(() => { alert("🎉 YOU WIN!! 相手のHPを0にしました！"); document.getElementById('tcg-battle-ui').style.display = 'none'; }, 1000); }
+// };
+
+// window.playCard = function(handIndex) {
+//     if (window.TCG_BATTLE.isEnemyTurn || window.TCG_BATTLE.isAnimating || window.TCG_BATTLE.selectedAttackerIndex !== -1) return;
+    
+//     if (window.TCG_BATTLE.targetingHandIndex !== undefined && window.TCG_BATTLE.targetingHandIndex !== -1) {
+//         window.TCG_BATTLE.targetingHandIndex = -1; window.renderBattleBoard(); return;
+//     }
+
+//     const p = window.TCG_BATTLE.player; const card = p.hand[handIndex];
+//     const actualCost = window.getActualCost(p, card);
+    
+//     if (p.currentMana < actualCost) { window.showBattleMessage(`マナが足りません！\n(必要: ${actualCost} / 現在: ${p.currentMana})`, true); return; }
+//     if (card.type === 'action' && p.actionUsed) { window.showBattleMessage("⚠️ アクションカードは1ターンに1回までしか使えません！", true); return; }
+
+//     // ▼▼▼ フィールドカード ▼▼▼
+//     if (card.type === 'field') {
+//         p.currentMana -= actualCost; p.hand.splice(handIndex, 1);
+//         window.renderBattleBoard(); // 手札から消す
+//         window.animateCardPlay(card, true, () => {
+//             window.playFieldCard(card, true); 
+//         });
+//         return;
+//     }
+
+//     // ▼▼▼ アイテム・アクションカード ▼▼▼
+//     if (card.type === 'item' || card.type === 'action') {
+//         if (window.requiresTarget && window.requiresTarget(card)) {
+//             if (p.field.length === 0) { window.showBattleMessage("対象にできる味方モンスターがいません", true); return; }
+//             window.TCG_BATTLE.targetingHandIndex = handIndex;
+//             window.showBattleMessage("🎯 対象にする味方モンスターを選んでください", false, 0);
+//             window.renderBattleBoard();
+//         } else {
+//             p.currentMana -= actualCost; if (card.type === 'action') p.actionUsed = true;
+//             p.hand.splice(handIndex, 1); 
+//             window.renderBattleBoard(); // 手札から消す
+//             window.animateCardPlay(card, true, () => {
+//                 window.executeSupportCard(card, null, true);
+//             });
+//         }
+//         return;
+//     }
+    
+//     // ▼▼▼ 進化モンスター ▼▼▼
+//     if (card.evolvesFrom) {
+//         const canEvolve = p.field.some(c => c.type === card.evolvesFrom);
+//         if (!canEvolve) {
+//             const evoName = window.getEvolvesFromName(card.evolvesFrom);
+//             window.showBattleMessage(`⚠️ 盤面に進化元の\n「${evoName}」がいません！`, true); return;
+//         }
+//         if (window.TCG_BATTLE.selectedHandCardIndex === handIndex) {
+//             window.TCG_BATTLE.selectedHandCardIndex = -1; 
+//         } else {
+//             window.TCG_BATTLE.selectedHandCardIndex = handIndex; window.TCG_BATTLE.selectedAttackerIndex = -1; 
+//             window.showBattleMessage("✨ 進化させるモンスターを選んでください！\n(もう一度押すとキャンセル)");
+//         }
+//         window.renderBattleBoard(); return;
+//     }
+
+//     // ▼▼▼ 通常モンスター ▼▼▼
+//     p.currentMana -= actualCost; p.hand.splice(handIndex, 1);
+//     card.canAttack = (card.ability === "haste"); 
+//     p.field.push(card); 
+//     window.showBattleMessage(`🛡️ ${card.name} を配置！`); 
+//     window.showVFX(`p-card-${p.field.length - 1}`, 'heal', '召喚!');
+//     window.triggerPlayEffect(card, true);
+
+//     if (window.TCG_BATTLE.currentField && window.TCG_BATTLE.currentField.card.ability === "field_forest" && ["spirit", "seed", "beetle"].includes(card.type.split('_')[0])) {
+//         card.maxHp += 20; card.hp += 20;
+//     }
+
+//     window.TCG_BATTLE.selectedHandCardIndex = -1; window.renderBattleBoard();
+//     if (window.TCG_BATTLE.cpu.hp <= 0) { setTimeout(() => { alert("🎉 YOU WIN!! 相手のHPを0にしました！"); document.getElementById('tcg-battle-ui').style.display = 'none'; }, 1000); }
+// };
+
 window.playCard = function(handIndex) {
+    if (window.TCG_BATTLE.isEnemyTurn || window.TCG_BATTLE.isAnimating || window.TCG_BATTLE.selectedAttackerIndex !== -1) return;
+    
+    if (window.TCG_BATTLE.targetingHandIndex !== undefined && window.TCG_BATTLE.targetingHandIndex !== -1) {
+        window.TCG_BATTLE.targetingHandIndex = -1; 
+        // ▼▼▼ 追加：キャンセル時にUIを消す ▼▼▼
+        let ui = document.getElementById('tcg-target-ui'); if (ui) ui.remove();
+        // ▲▲▲ 追加おわり ▲▲▲
+        window.renderBattleBoard(); return;
+    }
+
     const p = window.TCG_BATTLE.player; const card = p.hand[handIndex];
+    
+    // ▼▼▼ パッチ：手札のカードタイプを常に最新マスターデータに補正 ▼▼▼
+    if (window.TCG_MASTER[card.masterId]) card.type = window.TCG_MASTER[card.masterId].type;
+
     const actualCost = window.getActualCost(p, card);
     
     if (p.currentMana < actualCost) { window.showBattleMessage(`マナが足りません！\n(必要: ${actualCost} / 現在: ${p.currentMana})`, true); return; }
     if (card.type === 'action' && p.actionUsed) { window.showBattleMessage("⚠️ アクションカードは1ターンに1回までしか使えません！", true); return; }
+
+    // フィールドカード
+    if (card.type === 'field') {
+        p.currentMana -= actualCost; p.hand.splice(handIndex, 1);
+        window.renderBattleBoard(); 
+        window.animateCardPlay(card, true, () => { window.playFieldCard(card, true); });
+        return;
+    }
+
+    // アイテム・アクションカード
+    if (card.type === 'item' || card.type === 'action') {
+        if (window.requiresTarget && window.requiresTarget(card)) {
+            if (p.field.length === 0) { window.showBattleMessage("対象にできる味方モンスターがいません", true); return; }
+            window.TCG_BATTLE.targetingHandIndex = handIndex;
+            window.showBattleMessage("🎯 対象にする味方モンスターを選んでください", false, 0);
+
+            // ▼▼▼ 追加：画面中央に案内UIを表示 ▼▼▼
+            let ui = document.getElementById('tcg-target-ui');
+            if (!ui) {
+                ui = document.createElement('div');
+                ui.id = "tcg-target-ui";
+                ui.style.cssText = `position:fixed; top:25%; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.85); padding:15px 30px; border:3px solid #00BCD4; border-radius:30px; z-index:50000; text-align:center; box-shadow:0 0 20px rgba(0,188,212,0.6); pointer-events:none;`;
+                ui.innerHTML = `
+                    <div style="color:#00BCD4; font-size:22px; font-weight:bold; margin-bottom:5px;">🎯 対象を選択中...</div>
+                    <div style="color:#ddd; font-size:14px;">魔法をかける味方モンスターをクリックしてください<br>(もう一度手札をクリックでキャンセル)</div>
+                `;
+                document.body.appendChild(ui);
+            }
+            // ▲▲▲ 追加おわり ▲▲▲
+
+            window.renderBattleBoard();
+        } else {
+            p.currentMana -= actualCost; if (card.type === 'action') p.actionUsed = true;
+            p.hand.splice(handIndex, 1); 
+            window.renderBattleBoard(); 
+            window.animateCardPlay(card, true, () => { window.executeSupportCard(card, null, true); });
+        }
+        return;
+    }
     
+    // 進化モンスター
     if (card.evolvesFrom) {
-        const canEvolve = p.field.some(c => window.checkCanEvolve(c, card)); // ★新しい判定に変更
+        // ▼▼▼ 修正：分岐ルート対応の柔軟な進化判定を使用する ▼▼▼
+        const canEvolve = p.field.some(c => window.checkCanEvolve(c, card));
+
         if (!canEvolve) {
-            const evoName = window.getEvolvesFromName(card); // ★引数もカードそのものに変更
+            const evoName = window.getEvolvesFromName(card.evolvesFrom);
             window.showBattleMessage(`⚠️ 盤面に進化元の\n「${evoName}」がいません！`, true); return;
         }
         if (window.TCG_BATTLE.selectedHandCardIndex === handIndex) {
@@ -6057,87 +6261,80 @@ window.playCard = function(handIndex) {
         window.renderBattleBoard(); return;
     }
 
+    // 通常モンスター
     p.currentMana -= actualCost; p.hand.splice(handIndex, 1);
-    if (card.type === 'action') p.actionUsed = true;
-    window.TCG_BATTLE.selectedHandCardIndex = -1; 
-    window.renderBattleBoard(); 
+    card.canAttack = (card.ability === "haste"); 
+    p.field.push(card); 
+    window.showBattleMessage(`🛡️ ${card.name} を配置！`); 
+    window.showVFX(`p-card-${p.field.length - 1}`, 'heal', '召喚!');
+    window.triggerPlayEffect(card, true);
 
-    // ★ アニメーション開始前にプレイ宣言メッセージを出す
-    let playMsg = (card.type === 'item' || card.type === 'action') ? `✨ ${card.name} を使用！` : `🛡️ ${card.name} を配置！`;
-    window.showBattleMessage(playMsg, false, 1500, false, false);
+    if (window.TCG_BATTLE.currentField && window.TCG_BATTLE.currentField.card.ability === "field_forest" && ["spirit", "seed", "beetle"].includes(card.type.split('_')[0])) {
+        card.maxHp += 20; card.hp += 20;
+    }
 
-    window.animateCardPlay(card, true, () => {
-        // ★ アニメーション完了後に、効果を発動させる
-        if (card.type === 'item' || card.type === 'action') { 
-            card.isDead = true;
-            p.graveyard.push(card);
-            window.triggerPlayEffect(card, true); 
-        } else { 
-            card.canAttack = (card.ability === "haste"); p.field.push(card); 
-            window.triggerPlayEffect(card, true); 
-        }
-        if (window.TCG_BATTLE.cpu.hp <= 0) { setTimeout(() => { alert("🎉 YOU WIN!! 相手のHPを0にしました！"); document.getElementById('tcg-battle-ui').style.display = 'none'; }, 1000); }
-    });
+    window.TCG_BATTLE.selectedHandCardIndex = -1; window.renderBattleBoard();
+    if (window.TCG_BATTLE.cpu.hp <= 0) { setTimeout(() => { alert("🎉 YOU WIN!! 相手のHPを0にしました！"); document.getElementById('tcg-battle-ui').style.display = 'none'; }, 1000); }
 };
 
-window.selectPlayerCard = function(index) {
-    const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
-    const targetCard = p.field[index];
+// window.selectPlayerCard = function(index) {
+//     const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
+//     const targetCard = p.field[index];
 
-    if (targetCard.status === "stunned") {
-        window.showBattleMessage("🪨 化石化して動けない！", true); return;
-    }
+//     if (targetCard.status === "stunned") {
+//         window.showBattleMessage("🪨 化石化して動けない！", true); return;
+//     }
 
-    if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
-        const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
-        const actualCost = window.getActualCost(p, evoCard);
-        if (targetCard.type === evoCard.evolvesFrom) {
-            p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
-            window.renderBattleBoard();
+//     if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
+//         const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
+//         const actualCost = window.getActualCost(p, evoCard);
+//         if (targetCard.type === evoCard.evolvesFrom) {
+//             p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
+//             window.renderBattleBoard();
 
-            // ★ アニメーション開始前に進化宣言メッセージを出す
-            window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`, false, 1500, false, false);
+//             // ★ アニメーション開始前に進化宣言メッセージを出す
+//             window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`, false, 1500, false, false);
 
-            window.animateCardPlay(evoCard, true, () => {
-                // ★ アニメーション完了後に、進化効果を発動させる
-                evoCard.canAttack = false; p.field[index] = evoCard;  
-                window.showVFX(`p-card-${index}`, 'heal', '進化!'); 
-                window.triggerPlayEffect(evoCard, true); 
-            });
-        } else {
-            const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
-            window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
-        }
-        return;
-    }
+//             window.animateCardPlay(evoCard, true, () => {
+//                 // ★ アニメーション完了後に、進化効果を発動させる
+//                 evoCard.canAttack = false; p.field[index] = evoCard;  
+//                 window.showVFX(`p-card-${index}`, 'heal', '進化!'); 
+//                 window.triggerPlayEffect(evoCard, true); 
+//             });
+//         } else {
+//             const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
+//             window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
+//         }
+//         return;
+//     }
 
-    if (!targetCard.canAttack || targetCard.damage <= 0) {
-        if (!targetCard.isDefending && targetCard.ability !== "taunt" && p.currentMana >= 1) {
-            p.currentMana -= 1; targetCard.isDefending = true; 
-            window.showVFX(`p-card-${index}`, 'heal', '防御!'); window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`); window.renderBattleBoard();
-        } else if (targetCard.isDefending) { window.showBattleMessage(`このカードはすでに防御姿勢です。`); }
-        return;
-    }
+//     if (!targetCard.canAttack || targetCard.damage <= 0) {
+//         if (!targetCard.isDefending && targetCard.ability !== "taunt" && p.currentMana >= 1) {
+//             p.currentMana -= 1; targetCard.isDefending = true; 
+//             window.showVFX(`p-card-${index}`, 'heal', '防御!'); window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`); window.renderBattleBoard();
+//         } else if (targetCard.isDefending) { window.showBattleMessage(`このカードはすでに防御姿勢です。`); }
+//         return;
+//     }
 
-    if (window.TCG_BATTLE.selectedAttackerIndex === index) {
-        window.TCG_BATTLE.selectedAttackerIndex = -1;
-    } else {
-        window.TCG_BATTLE.selectedAttackerIndex = index;
-        if (targetCard.status === "charmed") {
-            window.TCG_BATTLE.selectedAttackerIndex = -1;
-            targetCard.status = null; targetCard.canAttack = false;
-            p.hp -= targetCard.damage;
-            window.showVFX('player-face', 'slash'); window.showVFX('player-face', 'damage', targetCard.damage);
-            window.showBattleMessage(`💕 魅了されていて、味方リーダーを攻撃してしまった！`, true, 2500);
-            window.renderBattleBoard();
-            setTimeout(() => {
-                if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); }
-            }, 800);
-            return;
-        }
-    }
-    window.renderBattleBoard();
-};
+//     if (window.TCG_BATTLE.selectedAttackerIndex === index) {
+//         window.TCG_BATTLE.selectedAttackerIndex = -1;
+//     } else {
+//         window.TCG_BATTLE.selectedAttackerIndex = index;
+//         if (targetCard.status === "charmed") {
+//             window.TCG_BATTLE.selectedAttackerIndex = -1;
+//             targetCard.status = null; targetCard.canAttack = false;
+//             p.hp -= targetCard.damage;
+//             window.showVFX('player-face', 'slash'); window.showVFX('player-face', 'damage', targetCard.damage);
+//             window.showBattleMessage(`💕 魅了されていて、味方リーダーを攻撃してしまった！`, true, 2500);
+//             window.renderBattleBoard();
+//             setTimeout(() => {
+//                 if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); }
+//             }, 800);
+//             return;
+//         }
+//     }
+//     window.renderBattleBoard();
+// };
 
 // ==========================================
 // ★ ダイレクトアタック強化 ＆ 進化バッジ表示バグ修正パッチ
@@ -6307,11 +6504,27 @@ if (!document.getElementById('tcg-cointoss-styles')) {
 }
 
 // ② 進化元をマスターデータから正確に判定して、名前を表示する
-window.getEvolvesFromName = function(evolvesFromType) {
-    const parentKey = Object.keys(window.TCG_MASTER).find(k => window.TCG_MASTER[k].type === evolvesFromType);
-    if (parentKey) return window.TCG_MASTER[parentKey].name;
-    return evolvesFromType; // 見つからなかった場合の保険
-};
+// window.getEvolvesFromName = function(evolvesFromType) {
+//     const map = {
+//         'robot': '基本ロボット', 'robot_type1': 'キリング系', 'robot_type2': 'アイドル系', 'robot_type3': 'アナリティクス系', 'robot_type3_2': 'マザー系', 'robot_type4': 'タンク系', 'robot_type4_2': 'アサルト系', 'robot_type5': 'スクラップ系',
+//         'dragon': '基本ドラゴン', 'dragon_type4': 'ワイバーン系', 'dragon_type1': '邪竜系', 'dragon_type5': '古竜系', 'dragon_type3': '水竜系', 'dragon_type2': '宝石竜系',
+//         'magician': '基本魔法使い', 'magician_type4': '武闘派系', 'magician_type1': '魔女系', 'magician_type5': '老魔道士系', 'magician_type2': '幻術師系', 'magician_type3': '学者系',
+//         'ghost': '基本ゴースト', 'ghost_type4': 'ポルターガイスト系', 'ghost_type5': '古霊系', 'ghost_type1': '悪霊系', 'ghost_type3': '学者幽霊系', 'ghost_type2': '聖霊系',
+//         'seed': '基本つぼみ', 'seed_type4': '野生植物系', 'seed_type1': '毒草系', 'seed_type5': '老木系', 'seed_type3': '知識の葉系', 'seed_type2': 'アロマ系',
+//         'spirit': '基本精霊', 'spirit_type4': 'ゴーレム系', 'spirit_type5': '枯葉系', 'spirit_type1': '毒キノコ系', 'spirit_type3': '記録精霊系', 'spirit_type2': '妖精系',
+//         'stone': '基本ゴーレム', 'stone_type4': 'マグマ系', 'stone_type5': '遺跡系', 'stone_type1': 'ガーゴイル系', 'stone_type3': 'ルーン石系', 'stone_type2': 'クリスタル系',
+//         'machine': '基本ぜんまい', 'machine_type4': 'スチーム系', 'machine_type5': 'アンティーク系', 'machine_type1': '呪い人形系', 'machine_type3': 'エンジン系', 'machine_type2': 'オルゴール系',
+//         'bird': '基本鳥', 'bird_type4': '猛禽系', 'bird_type5': 'フクロウ系', 'bird_type1': 'カラス系', 'bird_type3': 'ルーン鳥系', 'bird_type2': '輝鳥系',
+//         'beetle': '基本かぶとむし', 'beetle_type4': '巨角系', 'beetle_type5': '琥珀系', 'beetle_type1': '狂刃系', 'beetle_type3': '指揮官系', 'beetle_type2': '宝石虫系',
+//         'balloon': '基本風船', 'balloon_type4': 'マッスル系', 'balloon_type1': 'スモッグ系', 'balloon_type5': 'デフレート系', 'balloon_type3': '気象系', 'balloon_type2': 'シャボン系'
+//     };
+//     // ★修正：mapにない場合、マスターデータから直接名前を逆引きする
+//     if (map[evolvesFromType]) return map[evolvesFromType];
+//     const parentKey = Object.keys(window.TCG_MASTER).find(k => window.TCG_MASTER[k].type === evolvesFromType);
+//     if (parentKey) return window.TCG_MASTER[parentKey].name;
+    
+//     return evolvesFromType; 
+// };
 
 // ③ 賢いバッジ生成ロジック（+判定の正確化と、種族・属性ごとの色分け）
 window.getCardBadgeInfo = function(card) {
@@ -7480,68 +7693,79 @@ window.getCardBadgeInfo = function(card) {
 // ==========================================
 
 // プレイヤー側のカード選択（進化・攻撃・防御）処理を上書き
-window.selectPlayerCard = function(index) {
-    const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
-    const targetCard = p.field[index];
+// window.selectPlayerCard = function(index) {
+//     const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
+//     const targetCard = p.field[index];
 
-    if (targetCard.status === "stunned") {
-        window.showBattleMessage("🪨 化石化して動けない！", true); return;
-    }
+//     // ▼▼▼ ここから追加（ターゲット指定魔法の発動） ▼▼▼
+//     if (window.TCG_BATTLE.targetingHandIndex !== -1) {
+//         const supportCard = p.hand[window.TCG_BATTLE.targetingHandIndex];
+//         p.currentMana -= window.getActualCost(p, supportCard);
+//         if (supportCard.type === 'action') p.actionUsed = true;
+//         p.hand.splice(window.TCG_BATTLE.targetingHandIndex, 1);
+//         window.TCG_BATTLE.targetingHandIndex = -1;
+//         window.executeSupportCard(supportCard, targetCard, true);
+//         return;
+//     }
 
-    if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
-        const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
-        const actualCost = window.getActualCost(p, evoCard);
-        if (targetCard.type === evoCard.evolvesFrom) {
+//     if (targetCard.status === "stunned") {
+//         window.showBattleMessage("🪨 化石化して動けない！", true); return;
+//     }
+
+//     if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
+//         const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
+//         const actualCost = window.getActualCost(p, evoCard);
+//         if (targetCard.type === evoCard.evolvesFrom) {
             
-            // ★修正：進化元の「攻撃できる状態か」を記憶しておく！
-            const canAttackInherit = targetCard.canAttack;
+//             // ★修正：進化元の「攻撃できる状態か」を記憶しておく！
+//             const canAttackInherit = targetCard.canAttack;
 
-            p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
-            window.renderBattleBoard();
+//             p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
+//             window.renderBattleBoard();
 
-            window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`, false, 1500, false, false);
+//             window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`, false, 1500, false, false);
 
-            window.animateCardPlay(evoCard, true, () => {
-                // ★修正：アニメーション完了後、記憶しておいた攻撃権を進化カードに引き継ぐ
-                evoCard.canAttack = canAttackInherit; 
-                p.field[index] = evoCard;  
-                window.showVFX(`p-card-${index}`, 'heal', '進化!'); 
-                window.triggerPlayEffect(evoCard, true); 
-            });
-        } else {
-            const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
-            window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
-        }
-        return;
-    }
+//             window.animateCardPlay(evoCard, true, () => {
+//                 // ★修正：アニメーション完了後、記憶しておいた攻撃権を進化カードに引き継ぐ
+//                 evoCard.canAttack = canAttackInherit; 
+//                 p.field[index] = evoCard;  
+//                 window.showVFX(`p-card-${index}`, 'heal', '進化!'); 
+//                 window.triggerPlayEffect(evoCard, true); 
+//             });
+//         } else {
+//             const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
+//             window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
+//         }
+//         return;
+//     }
 
-    if (!targetCard.canAttack || targetCard.damage <= 0) {
-        if (!targetCard.isDefending && targetCard.ability !== "taunt" && p.currentMana >= 1) {
-            p.currentMana -= 1; targetCard.isDefending = true; 
-            window.showVFX(`p-card-${index}`, 'heal', '防御!'); window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`); window.renderBattleBoard();
-        } else if (targetCard.isDefending) { window.showBattleMessage(`このカードはすでに防御姿勢です。`); }
-        return;
-    }
+//     if (!targetCard.canAttack || targetCard.damage <= 0) {
+//         if (!targetCard.isDefending && targetCard.ability !== "taunt" && p.currentMana >= 1) {
+//             p.currentMana -= 1; targetCard.isDefending = true; 
+//             window.showVFX(`p-card-${index}`, 'heal', '防御!'); window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`); window.renderBattleBoard();
+//         } else if (targetCard.isDefending) { window.showBattleMessage(`このカードはすでに防御姿勢です。`); }
+//         return;
+//     }
 
-    if (window.TCG_BATTLE.selectedAttackerIndex === index) {
-        window.TCG_BATTLE.selectedAttackerIndex = -1;
-    } else {
-        window.TCG_BATTLE.selectedAttackerIndex = index;
-        if (targetCard.status === "charmed") {
-            window.TCG_BATTLE.selectedAttackerIndex = -1;
-            targetCard.status = null; targetCard.canAttack = false;
-            p.hp -= targetCard.damage;
-            window.showVFX('player-face', 'slash'); window.showVFX('player-face', 'damage', targetCard.damage);
-            window.showBattleMessage(`💕 魅了されていて、味方リーダーを攻撃してしまった！`, true, 2500);
-            window.renderBattleBoard();
-            setTimeout(() => {
-                if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); }
-            }, 800);
-            return;
-        }
-    }
-    window.renderBattleBoard();
-};
+//     if (window.TCG_BATTLE.selectedAttackerIndex === index) {
+//         window.TCG_BATTLE.selectedAttackerIndex = -1;
+//     } else {
+//         window.TCG_BATTLE.selectedAttackerIndex = index;
+//         if (targetCard.status === "charmed") {
+//             window.TCG_BATTLE.selectedAttackerIndex = -1;
+//             targetCard.status = null; targetCard.canAttack = false;
+//             p.hp -= targetCard.damage;
+//             window.showVFX('player-face', 'slash'); window.showVFX('player-face', 'damage', targetCard.damage);
+//             window.showBattleMessage(`💕 魅了されていて、味方リーダーを攻撃してしまった！`, true, 2500);
+//             window.renderBattleBoard();
+//             setTimeout(() => {
+//                 if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); }
+//             }, 800);
+//             return;
+//         }
+//     }
+//     window.renderBattleBoard();
+// };
 
 // 敵（CPU）のターン処理を上書き（敵も進化後即殴ってくるようにする）
 window.executeCPUTurn = function(isFirstTurn = false) {
@@ -7758,90 +7982,90 @@ window.showDefendHintModal = function(onConfirm) {
 };
 
 // ② プレイヤーカードの選択処理をアップデート（キャンセルと割り込みの許可）
-window.selectPlayerCard = function(index) {
-    const p = window.TCG_BATTLE.player;
-    const targetCard = p.field[index];
+// window.selectPlayerCard = function(index) {
+//     const p = window.TCG_BATTLE.player;
+//     const targetCard = p.field[index];
 
-    if (targetCard.status === "stunned") {
-        window.showBattleMessage("🪨 化石化して動けない！", true); return;
-    }
+//     if (targetCard.status === "stunned") {
+//         window.showBattleMessage("🪨 化石化して動けない！", true); return;
+//     }
 
-    // ★ 相手ターンの場合、進化や攻撃はできないが、防御（割り込み・解除）だけは許可する
-    if (window.TCG_BATTLE.isEnemyTurn) {
-        if (targetCard.ability === "taunt") {
-            window.showBattleMessage(`このカードは元々【かばう】を持っています。`, false, 1500);
-        } else if (targetCard.isDefending) {
-            p.currentMana += 1; targetCard.isDefending = false;
-            window.showBattleMessage(`🛡️ 防御姿勢を解除し、\n1マナ返還されました。`, false, 1500); window.renderBattleBoard();
-        } else if (p.currentMana >= 1) {
-            p.currentMana -= 1; targetCard.isDefending = true; 
-            window.showVFX(`p-card-${index}`, 'heal', '防御!'); window.showBattleMessage(`🛡️ 相手ターンに割り込み！\n${targetCard.name} が防御姿勢をとった！`, false, 1500); window.renderBattleBoard();
-        } else {
-            window.showBattleMessage("⚠️ マナが足りないため防御できません！", true);
-        }
-        return;
-    }
+//     // ★ 相手ターンの場合、進化や攻撃はできないが、防御（割り込み・解除）だけは許可する
+//     if (window.TCG_BATTLE.isEnemyTurn) {
+//         if (targetCard.ability === "taunt") {
+//             window.showBattleMessage(`このカードは元々【かばう】を持っています。`, false, 1500);
+//         } else if (targetCard.isDefending) {
+//             p.currentMana += 1; targetCard.isDefending = false;
+//             window.showBattleMessage(`🛡️ 防御姿勢を解除し、\n1マナ返還されました。`, false, 1500); window.renderBattleBoard();
+//         } else if (p.currentMana >= 1) {
+//             p.currentMana -= 1; targetCard.isDefending = true; 
+//             window.showVFX(`p-card-${index}`, 'heal', '防御!'); window.showBattleMessage(`🛡️ 相手ターンに割り込み！\n${targetCard.name} が防御姿勢をとった！`, false, 1500); window.renderBattleBoard();
+//         } else {
+//             window.showBattleMessage("⚠️ マナが足りないため防御できません！", true);
+//         }
+//         return;
+//     }
 
-    // 進化モードの場合
-    if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
-        const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
-        const actualCost = window.getActualCost(p, evoCard);
-        if (targetCard.type === evoCard.evolvesFrom) {
-            const canAttackInherit = targetCard.canAttack;
-            p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
-            window.renderBattleBoard();
-            window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`, false, 1500, false, false);
-            window.animateCardPlay(evoCard, true, () => {
-                evoCard.canAttack = canAttackInherit; 
-                p.field[index] = evoCard;  
-                window.showVFX(`p-card-${index}`, 'heal', '進化!'); 
-                window.triggerPlayEffect(evoCard, true); 
-            });
-        } else {
-            const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
-            window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
-        }
-        return;
-    }
+//     // 進化モードの場合
+//     if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
+//         const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
+//         const actualCost = window.getActualCost(p, evoCard);
+//         if (targetCard.type === evoCard.evolvesFrom) {
+//             const canAttackInherit = targetCard.canAttack;
+//             p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
+//             window.renderBattleBoard();
+//             window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`, false, 1500, false, false);
+//             window.animateCardPlay(evoCard, true, () => {
+//                 evoCard.canAttack = canAttackInherit; 
+//                 p.field[index] = evoCard;  
+//                 window.showVFX(`p-card-${index}`, 'heal', '進化!'); 
+//                 window.triggerPlayEffect(evoCard, true); 
+//             });
+//         } else {
+//             const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
+//             window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
+//         }
+//         return;
+//     }
 
-    // 自ターンの攻撃できない/終わったカード、または防御・解除させたい場合
-    if (!targetCard.canAttack || targetCard.damage <= 0 || targetCard.isDefending) {
-        if (targetCard.ability === "taunt") {
-            window.showBattleMessage(`このカードは元々【かばう】を持っています。`, false, 1500);
-        } else if (targetCard.isDefending) { 
-            // ★ 解除処理
-            p.currentMana += 1; targetCard.isDefending = false;
-            window.showBattleMessage(`🛡️ 防御姿勢を解除し、\n1マナ返還されました。`, false, 1500); window.renderBattleBoard();
-        } else if (p.currentMana >= 1) {
-            // ★ 防御設定
-            p.currentMana -= 1; targetCard.isDefending = true; 
-            window.showVFX(`p-card-${index}`, 'heal', '防御!'); window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`, false, 1500); window.renderBattleBoard();
-        } else {
-            window.showBattleMessage("⚠️ マナが足りないため防御できません！", true);
-        }
-        return;
-    }
+//     // 自ターンの攻撃できない/終わったカード、または防御・解除させたい場合
+//     if (!targetCard.canAttack || targetCard.damage <= 0 || targetCard.isDefending) {
+//         if (targetCard.ability === "taunt") {
+//             window.showBattleMessage(`このカードは元々【かばう】を持っています。`, false, 1500);
+//         } else if (targetCard.isDefending) { 
+//             // ★ 解除処理
+//             p.currentMana += 1; targetCard.isDefending = false;
+//             window.showBattleMessage(`🛡️ 防御姿勢を解除し、\n1マナ返還されました。`, false, 1500); window.renderBattleBoard();
+//         } else if (p.currentMana >= 1) {
+//             // ★ 防御設定
+//             p.currentMana -= 1; targetCard.isDefending = true; 
+//             window.showVFX(`p-card-${index}`, 'heal', '防御!'); window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`, false, 1500); window.renderBattleBoard();
+//         } else {
+//             window.showBattleMessage("⚠️ マナが足りないため防御できません！", true);
+//         }
+//         return;
+//     }
 
-    // 自ターンの攻撃選択
-    if (window.TCG_BATTLE.selectedAttackerIndex === index) {
-        window.TCG_BATTLE.selectedAttackerIndex = -1;
-    } else {
-        window.TCG_BATTLE.selectedAttackerIndex = index;
-        if (targetCard.status === "charmed") {
-            window.TCG_BATTLE.selectedAttackerIndex = -1;
-            targetCard.status = null; targetCard.canAttack = false;
-            p.hp -= targetCard.damage;
-            window.showVFX('player-face', 'slash'); window.showVFX('player-face', 'damage', targetCard.damage);
-            window.showBattleMessage(`💕 魅了されていて、味方リーダーを攻撃してしまった！`, true, 2500);
-            window.renderBattleBoard();
-            setTimeout(() => {
-                if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); }
-            }, 800);
-            return;
-        }
-    }
-    window.renderBattleBoard();
-};
+//     // 自ターンの攻撃選択
+//     if (window.TCG_BATTLE.selectedAttackerIndex === index) {
+//         window.TCG_BATTLE.selectedAttackerIndex = -1;
+//     } else {
+//         window.TCG_BATTLE.selectedAttackerIndex = index;
+//         if (targetCard.status === "charmed") {
+//             window.TCG_BATTLE.selectedAttackerIndex = -1;
+//             targetCard.status = null; targetCard.canAttack = false;
+//             p.hp -= targetCard.damage;
+//             window.showVFX('player-face', 'slash'); window.showVFX('player-face', 'damage', targetCard.damage);
+//             window.showBattleMessage(`💕 魅了されていて、味方リーダーを攻撃してしまった！`, true, 2500);
+//             window.renderBattleBoard();
+//             setTimeout(() => {
+//                 if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); }
+//             }, 800);
+//             return;
+//         }
+//     }
+//     window.renderBattleBoard();
+// };
 
 // ③ CPUターン開始時/終了時に「一時的にアビリティを書き換えるバグ」の温床を削除
 window._executeCPUTurnPatch_Interrupt = window.executeCPUTurn; 
@@ -8087,102 +8311,102 @@ window.showDefendHintModal = function(onConfirm) {
 };
 
 // ② プレイヤーカードの選択処理をアップデート（キャンセルと割り込みの許可）
-window.selectPlayerCard = function(index) {
-    const p = window.TCG_BATTLE.player;
-    const targetCard = p.field[index];
+// window.selectPlayerCard = function(index) {
+//     const p = window.TCG_BATTLE.player;
+//     const targetCard = p.field[index];
 
-    if (targetCard.status === "stunned") {
-        window.showBattleMessage("🪨 化石化して動けない！", true); return;
-    }
+//     if (targetCard.status === "stunned") {
+//         window.showBattleMessage("🪨 化石化して動けない！", true); return;
+//     }
 
-    // ★ 相手ターンの場合（割り込み処理）
-    if (window.TCG_BATTLE.isEnemyTurn) {
-        if (window.TCG_BATTLE.isIntercepting) {
-            // 割り込み画面が出ている時のクリック処理
-            if (targetCard.ability === "taunt" || targetCard.isDefending) {
-                // 守護モンスターを身代わりとして決定！
-                window.finishIntercept('card', index);
-            } else if (p.currentMana >= 1 && (!targetCard.canAttack || targetCard.damage <= 0) && targetCard.status !== "stunned") {
-                // マナを使ってとっさに守護を追加！
-                p.currentMana -= 1; targetCard.isDefending = true;
-                window.showVFX(`p-card-${index}`, 'heal', '防御!'); 
-                window.renderBattleBoard();
+//     // ★ 相手ターンの場合（割り込み処理）
+//     if (window.TCG_BATTLE.isEnemyTurn) {
+//         if (window.TCG_BATTLE.isIntercepting) {
+//             // 割り込み画面が出ている時のクリック処理
+//             if (targetCard.ability === "taunt" || targetCard.isDefending) {
+//                 // 守護モンスターを身代わりとして決定！
+//                 window.finishIntercept('card', index);
+//             } else if (p.currentMana >= 1 && (!targetCard.canAttack || targetCard.damage <= 0) && targetCard.status !== "stunned") {
+//                 // マナを使ってとっさに守護を追加！
+//                 p.currentMana -= 1; targetCard.isDefending = true;
+//                 window.showVFX(`p-card-${index}`, 'heal', '防御!'); 
+//                 window.renderBattleBoard();
                 
-                // スルーボタンを消す（守護ができたので必ず受ける必要がある）
-                let ui = document.getElementById('tcg-intercept-ui');
-                if (ui) {
-                    let btn = ui.querySelector('button');
-                    if (btn) btn.remove();
-                    ui.querySelector('p').innerHTML = "守護モンスターが複数います。<br>どのモンスターで攻撃を受けますか？対象をクリックしてください。";
-                }
-            } else {
-                window.showBattleMessage("⚠️ そのカードは防御や対象に選べません", true);
-            }
-        }
-        return;
-    }
+//                 // スルーボタンを消す（守護ができたので必ず受ける必要がある）
+//                 let ui = document.getElementById('tcg-intercept-ui');
+//                 if (ui) {
+//                     let btn = ui.querySelector('button');
+//                     if (btn) btn.remove();
+//                     ui.querySelector('p').innerHTML = "守護モンスターが複数います。<br>どのモンスターで攻撃を受けますか？対象をクリックしてください。";
+//                 }
+//             } else {
+//                 window.showBattleMessage("⚠️ そのカードは防御や対象に選べません", true);
+//             }
+//         }
+//         return;
+//     }
 
-    // 進化モードの場合
-    if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
-        const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
-        const actualCost = window.getActualCost(p, evoCard);
-        if (targetCard.type === evoCard.evolvesFrom) {
-            const canAttackInherit = targetCard.canAttack;
-            p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
-            window.renderBattleBoard();
-            window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`, false, 1500, false, false);
-            window.animateCardPlay(evoCard, true, () => {
-                evoCard.canAttack = canAttackInherit; 
-                p.field[index] = evoCard;  
-                window.showVFX(`p-card-${index}`, 'heal', '進化!'); 
-                window.triggerPlayEffect(evoCard, true); 
-            });
-        } else {
-            const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
-            window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
-        }
-        return;
-    }
+//     // 進化モードの場合
+//     if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
+//         const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
+//         const actualCost = window.getActualCost(p, evoCard);
+//         if (targetCard.type === evoCard.evolvesFrom) {
+//             const canAttackInherit = targetCard.canAttack;
+//             p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
+//             window.renderBattleBoard();
+//             window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`, false, 1500, false, false);
+//             window.animateCardPlay(evoCard, true, () => {
+//                 evoCard.canAttack = canAttackInherit; 
+//                 p.field[index] = evoCard;  
+//                 window.showVFX(`p-card-${index}`, 'heal', '進化!'); 
+//                 window.triggerPlayEffect(evoCard, true); 
+//             });
+//         } else {
+//             const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
+//             window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
+//         }
+//         return;
+//     }
 
-    // ★ 自ターンの防御付与＆キャンセル処理
-    if (!targetCard.canAttack || targetCard.damage <= 0 || targetCard.isDefending) {
-        if (targetCard.isDefending) { 
-            // 【新機能】キャンセルしてマナを返還
-            p.currentMana += 1; targetCard.isDefending = false;
-            window.showBattleMessage(`🛡️ 防御姿勢を解除し、1マナ戻りました。`, false, 1500); 
-            window.renderBattleBoard();
-        } else if (targetCard.ability !== "taunt" && p.currentMana >= 1) {
-            // 防御付与
-            p.currentMana -= 1; targetCard.isDefending = true; 
-            window.showVFX(`p-card-${index}`, 'heal', '防御!'); 
-            window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`, false, 1500); 
-            window.renderBattleBoard();
-        } else if (targetCard.ability === "taunt") {
-            window.showBattleMessage(`このカードは元々【かばう】を持っています。`, false, 1500);
-        }
-        return;
-    }
+//     // ★ 自ターンの防御付与＆キャンセル処理
+//     if (!targetCard.canAttack || targetCard.damage <= 0 || targetCard.isDefending) {
+//         if (targetCard.isDefending) { 
+//             // 【新機能】キャンセルしてマナを返還
+//             p.currentMana += 1; targetCard.isDefending = false;
+//             window.showBattleMessage(`🛡️ 防御姿勢を解除し、1マナ戻りました。`, false, 1500); 
+//             window.renderBattleBoard();
+//         } else if (targetCard.ability !== "taunt" && p.currentMana >= 1) {
+//             // 防御付与
+//             p.currentMana -= 1; targetCard.isDefending = true; 
+//             window.showVFX(`p-card-${index}`, 'heal', '防御!'); 
+//             window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`, false, 1500); 
+//             window.renderBattleBoard();
+//         } else if (targetCard.ability === "taunt") {
+//             window.showBattleMessage(`このカードは元々【かばう】を持っています。`, false, 1500);
+//         }
+//         return;
+//     }
 
-    // 自ターンの攻撃選択
-    if (window.TCG_BATTLE.selectedAttackerIndex === index) {
-        window.TCG_BATTLE.selectedAttackerIndex = -1;
-    } else {
-        window.TCG_BATTLE.selectedAttackerIndex = index;
-        if (targetCard.status === "charmed") {
-            window.TCG_BATTLE.selectedAttackerIndex = -1;
-            targetCard.status = null; targetCard.canAttack = false;
-            p.hp -= targetCard.damage;
-            window.showVFX('player-face', 'slash'); window.showVFX('player-face', 'damage', targetCard.damage);
-            window.showBattleMessage(`💕 魅了されていて、味方リーダーを攻撃してしまった！`, true, 2500);
-            window.renderBattleBoard();
-            setTimeout(() => {
-                if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); }
-            }, 800);
-            return;
-        }
-    }
-    window.renderBattleBoard();
-};
+//     // 自ターンの攻撃選択
+//     if (window.TCG_BATTLE.selectedAttackerIndex === index) {
+//         window.TCG_BATTLE.selectedAttackerIndex = -1;
+//     } else {
+//         window.TCG_BATTLE.selectedAttackerIndex = index;
+//         if (targetCard.status === "charmed") {
+//             window.TCG_BATTLE.selectedAttackerIndex = -1;
+//             targetCard.status = null; targetCard.canAttack = false;
+//             p.hp -= targetCard.damage;
+//             window.showVFX('player-face', 'slash'); window.showVFX('player-face', 'damage', targetCard.damage);
+//             window.showBattleMessage(`💕 魅了されていて、味方リーダーを攻撃してしまった！`, true, 2500);
+//             window.renderBattleBoard();
+//             setTimeout(() => {
+//                 if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); }
+//             }, 800);
+//             return;
+//         }
+//     }
+//     window.renderBattleBoard();
+// };
 
 // ③ ターン開始時に「後付けの防御姿勢」を完全リセットする
 const _baseStartPlayerTurn = window.startPlayerTurn;
@@ -8425,101 +8649,101 @@ window.executeCPUTurn = async function(isFirstTurn = false) {
 // ==========================================
 
 // ① プレイヤーカードの選択処理（割り込み中のUIテキスト変更に対応）
-window.selectPlayerCard = function(index) {
-    const p = window.TCG_BATTLE.player;
-    const targetCard = p.field[index];
+// window.selectPlayerCard = function(index) {
+//     const p = window.TCG_BATTLE.player;
+//     const targetCard = p.field[index];
 
-    if (targetCard.status === "stunned") {
-        window.showBattleMessage("🪨 化石化して動けない！", true); return;
-    }
+//     if (targetCard.status === "stunned") {
+//         window.showBattleMessage("🪨 化石化して動けない！", true); return;
+//     }
 
-    // ★ 相手ターンの場合（割り込み処理）
-    if (window.TCG_BATTLE.isEnemyTurn) {
-        if (window.TCG_BATTLE.isIntercepting) {
-            // 割り込み画面が出ている時のクリック処理
-            if (targetCard.ability === "taunt" || targetCard.isDefending) {
-                // 守護モンスターを身代わりとして決定！
-                window.finishIntercept('card', index);
-            } else if (p.currentMana >= 1 && (!targetCard.canAttack || targetCard.damage <= 0) && targetCard.status !== "stunned") {
-                // マナを使ってとっさに守護を追加！
-                p.currentMana -= 1; targetCard.isDefending = true;
-                window.showVFX(`p-card-${index}`, 'heal', '防御!'); 
-                window.renderBattleBoard();
+//     // ★ 相手ターンの場合（割り込み処理）
+//     if (window.TCG_BATTLE.isEnemyTurn) {
+//         if (window.TCG_BATTLE.isIntercepting) {
+//             // 割り込み画面が出ている時のクリック処理
+//             if (targetCard.ability === "taunt" || targetCard.isDefending) {
+//                 // 守護モンスターを身代わりとして決定！
+//                 window.finishIntercept('card', index);
+//             } else if (p.currentMana >= 1 && (!targetCard.canAttack || targetCard.damage <= 0) && targetCard.status !== "stunned") {
+//                 // マナを使ってとっさに守護を追加！
+//                 p.currentMana -= 1; targetCard.isDefending = true;
+//                 window.showVFX(`p-card-${index}`, 'heal', '防御!'); 
+//                 window.renderBattleBoard();
                 
-                // スルーボタンを消す（守護ができたので必ず受ける必要がある）
-                let ui = document.getElementById('tcg-intercept-ui');
-                if (ui) {
-                    let btn = ui.querySelector('button');
-                    if (btn) btn.remove();
-                    let pElem = ui.querySelector('p');
-                    if (pElem) pElem.innerHTML = "守護が複数います。<br><span style='color:#00BCD4; font-weight:bold;'>受ける味方をクリック</span>";
-                }
-            } else {
-                window.showBattleMessage("⚠️ そのカードは防御や対象に選べません", true);
-            }
-        }
-        return;
-    }
+//                 // スルーボタンを消す（守護ができたので必ず受ける必要がある）
+//                 let ui = document.getElementById('tcg-intercept-ui');
+//                 if (ui) {
+//                     let btn = ui.querySelector('button');
+//                     if (btn) btn.remove();
+//                     let pElem = ui.querySelector('p');
+//                     if (pElem) pElem.innerHTML = "守護が複数います。<br><span style='color:#00BCD4; font-weight:bold;'>受ける味方をクリック</span>";
+//                 }
+//             } else {
+//                 window.showBattleMessage("⚠️ そのカードは防御や対象に選べません", true);
+//             }
+//         }
+//         return;
+//     }
 
-    // 進化モードの場合
-    if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
-        const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
-        const actualCost = window.getActualCost(p, evoCard);
-        if (targetCard.type === evoCard.evolvesFrom) {
-            const canAttackInherit = targetCard.canAttack;
-            p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
-            window.renderBattleBoard();
-            window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`, false, 1500, false, false);
-            window.animateCardPlay(evoCard, true, () => {
-                evoCard.canAttack = canAttackInherit; 
-                p.field[index] = evoCard;  
-                window.showVFX(`p-card-${index}`, 'heal', '進化!'); 
-                window.triggerPlayEffect(evoCard, true); 
-            });
-        } else {
-            const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
-            window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
-        }
-        return;
-    }
+//     // 進化モードの場合
+//     if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
+//         const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
+//         const actualCost = window.getActualCost(p, evoCard);
+//         if (targetCard.type === evoCard.evolvesFrom) {
+//             const canAttackInherit = targetCard.canAttack;
+//             p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
+//             window.renderBattleBoard();
+//             window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`, false, 1500, false, false);
+//             window.animateCardPlay(evoCard, true, () => {
+//                 evoCard.canAttack = canAttackInherit; 
+//                 p.field[index] = evoCard;  
+//                 window.showVFX(`p-card-${index}`, 'heal', '進化!'); 
+//                 window.triggerPlayEffect(evoCard, true); 
+//             });
+//         } else {
+//             const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
+//             window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
+//         }
+//         return;
+//     }
 
-    // 自ターンの防御付与＆キャンセル処理
-    if (!targetCard.canAttack || targetCard.damage <= 0 || targetCard.isDefending) {
-        if (targetCard.isDefending) { 
-            p.currentMana += 1; targetCard.isDefending = false;
-            window.showBattleMessage(`🛡️ 防御姿勢を解除し、1マナ戻りました。`, false, 1500); 
-            window.renderBattleBoard();
-        } else if (targetCard.ability !== "taunt" && p.currentMana >= 1) {
-            p.currentMana -= 1; targetCard.isDefending = true; 
-            window.showVFX(`p-card-${index}`, 'heal', '防御!'); 
-            window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`, false, 1500); 
-            window.renderBattleBoard();
-        } else if (targetCard.ability === "taunt") {
-            window.showBattleMessage(`このカードは元々【かばう】を持っています。`, false, 1500);
-        }
-        return;
-    }
+//     // 自ターンの防御付与＆キャンセル処理
+//     if (!targetCard.canAttack || targetCard.damage <= 0 || targetCard.isDefending) {
+//         if (targetCard.isDefending) { 
+//             p.currentMana += 1; targetCard.isDefending = false;
+//             window.showBattleMessage(`🛡️ 防御姿勢を解除し、1マナ戻りました。`, false, 1500); 
+//             window.renderBattleBoard();
+//         } else if (targetCard.ability !== "taunt" && p.currentMana >= 1) {
+//             p.currentMana -= 1; targetCard.isDefending = true; 
+//             window.showVFX(`p-card-${index}`, 'heal', '防御!'); 
+//             window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`, false, 1500); 
+//             window.renderBattleBoard();
+//         } else if (targetCard.ability === "taunt") {
+//             window.showBattleMessage(`このカードは元々【かばう】を持っています。`, false, 1500);
+//         }
+//         return;
+//     }
 
-    // 自ターンの攻撃選択
-    if (window.TCG_BATTLE.selectedAttackerIndex === index) {
-        window.TCG_BATTLE.selectedAttackerIndex = -1;
-    } else {
-        window.TCG_BATTLE.selectedAttackerIndex = index;
-        if (targetCard.status === "charmed") {
-            window.TCG_BATTLE.selectedAttackerIndex = -1;
-            targetCard.status = null; targetCard.canAttack = false;
-            p.hp -= targetCard.damage;
-            window.showVFX('player-face', 'slash'); window.showVFX('player-face', 'damage', targetCard.damage);
-            window.showBattleMessage(`💕 魅了されていて、味方リーダーを攻撃してしまった！`, true, 2500);
-            window.renderBattleBoard();
-            setTimeout(() => {
-                if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); }
-            }, 800);
-            return;
-        }
-    }
-    window.renderBattleBoard();
-};
+//     // 自ターンの攻撃選択
+//     if (window.TCG_BATTLE.selectedAttackerIndex === index) {
+//         window.TCG_BATTLE.selectedAttackerIndex = -1;
+//     } else {
+//         window.TCG_BATTLE.selectedAttackerIndex = index;
+//         if (targetCard.status === "charmed") {
+//             window.TCG_BATTLE.selectedAttackerIndex = -1;
+//             targetCard.status = null; targetCard.canAttack = false;
+//             p.hp -= targetCard.damage;
+//             window.showVFX('player-face', 'slash'); window.showVFX('player-face', 'damage', targetCard.damage);
+//             window.showBattleMessage(`💕 魅了されていて、味方リーダーを攻撃してしまった！`, true, 2500);
+//             window.renderBattleBoard();
+//             setTimeout(() => {
+//                 if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); }
+//             }, 800);
+//             return;
+//         }
+//     }
+//     window.renderBattleBoard();
+// };
 
 
 // ② CPUターン（攻撃フェーズの割り込みUI表示を改善）
@@ -9111,33 +9335,281 @@ window.renderBattleBoard = function() {
 };
 
 // 4. プレイヤーのクリック処理（2段階の割り込みフェーズに対応！）
+// window.selectPlayerCard = function(index) {
+//     const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
+//     const targetCard = p.field[index];
+
+//     if (targetCard.status === "stunned") {
+//         window.showBattleMessage("🪨 化石化して動けない！", true); return;
+//     }
+
+//     // ▼▼▼ 追加（ターゲット指定魔法の発動） ▼▼▼
+//     if (window.TCG_BATTLE.targetingHandIndex !== undefined && window.TCG_BATTLE.targetingHandIndex !== -1) {
+//         const supportCard = p.hand[window.TCG_BATTLE.targetingHandIndex];
+        
+//         // ★追加：木材を使う時、対象がすでに守護を持っていたら弾く
+//         if (supportCard.ability === "item_taunt" && (targetCard.ability === "taunt" || targetCard.ability === "pure_aegis" || targetCard.isDefending || targetCard.hasPermanentTaunt)) {
+//             window.showBattleMessage("⚠️ そのモンスターはすでに守護状態です！", true);
+//             return; // キャンセルせず返す（別の味方を選び直せる）
+//         }
+//         p.currentMana -= window.getActualCost(p, supportCard);
+//         if (supportCard.type === 'action') p.actionUsed = true;
+//         p.hand.splice(window.TCG_BATTLE.targetingHandIndex, 1);
+//         window.TCG_BATTLE.targetingHandIndex = -1;
+        
+//         window.renderBattleBoard(); // 一旦手札から消す
+//         window.animateCardPlay(supportCard, true, () => {
+//             window.executeSupportCard(supportCard, targetCard, true);
+//         });
+//         return;
+//     }
+
+//     if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
+//         const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
+//         const actualCost = window.getActualCost(p, evoCard);
+//         if (targetCard.type === evoCard.evolvesFrom) {
+//             p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
+//             evoCard.canAttack = false; p.field[index] = evoCard;  
+//             window.showVFX(`p-card-${index}`, 'heal', '進化!'); window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`);
+//             window.triggerPlayEffect(evoCard, true); window.renderBattleBoard();
+//         } else {
+//             const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
+//             window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
+//         }
+//         return;
+//     }
+
+//     // ▼▼▼ 復活＆アップデート版：自ターンの防御付与＆キャンセル処理 ▼▼▼
+//     if (!targetCard.canAttack || targetCard.damage <= 0 || targetCard.isDefending) {
+//         // ① 元々守護持ち、または「木材」で永続守護になったカードは解除不可
+//         if (targetCard.ability === "taunt" || targetCard.ability === "pure_aegis" || targetCard.hasPermanentTaunt) {
+//             window.showBattleMessage(`このカードは永続的な【守護】を持っています。`, false, 1500);
+//         } 
+//         // ② 一時的に防御姿勢をとっている場合は解除して1マナ戻す
+//         else if (targetCard.isDefending) { 
+//             p.currentMana += 1; targetCard.isDefending = false;
+//             window.showBattleMessage(`🛡️ 防御姿勢を解除し、1マナ戻りました。`, false, 1500); 
+//             window.renderBattleBoard();
+//         } 
+//         // ③ マナを1消費して、一時的な防御姿勢をとる
+//         else if (p.currentMana >= 1) {
+//             p.currentMana -= 1; targetCard.isDefending = true; 
+//             window.showVFX(`p-card-${index}`, 'heal', '防御!'); 
+//             window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`, false, 1500); 
+//             window.renderBattleBoard();
+//         }
+//         return;
+//     }
+
+//     if (!targetCard.canAttack || targetCard.damage <= 0) {
+//         if (!targetCard.isDefending && targetCard.ability !== "taunt" && p.currentMana >= 1) {
+//             p.currentMana -= 1; targetCard.isDefending = true; 
+//             window.showVFX(`p-card-${index}`, 'heal', '防御!'); window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`); window.renderBattleBoard();
+//         } else if (targetCard.isDefending) { window.showBattleMessage(`このカードはすでに防御姿勢です。`); }
+//         return;
+//     }
+
+//     if (window.TCG_BATTLE.selectedAttackerIndex === index) window.TCG_BATTLE.selectedAttackerIndex = -1;
+//     else window.TCG_BATTLE.selectedAttackerIndex = index;
+//     window.renderBattleBoard();
+// };
+
+// window.selectPlayerCard = function(index) {
+//     const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
+//     const targetCard = p.field[index];
+
+//     if (targetCard.status === "stunned") {
+//         window.showBattleMessage("🪨 化石化して動けない！", true); return;
+//     }
+
+//     // 解決①：魔法のターゲット選択を【最優先】で処理する（防御処理より上に配置）
+//     if (window.TCG_BATTLE.targetingHandIndex !== undefined && window.TCG_BATTLE.targetingHandIndex !== -1) {
+//         const supportCard = p.hand[window.TCG_BATTLE.targetingHandIndex];
+        
+//         if (supportCard.ability === "item_taunt" && (targetCard.ability === "taunt" || targetCard.ability === "pure_aegis" || targetCard.isDefending || targetCard.hasPermanentTaunt)) {
+//             window.showBattleMessage("⚠️ そのモンスターはすでに守護状態です！", true);
+//             return;
+//         }
+
+//         p.currentMana -= window.getActualCost(p, supportCard);
+//         if (supportCard.type === 'action') p.actionUsed = true;
+//         p.hand.splice(window.TCG_BATTLE.targetingHandIndex, 1);
+//         window.TCG_BATTLE.targetingHandIndex = -1;
+        
+//         window.renderBattleBoard();
+//         window.animateCardPlay(supportCard, true, () => {
+//             window.executeSupportCard(supportCard, targetCard, true);
+//         });
+//         return;
+//     }
+
+//     // 解決②：相手ターンの「守護割り込み」処理（これが消えていたためバグっていました）
+//     if (window.TCG_BATTLE.isEnemyTurn) {
+//         if (window.TCG_BATTLE.isIntercepting) {
+//             if (window.TCG_BATTLE.interceptPhase === 'adding') {
+//                 if (p.currentMana >= 1 && targetCard.ability !== "taunt" && targetCard.ability !== "pure_aegis" && !targetCard.isDefending && !targetCard.hasPermanentTaunt) {
+//                     p.currentMana -= 1; targetCard.isDefending = true;
+//                     window.showVFX(`p-card-${index}`, 'heal', '防御!'); 
+//                     window.renderBattleBoard();
+//                     window.finishIntercept('added', index); 
+//                 } else {
+//                     window.showBattleMessage("⚠️ そのカードは守護にできません！", true);
+//                 }
+//             } 
+//             else if (window.TCG_BATTLE.interceptPhase === 'selecting') {
+//                 if (targetCard.ability === "taunt" || targetCard.ability === "pure_aegis" || targetCard.isDefending || targetCard.hasPermanentTaunt) {
+//                     window.finishIntercept('card', index); 
+//                 } else {
+//                     window.showBattleMessage("⚠️ 守護モンスターを選んでください！", true);
+//                 }
+//             }
+//         }
+//         return;
+//     }
+
+//     // 解決③：進化処理（行動権の引き継ぎと、属性進化の判定条件を修正）
+//     if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
+//         const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
+//         const actualCost = window.getActualCost(p, evoCard);
+        
+//         if (window.checkCanEvolve(targetCard, evoCard)) { // 修正: 単純一致ではなく専用関数で判定
+//             const canAttackInherit = targetCard.canAttack; // 行動権の引き継ぎ
+//             const hpDiff = targetCard.hp - targetCard.maxHp; 
+//             const masterTarget = window.TCG_MASTER[targetCard.masterId];
+//             const dmgDiff = targetCard.damage - (masterTarget ? (masterTarget.baseDmg || 0) : 0);
+
+//             p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
+            
+//             evoCard.canAttack = canAttackInherit; 
+//             evoCard.hp = Math.max(1, evoCard.maxHp + hpDiff); 
+//             if (evoCard.hp > evoCard.maxHp) evoCard.maxHp = evoCard.hp; 
+//             evoCard.damage = Math.max(0, evoCard.damage + dmgDiff); 
+//             p.field[index] = evoCard;  
+
+//             window.renderBattleBoard();
+//             window.showVFX(`p-card-${index}`, 'heal', '進化!'); 
+//             window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`, false, 1500, false, false);
+//             window.triggerPlayEffect(evoCard, true); 
+//         } else {
+//             const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
+//             window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
+//         }
+//         return;
+//     }
+
+//     // 防御の付与・解除
+//     if (!targetCard.canAttack || targetCard.damage <= 0 || targetCard.isDefending) {
+//         if (targetCard.ability === "taunt" || targetCard.ability === "pure_aegis" || targetCard.hasPermanentTaunt) {
+//             window.showBattleMessage(`このカードは永続的な【守護】を持っています。`, false, 1500);
+//         } else if (targetCard.isDefending) { 
+//             p.currentMana += 1; targetCard.isDefending = false;
+//             window.showBattleMessage(`🛡️ 防御姿勢を解除し、1マナ戻りました。`, false, 1500); 
+//             window.renderBattleBoard();
+//         } else if (p.currentMana >= 1) {
+//             p.currentMana -= 1; targetCard.isDefending = true; 
+//             window.showVFX(`p-card-${index}`, 'heal', '防御!'); 
+//             window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`, false, 1500); 
+//             window.renderBattleBoard();
+//         }
+//         return;
+//     }
+
+//     // 攻撃対象の選択
+//     if (window.TCG_BATTLE.selectedAttackerIndex === index) {
+//         window.TCG_BATTLE.selectedAttackerIndex = -1;
+//     } else {
+//         window.TCG_BATTLE.selectedAttackerIndex = index;
+//         // 解決④：魅了の自爆で死んだ場合にバトルを終了させる
+//         if (targetCard.status === "charmed") {
+//             window.TCG_BATTLE.selectedAttackerIndex = -1;
+//             targetCard.status = null; targetCard.canAttack = false;
+//             p.hp -= targetCard.damage;
+//             window.showVFX('player-face', 'slash'); window.showVFX('player-face', 'damage', targetCard.damage);
+//             window.showBattleMessage(`💕 魅了されていて、味方リーダーを攻撃してしまった！`, true, 2500);
+//             window.renderBattleBoard();
+            
+//             setTimeout(() => {
+//                 if (p.hp <= 0) { 
+//                     p.hp = 0; window.renderBattleBoard(); 
+//                     window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); 
+//                     setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); 
+//                 }
+//             }, 800);
+//             return;
+//         }
+//     }
+//     window.renderBattleBoard();
+// };
+
 window.selectPlayerCard = function(index) {
-    const p = window.TCG_BATTLE.player;
+    const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
     const targetCard = p.field[index];
 
     if (targetCard.status === "stunned") {
         window.showBattleMessage("🪨 化石化して動けない！", true); return;
     }
 
-    // ★ 相手ターンの場合（割り込み処理）
+    // 魔法のターゲット指定
+    if (window.TCG_BATTLE.targetingHandIndex !== undefined && window.TCG_BATTLE.targetingHandIndex !== -1) {
+        const supportCard = p.hand[window.TCG_BATTLE.targetingHandIndex];
+        
+        if (supportCard.ability === "item_taunt" && (targetCard.ability === "taunt" || targetCard.ability === "pure_aegis" || targetCard.isDefending || targetCard.hasPermanentTaunt)) {
+            window.showBattleMessage("⚠️ そのモンスターはすでに守護状態です！", true);
+            return;
+        }
+
+        p.currentMana -= window.getActualCost(p, supportCard);
+        if (supportCard.type === 'action') p.actionUsed = true;
+        p.hand.splice(window.TCG_BATTLE.targetingHandIndex, 1);
+        window.TCG_BATTLE.targetingHandIndex = -1;
+
+        // ▼▼▼ 追加：発動時にUIを消す ▼▼▼
+        let ui = document.getElementById('tcg-target-ui'); if (ui) ui.remove();
+        // ▲▲▲ 追加おわり ▲▲▲
+        
+        window.renderBattleBoard();
+        window.animateCardPlay(supportCard, true, () => {
+            window.executeSupportCard(supportCard, targetCard, true);
+        });
+        return;
+    }
+
+    // 相手ターンの「守護割り込み」処理
     if (window.TCG_BATTLE.isEnemyTurn) {
         if (window.TCG_BATTLE.isIntercepting) {
-            
-            // フェーズ1：守護を追加するカードを選ぶ時
             if (window.TCG_BATTLE.interceptPhase === 'adding') {
-                if (p.currentMana >= 1 && targetCard.ability !== "taunt" && targetCard.ability !== "pure_aegis" && !targetCard.isDefending) {
+                if (p.currentMana >= 1 && targetCard.ability !== "taunt" && targetCard.ability !== "pure_aegis" && !targetCard.isDefending && !targetCard.hasPermanentTaunt) {
                     p.currentMana -= 1; targetCard.isDefending = true;
                     window.showVFX(`p-card-${index}`, 'heal', '防御!'); 
                     window.renderBattleBoard();
-                    window.finishIntercept('added', index); // 追加完了として処理を進める
+                    
+                    // ▼▼▼ 修正：直接Promiseを解決する（エラーの元だった関数を排除） ▼▼▼
+                    let ui = document.getElementById('tcg-intercept-ui');
+                    if (ui) ui.remove();
+                    // ▼▼▼ 追加：味方を選んだら案内UIも消す ▼▼▼
+                    let targetUi = document.getElementById('tcg-target-ui'); 
+                    if (targetUi) targetUi.remove();
+                    // ▲▲▲ 追加おわり ▲▲▲
+
+                    if (window.TCG_BATTLE.interceptResolve) {
+                        window.TCG_BATTLE.interceptResolve('added');
+                        window.TCG_BATTLE.interceptResolve = null;
+                    }
                 } else {
                     window.showBattleMessage("⚠️ そのカードは守護にできません！", true);
                 }
             } 
-            // フェーズ2：身代わりになる守護を選ぶ時
             else if (window.TCG_BATTLE.interceptPhase === 'selecting') {
-                if (targetCard.ability === "taunt" || targetCard.ability === "pure_aegis" || targetCard.isDefending) {
-                    window.finishIntercept('card', index); // 攻撃対象として決定！
+                if (targetCard.ability === "taunt" || targetCard.ability === "pure_aegis" || targetCard.isDefending || targetCard.hasPermanentTaunt) {
+                    
+                    // ▼▼▼ 修正：必ず【オブジェクト】で結果を返してダメージ消失を防ぐ ▼▼▼
+                    let ui = document.getElementById('tcg-intercept-ui');
+                    if (ui) ui.remove();
+                    window.TCG_BATTLE.isIntercepting = false;
+                    if (window.TCG_BATTLE.interceptResolve) {
+                        window.TCG_BATTLE.interceptResolve({ targetType: 'card', targetIndex: index });
+                        window.TCG_BATTLE.interceptResolve = null;
+                    }
                 } else {
                     window.showBattleMessage("⚠️ 守護モンスターを選んでください！", true);
                 }
@@ -9146,58 +9618,59 @@ window.selectPlayerCard = function(index) {
         return;
     }
 
-    // （自ターンの進化処理）
+    // 進化処理
+    // 進化処理
     if (window.TCG_BATTLE.selectedHandCardIndex !== -1) {
         const evoCard = p.hand[window.TCG_BATTLE.selectedHandCardIndex];
         const actualCost = window.getActualCost(p, evoCard);
-        if (window.checkCanEvolve(targetCard, evoCard)) {
+        
+        // ▼▼▼ 修正：分岐ルート対応の柔軟な進化判定を使用する ▼▼▼
+        if (window.checkCanEvolve(targetCard, evoCard)) { 
             const canAttackInherit = targetCard.canAttack;
-            
-            // ★追加：進化前の「バフ/デバフ・ダメージ」を計算して引き継ぐ
             const hpDiff = targetCard.hp - targetCard.maxHp; 
             const masterTarget = window.TCG_MASTER[targetCard.masterId];
             const dmgDiff = targetCard.damage - (masterTarget ? (masterTarget.baseDmg || 0) : 0);
 
             p.currentMana -= actualCost; p.hand.splice(window.TCG_BATTLE.selectedHandCardIndex, 1); window.TCG_BATTLE.selectedHandCardIndex = -1;
+            
+            evoCard.canAttack = canAttackInherit; 
+            evoCard.hasPermanentTaunt = targetCard.hasPermanentTaunt; // ←追加：永続守護の引き継ぎ
+            evoCard.isDefending = targetCard.isDefending;             // ←追加：現在の防御マークの引き継ぎ
+            evoCard.hp = Math.max(1, evoCard.maxHp + hpDiff); 
+            if (evoCard.hp > evoCard.maxHp) evoCard.maxHp = evoCard.hp; 
+            evoCard.damage = Math.max(0, evoCard.damage + dmgDiff); 
+            p.field[index] = evoCard;
+
             window.renderBattleBoard();
+            window.showVFX(`p-card-${index}`, 'heal', '進化!'); 
             window.showBattleMessage(`✨ ${targetCard.name} は\n${evoCard.name} に進化した！`, false, 1500, false, false);
-            window.animateCardPlay(evoCard, true, () => {
-                evoCard.canAttack = canAttackInherit; 
-                
-                // ★追加：進化後カードにステータス変動を適用
-                evoCard.hp = Math.max(1, evoCard.maxHp + hpDiff); // ダメージやオーバーヒールを引き継ぐ
-                if (evoCard.hp > evoCard.maxHp) evoCard.maxHp = evoCard.hp; // オーバーヒールなら最大HPも更新
-                evoCard.damage = Math.max(0, evoCard.damage + dmgDiff); // 攻撃力の増減を引き継ぐ
-                
-                p.field[index] = evoCard;  
-                window.showVFX(`p-card-${index}`, 'heal', '進化!'); 
-                window.triggerPlayEffect(evoCard, true); 
-            });
+            window.triggerPlayEffect(evoCard, true); 
         } else {
-            const evoName = window.getEvolvesFromName(evoCard); // ★引数変更
+            const evoName = window.getEvolvesFromName(evoCard.evolvesFrom);
             window.showBattleMessage(`⚠️ そのモンスターには進化できません！\n「${evoName}」を選んでください。`, true);
         }
         return;
     }
 
-    // 自ターンの防御付与＆キャンセル処理
-    if (!targetCard.canAttack || targetCard.damage <= 0 || targetCard.isDefending) {
-        if (targetCard.isDefending) { 
+    // 防御の付与・解除
+    let isTempDefending = targetCard.isDefending && !targetCard.hasPermanentTaunt; // ←追加：一時的な防御か判定
+    if (!targetCard.canAttack || targetCard.damage <= 0 || isTempDefending) { // ←修正：永続守護ならここをスルーして攻撃可能にする
+        if (targetCard.ability === "taunt" || targetCard.ability === "pure_aegis" || targetCard.hasPermanentTaunt) {
+            window.showBattleMessage(`このカードは永続的な【守護】を持っています。`, false, 1500);
+        } else if (targetCard.isDefending) { 
             p.currentMana += 1; targetCard.isDefending = false;
             window.showBattleMessage(`🛡️ 防御姿勢を解除し、1マナ戻りました。`, false, 1500); 
             window.renderBattleBoard();
-        } else if (targetCard.ability !== "taunt" && targetCard.ability !== "pure_aegis" && p.currentMana >= 1) {
-            p.currentMana -= 1; targetCard.isDefending = true;
+        } else if (p.currentMana >= 1) {
+            p.currentMana -= 1; targetCard.isDefending = true; 
             window.showVFX(`p-card-${index}`, 'heal', '防御!'); 
             window.showBattleMessage(`🛡️ 1マナ消費！\n${targetCard.name} が防御姿勢をとった！`, false, 1500); 
             window.renderBattleBoard();
-        } else if (targetCard.ability === "taunt" || targetCard.ability === "pure_aegis") {
-            window.showBattleMessage(`このカードは元々【かばう】を持っています。`, false, 1500);
         }
         return;
     }
 
-    // 自ターンの攻撃選択
+    // 攻撃対象の選択
     if (window.TCG_BATTLE.selectedAttackerIndex === index) {
         window.TCG_BATTLE.selectedAttackerIndex = -1;
     } else {
@@ -9209,8 +9682,13 @@ window.selectPlayerCard = function(index) {
             window.showVFX('player-face', 'slash'); window.showVFX('player-face', 'damage', targetCard.damage);
             window.showBattleMessage(`💕 魅了されていて、味方リーダーを攻撃してしまった！`, true, 2500);
             window.renderBattleBoard();
+            
             setTimeout(() => {
-                if (p.hp <= 0) { p.hp = 0; window.renderBattleBoard(); window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); }
+                if (p.hp <= 0) { 
+                    p.hp = 0; window.renderBattleBoard(); 
+                    window.showBattleMessage("💀 YOU LOSE...\nプレイヤーのHPが0になりました。", true, 5000); 
+                    setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000); 
+                }
             }, 800);
             return;
         }
@@ -9259,6 +9737,16 @@ window.executeCPUTurn = async function(isFirstTurn = false) {
             cpu.hp -= cpuCard.damage;
             window.showVFX('cpu-face', 'slash'); window.showVFX('cpu-face', 'damage', cpuCard.damage);
             window.renderBattleBoard();
+
+            // ▼▼▼ 追加：CPUのHPが0になったら勝利！ ▼▼▼
+            if (cpu.hp <= 0) {
+                cpu.hp = 0; window.renderBattleBoard();
+                window.showBattleMessage("🎉 YOU WIN!!\n敵リーダーのHPが0になりました！", false, 5000);
+                setTimeout(() => document.getElementById('tcg-battle-ui').style.display = 'none', 5000);
+                return; // ターン処理自体を完全に終了する
+            }
+            // ▲▲▲ 追加おわり ▲▲▲
+
             await window.tcgSleep(800);
             continue;
         }
@@ -9318,14 +9806,40 @@ window.executeCPUTurn = async function(isFirstTurn = false) {
                     });
 
                     if (phase1Result === 'add') {
-                        window.showBattleMessage("🛡️ 新たに守護にする味方をクリックしてください", false, 3000);
-                        await new Promise(res2 => {
+                        let addResult = await new Promise(res2 => {
                             window.TCG_BATTLE.interceptPhase = 'adding';
                             window.TCG_BATTLE.interceptResolve = res2;
+                            
+                            // ▼▼▼ 追加：守護選択の案内UIとキャンセルボタン ▼▼▼
+                            let ui = document.getElementById('tcg-target-ui');
+                            if (!ui) {
+                                ui = document.createElement('div');
+                                ui.id = "tcg-target-ui";
+                                ui.style.cssText = `position:fixed; top:25%; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.85); padding:15px 30px; border:3px solid #00BCD4; border-radius:30px; z-index:50000; text-align:center; box-shadow:0 0 20px rgba(0,188,212,0.6); pointer-events:auto;`;
+                                ui.innerHTML = `
+                                    <div style="color:#00BCD4; font-size:22px; font-weight:bold; margin-bottom:10px;">🛡️ 守護を追加する味方を選択中...</div>
+                                    <div style="color:#ddd; font-size:14px; margin-bottom:15px;">守護にしたい味方モンスターをクリックしてください</div>
+                                    <button id="btn-cancel-add" style="padding:8px 20px; background:#555; color:#fff; border:2px solid #777; border-radius:8px; font-weight:bold; cursor:pointer;">キャンセル</button>
+                                `;
+                                document.body.appendChild(ui);
+                                
+                                document.getElementById('btn-cancel-add').onclick = () => {
+                                    ui.remove();
+                                    if (window.TCG_BATTLE.interceptResolve) {
+                                        window.TCG_BATTLE.interceptResolve('cancel');
+                                        window.TCG_BATTLE.interceptResolve = null;
+                                    }
+                                };
+                            }
+                            // ▲▲▲ 追加おわり ▲▲▲
+                            
                             window.renderBattleBoard();
                         });
-                        // 守護が追加されたのでリストを更新
-                        taunts = getTaunts(); 
+                        
+                        // キャンセルされずに無事追加された時だけリストを更新
+                        if (addResult === 'added') {
+                            taunts = getTaunts(); 
+                        }
                     }
                 }
 
@@ -9669,13 +10183,13 @@ window.checkCanEvolve = function(targetCard, evoCard) {
 };
 
 // エラーメッセージの表示名を親切にするパッチ
-window.getEvolvesFromName = function(evoCard) {
-    let baseEvolves = evoCard.evolvesFrom;
+window.getEvolvesFromName = function(evolvesFromType) {
+    if (!evolvesFromType) return "不明なモンスター";
     
     // 進化元が "_type" を含む（＝第2形態へ進化しようとしている）場合
-    if (baseEvolves && baseEvolves.includes('_type')) {
+    if (evolvesFromType.includes('_type')) {
         let attrMap = { 'type1': '闇', 'type2': '美', 'type3': '賢', 'type4': '活', 'type5': '老' };
-        let attrMatch = baseEvolves.match(/type\d/);
+        let attrMatch = evolvesFromType.match(/type\d/);
         if (attrMatch && attrMap[attrMatch[0]]) {
             return `同種族の【${attrMap[attrMatch[0]]}属性】のモンスター`;
         }
@@ -9683,26 +10197,270 @@ window.getEvolvesFromName = function(evoCard) {
     
     // 基本種族からの進化の場合の汎用名マップ
     const baseRaceMap = {
-        'robot': '基本のロボット',
-        'dragon': '基本のドラゴン',
-        'magician': '基本の魔法使い',
-        'ghost': '基本のゴースト',
-        'seed': '基本のつぼみ',
-        'spirit': '基本の精霊',
-        'stone': '基本のゴーレム',
-        'machine': '基本のぜんまい',
-        'bird': '基本の鳥',
-        'beetle': '基本のかぶとむし',
-        'balloon': '基本の風船'
+        'robot': '基本のロボット', 'dragon': '基本のドラゴン', 'magician': '基本の魔法使い', 'ghost': '基本のゴースト', 'seed': '基本のつぼみ', 'spirit': '基本の精霊', 'stone': '基本のゴーレム', 'machine': '基本のぜんまい', 'bird': '基本の鳥', 'beetle': '基本のかぶとむし', 'balloon': '基本の風船'
     };
 
-    if (baseRaceMap[baseEvolves]) {
-        return baseRaceMap[baseEvolves] + "モンスター";
+    if (baseRaceMap[evolvesFromType]) {
+        return baseRaceMap[evolvesFromType] + "モンスター";
     }
 
     // 万が一の保険
-    const parentKey = Object.keys(window.TCG_MASTER).find(k => window.TCG_MASTER[k].type === baseEvolves);
+    const parentKey = Object.keys(window.TCG_MASTER).find(k => window.TCG_MASTER[k].type === evolvesFromType);
     if (parentKey) return window.TCG_MASTER[parentKey].name;
     
-    return baseEvolves;
+    return evolvesFromType;
+};
+
+// ==========================================
+// ★ サポートカード（アクション・アイテム・フィールド）処理システム
+// ==========================================
+
+// ターゲット指定が必要なカードか判定
+window.requiresTarget = function(card) {
+    return ["action_atk_up", "item_hp_up", "item_taunt", "item_heal_cleanse"].includes(card.ability);
+};
+
+// アクション・アイテムの発動処理（発動後は墓地へ）
+// window.executeSupportCard = function(card, targetCard, isPlayer) {
+//     const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
+//     const owner = isPlayer ? p : cpu;
+//     let tIdx = targetCard ? owner.field.indexOf(targetCard) : -1;
+//     let tId = isPlayer ? `p-card-${tIdx}` : `c-card-${tIdx}`;
+
+//     window.showBattleMessage(`🪄 ${card.name} を発動！`, false, 2000, !isPlayer);
+
+//     // アイテム効果
+//     if (card.ability === "item_hp_up" && targetCard) {
+//         targetCard.maxHp += 20; targetCard.hp += 20; window.showVFX(tId, 'heal', 'HP+20');
+//     } else if (card.ability === "item_taunt" && targetCard) {
+//         targetCard.isDefending = true; window.showVFX(tId, 'heal', '守護付与');
+//     } else if (card.ability === "item_heal_cleanse" && targetCard) {
+//         targetCard.hp = targetCard.maxHp; targetCard.status = null; window.showVFX(tId, 'heal', '全回復');
+//     } else if (card.ability === "item_draw") {
+//         if (owner.deck.length > 0) owner.hand.push(owner.deck.shift()); window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', 'ドロー');
+//     } else if (card.ability === "item_mana_boost") {
+//         owner.currentMana += 2; window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', 'マナ回復');
+//     }
+//     // アクション効果
+//     else if (card.ability === "action_draw_3") {
+//         for(let i=0; i<3; i++) { if(owner.deck.length > 0) owner.hand.push(owner.deck.shift()); }
+//         window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', '3ドロー');
+//     } else if (card.ability === "action_atk_up" && targetCard) {
+//         targetCard.damage += 40; window.showVFX(tId, 'heal', '攻+40');
+//     } else if (card.ability === "action_search_evo") {
+//         let evos = owner.deck.filter(c => window.TCG_MASTER[c.masterId] && window.TCG_MASTER[c.masterId].evolvesFrom);
+//         if (evos.length > 0) {
+//             let hit = evos[Math.floor(Math.random() * evos.length)];
+//             owner.deck = owner.deck.filter(c => c !== hit); owner.hand.push(hit);
+//             window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', 'サーチ');
+//         }
+//     } else if (card.ability === "action_heal_face") {
+//         owner.hp += 100; window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', '100回復');
+//     } else if (card.ability === "action_heal_all") {
+//         owner.hp += 100; window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', '全回復');
+//         owner.field.forEach((c, idx) => { c.hp = c.maxHp; window.showVFX(isPlayer ? `p-card-${idx}` : `c-card-${idx}`, 'heal'); });
+//     }
+
+//     card.isDead = true;
+//     if (!owner.graveyard) owner.graveyard = [];
+//     owner.graveyard.push(card); // 使い終わったら墓地へ
+//     window.renderBattleBoard();
+// };
+
+// フィールドカードの展開処理
+// window.playFieldCard = function(card, isPlayer) {
+//     const ownerObj = isPlayer ? window.TCG_BATTLE.player : window.TCG_BATTLE.cpu;
+//     if (window.TCG_BATTLE.currentField) { // 既存のフィールドがあれば墓地へ
+//         window.TCG_BATTLE.currentField.owner.graveyard.push(window.TCG_BATTLE.currentField.card);
+//     }
+//     window.TCG_BATTLE.currentField = { card: card, owner: ownerObj };
+//     window.showBattleMessage(`🗺️ フィールド展開：\n『${card.name}』！`, false, 2500, !isPlayer);
+    
+//     // 展開時の即時バフ（森の加護）
+//     if (card.ability === "field_forest") {
+//         const buffRaces = ["spirit", "seed", "beetle"];
+//         const applyBuff = (pObj, pfx) => {
+//             pObj.field.forEach((c, idx) => {
+//                 if (buffRaces.includes(c.type.split('_')[0])) { c.maxHp += 20; c.hp += 20; window.showVFX(`${pfx}-card-${idx}`, 'heal', '森の加護'); }
+//             });
+//         };
+//         applyBuff(window.TCG_BATTLE.player, 'p'); applyBuff(window.TCG_BATTLE.cpu, 'c');
+//     }
+//     window.renderBattleBoard();
+// };
+
+// ==========================================
+// ★ サポートカード（アクション・アイテム・フィールド）処理システム
+// ==========================================
+if (!window.TCG_BATTLE) window.TCG_BATTLE = {}; 
+window.TCG_BATTLE.currentField = null; 
+window.TCG_BATTLE.targetingHandIndex = -1;
+
+window.requiresTarget = function(card) {
+    return ["action_atk_up", "item_hp_up", "item_taunt", "item_heal_cleanse"].includes(card.ability);
+};
+
+// window.executeSupportCard = function(card, targetCard, isPlayer) {
+//     const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
+//     const owner = isPlayer ? p : cpu;
+//     let tIdx = targetCard ? owner.field.indexOf(targetCard) : -1;
+//     let tId = isPlayer ? `p-card-${tIdx}` : `c-card-${tIdx}`;
+
+//     window.showBattleMessage(`🪄 ${card.name} を発動！`, false, 2000, !isPlayer);
+
+//     // 各カードの効果
+//     if (card.ability === "item_hp_up" && targetCard) {
+//         targetCard.maxHp += 20; targetCard.hp += 20; window.showVFX(tId, 'heal', 'HP+20');
+//     } else if (card.ability === "item_taunt" && targetCard) {
+//         targetCard.isDefending = true; window.showVFX(tId, 'heal', '守護付与');
+//     } else if (card.ability === "item_heal_cleanse" && targetCard) {
+//         targetCard.hp = targetCard.maxHp; targetCard.status = null; window.showVFX(tId, 'heal', '全回復');
+//     } else if (card.ability === "item_draw") {
+//         if (owner.deck.length > 0) owner.hand.push(owner.deck.shift()); window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', 'ドロー');
+//     } else if (card.ability === "item_mana_boost") {
+//         owner.currentMana += 2; window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', 'マナ+2');
+//     }
+//     else if (card.ability === "action_draw_3") {
+//         for(let i=0; i<3; i++) { if(owner.deck.length > 0) owner.hand.push(owner.deck.shift()); }
+//         window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', '3ドロー');
+//     } else if (card.ability === "action_atk_up" && targetCard) {
+//         targetCard.damage += 40; window.showVFX(tId, 'heal', '攻+40');
+//     } else if (card.ability === "action_search_evo") {
+//         let evos = owner.deck.filter(c => window.TCG_MASTER[c.masterId] && window.TCG_MASTER[c.masterId].evolvesFrom);
+//         if (evos.length > 0) {
+//             let hit = evos[Math.floor(Math.random() * evos.length)];
+//             owner.deck = owner.deck.filter(c => c !== hit); owner.hand.push(hit);
+//             window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', 'サーチ');
+//         }
+//     } else if (card.ability === "action_heal_face") {
+//         owner.hp += 100; window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', '100回復');
+//     } else if (card.ability === "action_heal_all") {
+//         owner.hp += 100; window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', '全回復');
+//         owner.field.forEach((c, idx) => { c.hp = c.maxHp; window.showVFX(isPlayer ? `p-card-${idx}` : `c-card-${idx}`, 'heal'); });
+//     }
+
+//     card.isDead = true;
+//     if (!owner.graveyard) owner.graveyard = [];
+//     owner.graveyard.push(card); 
+//     window.renderBattleBoard();
+// };
+
+window.executeSupportCard = function(card, targetCard, isPlayer) {
+    const p = window.TCG_BATTLE.player; const cpu = window.TCG_BATTLE.cpu;
+    const owner = isPlayer ? p : cpu;
+    
+    // 1. まずステータスの計算だけを行う
+    if (card.ability === "item_hp_up" && targetCard) { targetCard.maxHp += 20; targetCard.hp += 20; }
+    else if (card.ability === "item_taunt" && targetCard) {
+        targetCard.hasPermanentTaunt = true; // 元の能力は残したまま「永続守護フラグ」を追加
+        targetCard.isDefending = true; 
+        window.showVFX(tId, 'heal', '守護付与');
+    }
+    else if (card.ability === "item_heal_cleanse" && targetCard) { targetCard.hp = targetCard.maxHp; targetCard.status = null; }
+    else if (card.ability === "item_draw") { if (owner.deck.length > 0) owner.hand.push(owner.deck.shift()); }
+    else if (card.ability === "item_mana_boost") { owner.currentMana += 2; }
+    else if (card.ability === "action_draw_3") { for(let i=0; i<3; i++) { if(owner.deck.length > 0) owner.hand.push(owner.deck.shift()); } }
+    else if (card.ability === "action_atk_up" && targetCard) { targetCard.damage += 40; }
+    else if (card.ability === "action_search_evo") {
+        let evos = owner.deck.filter(c => window.TCG_MASTER[c.masterId] && window.TCG_MASTER[c.masterId].evolvesFrom);
+        if (evos.length > 0) {
+            let hit = evos[Math.floor(Math.random() * evos.length)];
+            owner.deck = owner.deck.filter(c => c !== hit); owner.hand.push(hit);
+        }
+    }
+    else if (card.ability === "action_heal_face") { owner.hp += 100; }
+    else if (card.ability === "action_heal_all") {
+        owner.hp += 100; owner.field.forEach(c => c.hp = c.maxHp);
+    }
+
+    card.isDead = true;
+    if (!owner.graveyard) owner.graveyard = [];
+    owner.graveyard.push(card); 
+    
+    // 2. 盤面を描画して、新しいステータスを画面に反映させる
+    window.renderBattleBoard();
+
+    // 3. 最後にエフェクト（VFX）とメッセージを出す
+    window.showBattleMessage(`🪄 ${card.name} を発動！`, false, 2000, !isPlayer);
+    let tIdx = targetCard ? owner.field.indexOf(targetCard) : -1;
+    let tId = isPlayer ? `p-card-${tIdx}` : `c-card-${tIdx}`;
+
+    if (card.ability === "item_hp_up" && targetCard) window.showVFX(tId, 'heal', 'HP+20');
+    else if (card.ability === "item_taunt" && targetCard) window.showVFX(tId, 'heal', '守護付与');
+    else if (card.ability === "item_heal_cleanse" && targetCard) window.showVFX(tId, 'heal', '全回復');
+    else if (card.ability === "item_draw") window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', 'ドロー');
+    else if (card.ability === "item_mana_boost") window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', 'マナ+2');
+    else if (card.ability === "action_draw_3") window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', '3ドロー');
+    else if (card.ability === "action_atk_up" && targetCard) window.showVFX(tId, 'heal', '攻+40');
+    else if (card.ability === "action_search_evo") window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', 'サーチ');
+    else if (card.ability === "action_heal_face") window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', '100回復');
+    else if (card.ability === "action_heal_all") {
+        window.showVFX(isPlayer ? 'player-face' : 'cpu-face', 'heal', '全回復');
+        owner.field.forEach((c, idx) => { window.showVFX(isPlayer ? `p-card-${idx}` : `c-card-${idx}`, 'heal'); });
+    }
+};
+
+window.playFieldCard = function(card, isPlayer) {
+    const ownerObj = isPlayer ? window.TCG_BATTLE.player : window.TCG_BATTLE.cpu;
+    if (window.TCG_BATTLE.currentField) {
+        window.TCG_BATTLE.currentField.owner.graveyard.push(window.TCG_BATTLE.currentField.card);
+    }
+    window.TCG_BATTLE.currentField = { card: card, owner: ownerObj };
+    window.showBattleMessage(`🗺️ フィールド展開：\n『${card.name}』！`, false, 2500, !isPlayer);
+    
+    if (card.ability === "field_forest") {
+        const buffRaces = ["spirit", "seed", "beetle"];
+        const applyBuff = (pObj, pfx) => {
+            pObj.field.forEach((c, idx) => {
+                if (buffRaces.includes(c.type.split('_')[0])) { c.maxHp += 20; c.hp += 20; window.showVFX(`${pfx}-card-${idx}`, 'heal', '森の加護'); }
+            });
+        };
+        applyBuff(window.TCG_BATTLE.player, 'p'); applyBuff(window.TCG_BATTLE.cpu, 'c');
+    }
+    window.renderBattleBoard();
+};
+
+// ==========================================
+// ★ ターン開始時の「永続守護」維持パッチ
+// ==========================================
+const _originalStartPlayerTurn = window.startPlayerTurn;
+window.startPlayerTurn = function(isFirstTurn = false) {
+    _originalStartPlayerTurn(isFirstTurn); // 元のターン開始処理（防御リセットなど）を実行
+    
+    // その直後に、永続守護フラグを持つ味方だけ防御姿勢を復活させる
+    if (window.TCG_BATTLE && window.TCG_BATTLE.player) {
+        window.TCG_BATTLE.player.field.forEach(c => {
+            if (c.hasPermanentTaunt) c.isDefending = true;
+        });
+    }
+};
+
+// ==========================================
+// ★ 進化判定の柔軟化パッチ（分岐ルート＆階級チェック対応）
+// ==========================================
+window.checkCanEvolve = function(fieldCard, handCard) {
+    if (!handCard.evolvesFrom) return false;
+    const fMaster = window.TCG_MASTER[fieldCard.masterId];
+    const fType = fMaster ? fMaster.type : fieldCard.type;
+    const fEvolvesFrom = fMaster ? fMaster.evolvesFrom : fieldCard.evolvesFrom;
+
+    // 1. 完全一致（基本種族 → 第1形態 など）
+    if (fType === handCard.evolvesFrom) return true;
+
+    // 2. 柔軟な一致（第1形態 → 第2形態 の分岐ルート対応）
+    // 手札の進化条件が "xxx_typeY" などの場合
+    if (handCard.evolvesFrom.includes('_type')) {
+        const reqMatch = handCard.evolvesFrom.match(/^([a-z]+)_type(\d)/); 
+        const fMatch = fType.match(/^([a-z]+)_type(\d)/);
+
+        // 種族とルート属性（typeの直後の数字）が一致しているか
+        if (reqMatch && fMatch && reqMatch[1] === fMatch[1] && reqMatch[2] === fMatch[2]) {
+            // 【重要】盤面のカードが「第1形態」であることを確認する
+            // （第1形態の evolvesFrom は "beetle" などであり "_type" を含まない）
+            if (fEvolvesFrom && !fEvolvesFrom.includes('_type')) {
+                return true; 
+            }
+        }
+    }
+    return false;
 };
