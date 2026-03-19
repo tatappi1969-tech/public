@@ -3699,6 +3699,30 @@ window.renderBattleBoard = function() {
     // ==========================================
     // ★ 完璧な全画面レイアウト ＋ ログ＆墓地ボタン追加！
     // ==========================================
+    // ▼▼▼ フィールドゾーンの描画HTML生成 ▼▼▼
+    const createFieldZoneHtml = (isPlayer) => {
+        let owner = isPlayer ? p : cpu;
+        let fieldData = window.TCG_BATTLE.currentField;
+        
+        if (fieldData && fieldData.owner === owner) {
+            let cardHtml = window.renderCardHTML(fieldData.card);
+            return `
+            <div style="margin-right: 20px; display:flex; flex-direction:column; align-items:center; flex-shrink: 0;" title="${fieldData.card.name}">
+                <div style="transform: scale(0.55); transform-origin: top left; width: 99px; height: 143px; pointer-events:none; filter: drop-shadow(0 0 10px #4DB6AC); z-index:50;">
+                    ${cardHtml}
+                </div>
+                <div style="color:#4DB6AC; font-size:12px; font-weight:bold; margin-top:-5px; background:#111; padding:2px 8px; border-radius:4px; border:1px solid #4DB6AC; z-index:51;">展開中</div>
+            </div>`;
+        } else {
+            return `
+            <div style="width: 100px; height: 140px; border: 2px dashed ${isPlayer ? '#00BCD4' : '#ff5252'}; border-radius: 8px; display: flex; justify-content: center; align-items: center; margin-right: 20px; background: rgba(0,0,0,0.3); flex-shrink: 0;">
+                <span style="color: ${isPlayer ? '#00BCD4' : '#ff5252'}; font-weight: bold; font-size: 12px; opacity: 0.5;">フィールド</span>
+            </div>`;
+        }
+    };
+    let playerFieldZoneHtml = createFieldZoneHtml(true);
+    let cpuFieldZoneHtml = createFieldZoneHtml(false);
+
     battleUI.innerHTML = `
         <style>
             #tcg-battle-ui, #tcg-battle-ui * { box-sizing: border-box !important; }
@@ -3725,11 +3749,11 @@ window.renderBattleBoard = function() {
 
             <div style="flex: 1; display: flex; flex-direction: column; background: #1a1a1a; position: relative;">
                 <div style="flex: 1; position: relative; border-bottom: 2px dashed #444; background: rgba(255,0,0,0.05);">
-                    ${cpuFieldHtml}
+                    ${cpuFieldZoneHtml}${cpuFieldHtml}
                 </div>
                 <div style="flex: 1; position: relative; background: rgba(0,188,212,0.05);"
                      onclick="if(${isTargeting} && event.target === this) { window.TCG_BATTLE.selectedAttackerIndex = -1; window.renderBattleBoard(); } else if (${isEvoMode} && event.target === this) { window.TCG_BATTLE.selectedHandCardIndex = -1; window.renderBattleBoard(); }">
-                    ${fieldHtml}
+                    ${playerFieldZoneHtml}${fieldHtml}
                 </div>
             </div>
 
@@ -5287,6 +5311,7 @@ window.startBattle = function(enemyData = null, selectedDeckIndex = -1) {
         player: { hp: 200, maxMana: 0, currentMana: 0, deck: [], hand: [], field: [], actionUsed: false, graveyard: [] },
         cpu:    { hp: 200, maxMana: 0, currentMana: 0, deck: [], hand: [], field: [], actionUsed: false, graveyard: [] },
         turn: 1, selectedAttackerIndex: -1, selectedHandCardIndex: -1, _skipDefendHint: false,
+        currentField: null, targetingHandIndex: -1,
         firstPlayer: 'player', isEnemyTurn: false, isAnimating: true, isAuto: false,
         battleLog: [] // ログ初期化
     };
