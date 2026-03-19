@@ -1353,8 +1353,8 @@ aiPet.processFishingFrame = function() {
                 
                 this.fishingPopup = `✨ ${d.targetName} を釣った！ ✨`;
                 this.fishingPopupTimer = 90;
-                // ★追加：アクションカード「みんなで大漁」を取得
-                if (typeof window.unlockSupportCard === 'function') window.unlockSupportCard('support_2', this.generation || 1, 'アクション');
+                // ★修正：アクションカード「みんなで大漁」を取得
+                if (typeof window.triggerTCGUnlock === 'function') window.triggerTCGUnlock('action_fish', this.generation);
                 
                 if (typeof openInventoryPanel === 'function') {
                     const invPanel = document.getElementById('panel-inventory');
@@ -2399,6 +2399,11 @@ aiPet.executeEnterAction = function() {
         let msg = "中に入ったよ";
         if (this.interactionTarget.type === 'castle') msg = "城の中を探索中...";
         this.message = msg; this.messageTimer = 120;
+
+        // ▼▼▼ 追加：小屋（hut）に入った時のカードアンロック ▼▼▼
+        if (this.interactionTarget.type === 'hut' && typeof window.triggerTCGUnlock === 'function') {
+            window.triggerTCGUnlock('visit_forest', this.generation);
+        }
     }
     else { this.actionState = 'entering'; }
 };
@@ -2899,6 +2904,13 @@ aiPet.processExploration = function() {
         this.indoorTarget = null;
         // ★修正：40回積まれた予定もすべて消去する！
         this.schedule = [];
+
+        // ▼▼▼ 追加：ダンジョン進入時のカードアンロック ▼▼▼
+        if (typeof window.triggerTCGUnlock === 'function') {
+            if (this.interactionTarget.type === 'skull') window.triggerTCGUnlock('visit_cave', this.generation);
+            if (this.interactionTarget.type === 'crystal') window.triggerTCGUnlock('visit_mine', this.generation);
+        }
+
         if (typeof window.updateScheduleList === 'function') window.updateScheduleList();
         
         if (typeof window.openDungeonUI === 'function') {
@@ -2909,7 +2921,8 @@ aiPet.processExploration = function() {
 
     const fData = facilityData[state.currentFacility] || facilityData['default'];
     const consumeRate = this.getTraitData().consumption || 1.0;
-    if (typeof window.unlockSupportCard === 'function') window.unlockSupportCard('support_8', this.generation || 1, 'アクション');
+    // ★修正：アクションカード「未知の洞窟探検」を取得
+    if (typeof window.triggerTCGUnlock === 'function') window.triggerTCGUnlock('action_cave', this.generation);
     
     if (!this.godMode) { this.energy -= 2 * consumeRate; this.hunger -= 2 * consumeRate; }
     if (!this.godMode && (this.energy <= 5 || this.hunger <= 5)) { 
@@ -5427,6 +5440,14 @@ if (typeof window.AICharacter !== 'undefined') {
                 this.actionState = 'idle'; this.isIndoors = false; this.indoorTarget = null;
                 // ★修正：40回積まれた予定もすべて消去する！
                 this.schedule = [];
+
+                // ▼▼▼ 追加：ダンジョン進入時のカードアンロック ▼▼▼
+                if (typeof window.triggerTCGUnlock === 'function') {
+                    if (this.interactionTarget.type === 'skull') window.triggerTCGUnlock('visit_cave', this.generation);
+                    if (this.interactionTarget.type === 'crystal') window.triggerTCGUnlock('visit_mine', this.generation);
+                }
+                // ▲▲▲ 追加おわり ▲▲▲
+
                 if (typeof window.updateScheduleList === 'function') window.updateScheduleList();
                 if (typeof window.openDungeonUI === 'function') window.openDungeonUI(this.interactionTarget.type);
                 return;

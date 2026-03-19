@@ -2661,51 +2661,79 @@ window.checkDeath = function(card, owner, htmlId, enemyOwner = null) {
 };
 
 // ==========================================
-// 3. 引退したAIからカードを生成する関数 (偽装対応 ＆ コスト保証パッチ)
+// 3. 引退したAIからカードを生成する関数 (究極バランス版)
 // ==========================================
 window.generateCardFromAI = function(aiPet) {
     let rawRace = aiPet.currentSkin || aiPet.baseType || 'robot';
-    let candidateKeys = Object.keys(window.TCG_MASTER).filter(key => window.TCG_MASTER[key].type === rawRace);
-    
-    if (candidateKeys.length === 0) {
-        let baseRace = rawRace.split('_')[0];
-        candidateKeys = Object.keys(window.TCG_MASTER).filter(key => window.TCG_MASTER[key].type === baseRace);
-    }
-    if (candidateKeys.length === 0) {
-        candidateKeys = Object.keys(window.TCG_MASTER).filter(key => window.TCG_MASTER[key].type === 'robot');
-    }
+    const isEvolved = rawRace.includes('_type'); // 進化種族かどうかの判定
 
-    // ==========================================
-    // ★ 追加：ステータスに基づく「最低保証コスト」の計算
-    // ==========================================
     const totalStats = (aiPet.stats.power || 0) + (aiPet.stats.intel || 0) + (aiPet.stats.beauty || 0);
-    // 合計ステータスが 50 上がるごとに、最低保証コストが 1 ずつ上がる（最大コスト8まで）
-    const minCost = Math.max(1, Math.min(8, Math.floor(totalStats / 50)));
-
-    // 候補の中から、最低保証コスト「以上」のカードだけに絞り込む
-    let validKeys = candidateKeys.filter(k => window.TCG_MASTER[k].baseCost >= minCost);
     
-    // もし「その種族に該当する高コストカードが存在しない」場合は、
-    // その種族の中で『一番コストが高いカード』を確定でドロップさせる
-    if (validKeys.length === 0) {
-        candidateKeys.sort((a, b) => window.TCG_MASTER[b].baseCost - window.TCG_MASTER[a].baseCost);
-        validKeys = [candidateKeys[0]];
+    // インフレを防ぐ平方根ボーナス計算（例: ステータス100なら10、10000なら100）
+    let rawHpBonus = Math.floor(Math.sqrt(aiPet.stats.power || 0));
+    let rawDmgBonus = Math.floor(Math.sqrt(aiPet.stats.intel || 0));
+
+    let masterId, masterData, finalCost, finalHp, finalDmg;
+
+    if (isEvolved) {
+        // ==========================================
+        // 【進化種族：ハクスラ（自動スケーリング）方式】
+        // ==========================================
+        let candidateKeys = Object.keys(window.TCG_MASTER).filter(key => window.TCG_MASTER[key].type === rawRace);
+        if (candidateKeys.length === 0) candidateKeys = Object.keys(window.TCG_MASTER).filter(key => window.TCG_MASTER[key].type === rawRace.split('_')[0]);
+        
+        masterId = candidateKeys[0]; // 進化種は1種類固定
+        masterData = window.TCG_MASTER[masterId];
+        if (!masterData) return null;
+
+        // ステータスに応じてコストが 1〜8 に変動する（約150ステータスごとにコストが1上がる）
+        finalCost = Math.max(1, Math.min(8, Math.floor(totalStats / 150) + 1));
+        
+        // 本来のコストとの倍率を計算（例：本来コスト4がコスト8になったら2倍、コスト2になったら半分）
+        let scale = finalCost / Math.max(1, masterData.baseCost);
+        
+        // 基礎ステータスをコストに合わせて伸縮
+        let scaledBaseHp = Math.floor(masterData.baseHp * scale);
+        let scaledBaseDmg = masterData.baseDmg > 0 ? Math.floor(masterData.baseDmg * scale) : 0;
+
+        // 変動後のコストに応じた「キャパシティ（器）」を計算
+        const maxBonusLimit = Math.max(10, finalCost * 15);
+        
+        // スケール後の基礎値 ＋ 育成ボーナス（上限付き）
+        finalHp = scaledBaseHp + Math.min(maxBonusLimit, rawHpBonus);
+        finalDmg = scaledBaseDmg + Math.min(maxBonusLimit, rawDmgBonus);
+
+    } else {
+        // ==========================================
+        // 【基本種族：ハイブリッド（多様なプール）方式】
+        // ==========================================
+        let candidateKeys = Object.keys(window.TCG_MASTER).filter(key => window.TCG_MASTER[key].type === rawRace);
+        if (candidateKeys.length === 0) candidateKeys = Object.keys(window.TCG_MASTER).filter(key => window.TCG_MASTER[key].type === 'robot');
+
+        // 強いAIほど高いコスト「まで」落ちるようになる（コスト1〜3の低コストも必ず混ざる）
+        const targetCost = Math.max(1, Math.min(8, Math.floor(totalStats / 100) + 1)); 
+        let validKeys = candidateKeys.filter(k => window.TCG_MASTER[k].baseCost <= Math.max(targetCost, 3)); 
+        if (validKeys.length === 0) validKeys = candidateKeys; 
+
+        masterId = validKeys[Math.floor(Math.random() * validKeys.length)];
+        masterData = window.TCG_MASTER[masterId];
+        if (!masterData) return null;
+
+        finalCost = masterData.baseCost;
+        
+        // 本来のコストに応じた「キャパシティ（器）」を計算
+        const maxBonusLimit = Math.max(10, finalCost * 15); 
+        finalHp = masterData.baseHp + Math.min(maxBonusLimit, rawHpBonus);
+        finalDmg = masterData.baseDmg > 0 ? masterData.baseDmg + Math.min(maxBonusLimit, rawDmgBonus) : 0;
     }
-
-    const masterId = validKeys[Math.floor(Math.random() * validKeys.length)];
-    const masterData = window.TCG_MASTER[masterId];
-    if (!masterData) return null;
-
-    // さらにステータスから微量のボーナス値を乗せる
-    const hpBonus = Math.floor((aiPet.stats.power || 0) / 10);
-    const dmgBonus = Math.floor((aiPet.stats.intel || 0) / 10);
 
     const newCard = {
         uid: 'card_' + Date.now() + '_' + Math.floor(Math.random() * 1000), 
         masterId: masterId, name: masterData.name, type: masterData.type,
-        cost: masterData.baseCost, hp: masterData.baseHp + hpBonus, maxHp: masterData.baseHp + hpBonus,
+        cost: finalCost, 
+        hp: finalHp, maxHp: finalHp,
         skillName: masterData.skillName, skillCost: masterData.skillCost,
-        damage: masterData.baseDmg > 0 ? masterData.baseDmg + dmgBonus : 0,
+        damage: finalDmg,
         ability: masterData.ability, image: masterData.image, imageIndex: masterData.imageIndex,
         sx: masterData.sx, sy: masterData.sy, sw: masterData.sw, sh: masterData.sh,
         scaleX: masterData.scaleX, scaleY: masterData.scaleY, evolvesFrom: masterData.evolvesFrom
@@ -2714,11 +2742,55 @@ window.generateCardFromAI = function(aiPet) {
     window.TCG.myCollection.push(newCard);
     window.saveTCGData();
 
-    // ★ 偽装処理: 60枚未満ならアルバム風のメッセージにする
     const isUnlocked = window.TCG.myCollection.length >= 60;
     const msg = isUnlocked ? "🎉 AIの生涯がカードに刻まれた！ 🎉" : "✨ AIとの思い出がアルバムに追加された！ ✨";
     window.showCardUnlockPopup(newCard, msg);
+
+    // ボタンの表示（偽装）を更新
+    if (typeof window.updateTcgButtonAppearance === 'function') window.updateTcgButtonAppearance();
     return newCard;
+};
+
+// ==========================================
+// 📖 TCGカード解放トリガー辞書
+// ==========================================
+window.TCG_UNLOCK_CONDITIONS = {
+    // 拾得アイテムのトリガー
+    'iron': 'support_0',      // 鉄鉱石 → 鉄鉱石の塊
+    'wood': 'support_3',      // 木材 → 建築用の木材
+    'herb': 'support_6',      // 薬草 → 三種の霊薬
+    'book': 'support_9',      // 魔導書 → 古の魔導書
+    'crystal': 'support_12',  // 魔結晶 → 輝くクリスタル
+
+    // アクション（行動）のトリガー
+    'action_farm': 'support_11',  // 収穫する → 豊穣の畑仕事
+    'action_fish': 'support_2',   // 釣りをする → みんなで大漁
+    'action_craft': 'support_5',  // 鍛冶をする → 武器の鍛造
+    'action_cave': 'support_8',   // 洞窟を探検 → 未知の洞窟探検
+    'action_camp': 'support_14',  // キャンプする → キャンプファイヤー
+
+    // フィールド（場所）のトリガー
+    'visit_forest': 'support_1',  // 森へ行く → 静寂の森の小屋
+    'visit_castle': 'support_4',  // 城へ行く → 栄華を極めた城
+    'visit_casino': 'support_7',  // カジノへ行く → 廃れたカジノ
+    'visit_cave': 'support_10',   // 洞窟へ行く → ドクロの洞窟
+    'visit_mine': 'support_13'    // 鉱脈へ行く → 結晶の鉱脈
+};
+
+// ==========================================
+// 🚀 汎用アンロック呼び出し関数
+// ==========================================
+window.triggerTCGUnlock = function(triggerKey, generation) {
+    if (typeof window.unlockSupportCard !== 'function') return;
+    
+    // 辞書に登録されているトリガーか確認
+    const targetCardId = window.TCG_UNLOCK_CONDITIONS[triggerKey];
+    
+    // 辞書になければ（ただの石ころやゴミなどの無関係な行動なら）完全にスルー！
+    if (!targetCardId) return; 
+    
+    // 前回追加した「世代スケーリング付きの解放関数」を呼び出す
+    window.unlockSupportCard(targetCardId, generation || 1);
 };
 
 // ==========================================
@@ -10377,22 +10449,66 @@ window.executeCPUTurn = async function(isFirstTurn = false) {
         await window.tcgSleep(1500); 
     }
 
-    // --- 召喚＆進化フェーズ ---
+    // --- 召喚＆魔法＆進化フェーズ ---
     let cardsToPlay = [];
     for (let i = cpu.hand.length - 1; i >= 0; i--) {
         let card = cpu.hand[i]; let actualCost = window.getActualCost(cpu, card);
         if (cpu.currentMana >= actualCost) {
             if (card.type === 'action' && cpu.actionUsed) continue;
-            if (card.evolvesFrom) {
-                let targetIndex = cpu.field.findIndex(c => window.checkCanEvolve(c, card)); // ★新しい判定に変更
+            
+            // ① フィールドカードの場合
+            if (card.type === 'field') {
+                cardsToPlay.push({ handIndex: i, card: card, cost: actualCost, isSupport: true, targetCard: null });
+                cpu.currentMana -= actualCost; cpu.hand.splice(i, 1);
+            }
+            // ② 魔法カード（アイテム・アクション）の場合
+            else if (card.type === 'item' || card.type === 'action') {
+                let needsTarget = window.requiresTarget ? window.requiresTarget(card) : false;
+                let targetCard = null;
+                
+                // AIの思考：能力名に攻撃的なワードが入っているか？
+                let isOffensive = card.ability && (card.ability.includes('damage') || card.ability.includes('stun') || card.ability.includes('charm') || card.ability.includes('break') || card.ability.includes('debuff'));
+                
+                if (needsTarget) {
+                    if (isOffensive) {
+                        // 攻撃魔法：プレイヤーのモンスターをランダムに狙う
+                        let validTargets = p.field.filter(c => !c.isDead && c.ability !== "stealth");
+                        if (validTargets.length > 0) {
+                            targetCard = validTargets[Math.floor(Math.random() * validTargets.length)];
+                        } else {
+                            continue; // 撃つ相手がいないなら、無駄撃ちせず手札に温存する！
+                        }
+                    } else {
+                        // 強化魔法：自分のモンスターを狙う
+                        let validTargets = cpu.field.filter(c => !c.isDead);
+                        if (card.ability === "item_taunt") { 
+                            // 賢いAI：すでに守護を持っている味方には重ねがけしない
+                            validTargets = validTargets.filter(c => c.ability !== "taunt" && c.ability !== "pure_aegis" && !c.hasPermanentTaunt);
+                        }
+                        if (validTargets.length > 0) {
+                            targetCard = validTargets[Math.floor(Math.random() * validTargets.length)];
+                        } else {
+                            continue; // 味方がいないなら温存する！
+                        }
+                    }
+                }
+
+                cardsToPlay.push({ handIndex: i, card: card, cost: actualCost, isSupport: true, targetCard: targetCard });
+                cpu.currentMana -= actualCost; cpu.hand.splice(i, 1);
+                if (card.type === 'action') cpu.actionUsed = true;
+            }
+            // ③ 進化モンスターの場合
+            else if (card.evolvesFrom) {
+                let targetIndex = cpu.field.findIndex(c => window.checkCanEvolve(c, card)); 
                 if (targetIndex !== -1) {
                     cardsToPlay.push({ handIndex: i, card: card, cost: actualCost, isEvo: true, targetIndex: targetIndex });
                     cpu.currentMana -= actualCost; cpu.hand.splice(i, 1);
                 }
-            } else {
+            } 
+            // ④ 通常モンスターの場合
+            else {
                 cardsToPlay.push({ handIndex: i, card: card, cost: actualCost, isEvo: false });
                 cpu.currentMana -= actualCost; cpu.hand.splice(i, 1);
-                if (card.type === 'action') cpu.actionUsed = true;
             }
         }
     }
@@ -10404,25 +10520,42 @@ window.executeCPUTurn = async function(isFirstTurn = false) {
         
         await new Promise(resolve => {
             window.animateCardPlay(card, false, () => {
-                if (playData.isEvo) {
-                    let prevCard = cpu.field[playData.targetIndex];
-                    let canAttackInherit = prevCard ? prevCard.canAttack : false;
-                    card.canAttack = canAttackInherit; 
-                    cpu.field[playData.targetIndex] = card; 
-                    window.showBattleMessage(`✨ 敵が ${card.name} に進化した！`, false, 2000, true);
-                    window.triggerPlayEffect(card, false); 
-                } else {
-                    if (card.type === 'item' || card.type === 'action') { 
+                if (card.type === 'field') {
+                    // フィールド発動
+                    window.showBattleMessage(`⛰️ 敵がフィールド『${card.name}』を展開！`, false, 2500, true);
+                    if (window.playFieldCard) window.playFieldCard(card, false);
+                } 
+                else if (card.type === 'item' || card.type === 'action') {
+                    // 魔法発動
+                    window.showBattleMessage(`✨ 敵が魔法『${card.name}』を使用！`, false, 2500, true);
+                    if (window.executeSupportCard) {
+                        window.executeSupportCard(card, playData.targetCard, false);
+                    } else {
                         card.isDead = true; cpu.graveyard.push(card);
-                        window.showBattleMessage(`✨ 敵が ${card.name} を使用！`, false, 2000, true);
-                        window.triggerPlayEffect(card, false); 
-                    } else { 
-                        card.canAttack = (card.ability === "haste"); cpu.field.push(card); 
-                        window.showBattleMessage(`🛡️ 敵が ${card.name} を配置！`, false, 2000, true);
                         window.triggerPlayEffect(card, false); 
                     }
+                } 
+                else if (playData.isEvo) {
+                    // 進化
+                    let prevCard = cpu.field[playData.targetIndex];
+                    let canAttackInherit = prevCard ? prevCard.canAttack : false;
+                    let hasPermanentTauntInherit = prevCard ? prevCard.hasPermanentTaunt : false; // 敵も木の板を引き継ぐ
+                    let isDefendingInherit = prevCard ? prevCard.isDefending : false;
+                    
+                    card.canAttack = canAttackInherit; 
+                    card.hasPermanentTaunt = hasPermanentTauntInherit;
+                    card.isDefending = isDefendingInherit;
+                    cpu.field[playData.targetIndex] = card; 
+                    window.showBattleMessage(`✨ 敵のモンスターが\n${card.name} に進化した！`, false, 2000, true);
+                    window.triggerPlayEffect(card, false); 
+                } 
+                else {
+                    // 通常モンスター
+                    card.canAttack = (card.ability === "haste"); cpu.field.push(card); 
+                    window.showBattleMessage(`🛡️ 敵が ${card.name} を配置！`, false, 2000, true);
+                    window.triggerPlayEffect(card, false); 
                 }
-                setTimeout(resolve, 1000); 
+                setTimeout(resolve, 1500); 
             });
         });
     }
@@ -11082,4 +11215,25 @@ window.checkCanEvolve = function(fieldCard, handCard) {
         }
     }
     return false;
+};
+
+// ==========================================
+// 📖 TCGボタン偽装＆アップデート処理
+// ==========================================
+window.updateTcgButtonAppearance = function() {
+    const btn = document.getElementById('btnTcgDeck');
+    if (!btn) return;
+
+    // 現在の所持枚数をチェック
+    const collectionCount = (window.TCG && window.TCG.myCollection) ? window.TCG.myCollection.length : 0;
+
+    if (collectionCount >= 60) {
+        // TCG解禁後（本来の姿）
+        btn.innerHTML = '🃏 TCG';
+        btn.style.background = '#9C27B0'; // 元の紫カラー
+    } else {
+        // TCG未解放時（アルバムに偽装）
+        btn.innerHTML = '📖 アルバム';
+        btn.style.background = '#795548'; // アルバム風のブラウンカラー
+    }
 };

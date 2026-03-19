@@ -4,21 +4,9 @@
 // ★新規：アイテム獲得時にTCGカードをアンロックする便利関数
 // ==========================================
 aiPet.checkItemCardUnlock = function(itemKey) {
-    if (typeof window.unlockSupportCard !== 'function') return;
-    const gen = this.generation || 1;
-
-    // ゲーム内のアイテムID(itemKey)に合わせて、左側の文字を書き換えてください
-    // 例：鉄鉱石のIDが 'iron_ore' なら以下のようにします
-    if (itemKey === 'iron_ore' || itemKey === 'iron') {
-        window.unlockSupportCard('support_0', gen, 'アイテム'); // 鉄鉱石の塊
-    } else if (itemKey === 'wood' || itemKey === 'lumber') {
-        window.unlockSupportCard('support_3', gen, 'アイテム'); // 建築用の木材
-    } else if (itemKey === 'potion' || itemKey === 'elixir' || itemKey === 'herb') {
-        window.unlockSupportCard('support_6', gen, 'アイテム'); // 三種の霊薬
-    } else if (itemKey === 'magic_book' || itemKey === 'scroll') {
-        window.unlockSupportCard('support_9', gen, 'アイテム'); // 古の魔導書
-    } else if (itemKey === 'crystal' || itemKey === 'gem') {
-        window.unlockSupportCard('support_12', gen, 'アイテム'); // 輝くクリスタル
+    // 辞書に投げるだけ。辞書にないアイテム（トマトや長靴など）は自動で無視されます
+    if (typeof window.triggerTCGUnlock === 'function') {
+        window.triggerTCGUnlock(itemKey, this.generation);
     }
 };
 
@@ -315,11 +303,11 @@ aiPet.workFarm = function() {
     }
 
     // ==========================================
-    // ★カード解禁・保存処理も維持
+    // ★カード解禁・保存処理
     // ==========================================
-    if (typeof window.unlockSupportCard === 'function') {
-        const gen = this.generation || 1;
-        window.unlockSupportCard('support_11', gen, 'アクション');
+    if (typeof window.triggerTCGUnlock === 'function') {
+        // 「収穫したよ！」という合図（action_farm）だけを送る
+        window.triggerTCGUnlock('action_farm', this.generation);
     }
 
     saveGameData();

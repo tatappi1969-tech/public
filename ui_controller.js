@@ -1313,6 +1313,10 @@ window.sendChat = function() {
 // ★究極改修：カジノ入室時の専用ロビーとAI連動処理
 // ==========================================
 window.openCasino = function() {
+    // ▼▼▼ 追加：カジノに足を踏み入れた時のカードアンロック ▼▼▼
+    if (window.aiPet && typeof window.triggerTCGUnlock === 'function') {
+        window.triggerTCGUnlock('visit_casino', window.aiPet.generation);
+    }
     // 1. TCGデータがまだ無い、または60枚未満の場合は「入場拒否」の演出
     if (!window.TCG || !window.TCG.myCollection || window.TCG.myCollection.length < 60) {
         let count = window.TCG ? (window.TCG.myCollection ? window.TCG.myCollection.length : 0) : 0;
@@ -4776,87 +4780,96 @@ window.confirmEncounter = function(isAccept) {
 };
 
 // ==========================================
-// 🃏 TCGカード獲得演出＆アンロックシステム（復元パッチ）
+// 🃏 TCGカード獲得演出＆アンロックシステム（HPバグ修正版）
 // ==========================================
-
-window.unlockSupportCard = function(cardId, generation, cardType) {
+window.unlockSupportCard = function(cardId, generation) {
     if (!window.TCG) window.TCG = { myCollection: [], decks: [[]] };
     if (!window.TCG.myCollection) window.TCG.myCollection = [];
     
-    // 世代ごとの獲得履歴をチェック
-    let historyKey = 'unlocked_cards_gen_' + generation;
-    let history = JSON.parse(localStorage.getItem(historyKey) || '[]');
-    
-    if (history.includes(cardId)) return; // この世代ですでに獲得済みなら何もしない
-    
-    // 履歴に追加
-    history.push(cardId);
-    localStorage.setItem(historyKey, JSON.stringify(history));
-    
-    // カードの名前を決定（カタログがあればそこから、なければデフォルト名）
-    let cardName = cardId;
-    if (cardId === 'support_5') cardName = "武器の鍛造";
-    if (cardId === 'support_2') cardName = "みんなで大漁";
-    if (cardId === 'support_8') cardName = "未知の洞窟探検";
-    if (cardId === 'item_card_wood') cardName = "丸太";
-    if (cardId === 'item_card_stone') cardName = "石ころ";
-    if (cardId === 'item_card_iron') cardName = "鉄鉱石";
-    if (cardId === 'item_card_berry') cardName = "野イチゴ";
-    if (cardId === 'item_card_crystal') cardName = "クリスタル";
-    if (typeof window.TCG_CARD_CATALOG !== 'undefined' && window.TCG_CARD_CATALOG[cardId]) {
-        cardName = window.TCG_CARD_CATALOG[cardId].name;
-    }
-
-    // ★修正：マスターデータから画像座標やカード性能をしっかり取得してコピーする！
+    // ① マスターデータの存在チェック
     let masterData = null;
     if (typeof window.TCG_MASTER !== 'undefined') {
         masterData = window.TCG_MASTER[cardId];
     }
+    if (!masterData || !['item', 'action', 'field'].includes(masterData.type)) return;
 
-    // コレクションに追加（TCG画面で使えるようにする）
-    window.TCG.myCollection.push({
+    // ② 世代ごとの獲得履歴をチェック
+    let historyKey = 'unlocked_cards_gen_' + generation;
+    let history = JSON.parse(localStorage.getItem(historyKey) || '[]');
+    
+    if (history.includes(cardId)) return; 
+    
+    history.push(cardId);
+    localStorage.setItem(historyKey, JSON.stringify(history));
+
+    // ③ 世代に応じたスケーリング（強化）計算
+    let bonusLevel = Math.max(0, parseInt(generation) - 1); 
+    
+    // ▼▼▼ 修正：HPバフは「フィールドカード」専用にする！ ▼▼▼
+    let enhancedHp = masterData.baseHp;
+    if (masterData.type === 'field') {
+        enhancedHp += (bonusLevel * 10);
+    }
+    // ▲▲▲ 修正おわり（アイテム等は baseHp=0 のままになる） ▲▲▲
+
+    let enhancedDmg = masterData.baseDmg > 0 ? masterData.baseDmg + (bonusLevel * 2) : 0;
+    
+    let costReduction = Math.floor(bonusLevel / 10);
+    let enhancedCost = Math.max(0, masterData.baseCost - costReduction);
+
+    let cardName = masterData.name;
+    if (bonusLevel > 0) cardName += ` +${bonusLevel}`;
+
+    // ④ コレクションに追加
+    const newCard = {
         uid: 'card_' + Date.now() + Math.floor(Math.random()*1000),
         masterId: cardId,
         name: cardName,
-        type: cardType,
-        // ★追加：画像表示とバトルに必要なデータを全て引き継ぐ
-        cost: masterData ? masterData.baseCost : 1,
-        hp: masterData ? masterData.baseHp : 0,
-        maxHp: masterData ? masterData.baseHp : 0,
-        skillName: masterData ? masterData.skillName : "効果なし",
-        skillCost: masterData ? masterData.skillCost : 0,
-        damage: masterData ? masterData.baseDmg : 0,
-        ability: masterData ? masterData.ability : null,
-        image: masterData ? masterData.image : 'support_card.png',
-        imageIndex: masterData ? masterData.imageIndex : 0,
-        sx: masterData ? masterData.sx : undefined,
-        sy: masterData ? masterData.sy : undefined,
-        sw: masterData ? masterData.sw : undefined,
-        sh: masterData ? masterData.sh : undefined,
-        scaleX: masterData ? masterData.scaleX : 1.0,
-        scaleY: masterData ? masterData.scaleY : 1.0
-    });
+        type: masterData.type,
+        cost: enhancedCost,
+        hp: enhancedHp,
+        maxHp: enhancedHp,
+        skillName: masterData.skillName,
+        skillCost: masterData.skillCost,
+        damage: enhancedDmg,
+        ability: masterData.ability,
+        image: masterData.image,
+        imageIndex: masterData.imageIndex,
+        sx: masterData.sx, sy: masterData.sy, sw: masterData.sw, sh: masterData.sh,
+        scaleX: masterData.scaleX, scaleY: masterData.scaleY
+    };
     
+    window.TCG.myCollection.push(newCard);
     if (typeof saveGameData === 'function') saveGameData();
 
-    // 画面にカード獲得演出を表示（チュートリアルの順番待ちシステムを活用して安全に表示）
-    if (typeof window.showGameTutorial === 'function') {
-        let typeColor = '#FF9800';
-        if (cardType === 'アクション') typeColor = '#ff5252';
-        else if (cardType === 'アイテム') typeColor = '#4CAF50';
-        else if (cardType === 'フィールド') typeColor = '#2196F3';
+    // ⑤ 画面にカード獲得演出を表示（★思い出/カードのテキスト分岐を復活！）
+    if (typeof window.showCardUnlockPopup === 'function') {
+        // 現在の所持枚数をチェックして、60枚未満なら「思い出」扱いにする
+        const isUnlocked = window.TCG.myCollection.length >= 60;
+        let msg = "";
 
-        window.showGameTutorial(
-            `🃏 カード獲得！`,
-            `<div style="text-align:center;">
-                <div style="font-size:13px; color:#ccc; margin-bottom:10px;">新しい記憶がTCG用カードになりました！</div>
-                <div style="background:#222; border:2px solid ${typeColor}; border-radius:8px; padding:15px; display:inline-block; box-shadow:0 0 15px ${typeColor}88;">
-                    <div style="font-size:12px; color:${typeColor}; font-weight:bold; margin-bottom:5px;">【${cardType}カード】</div>
-                    <div style="font-size:20px; color:#FFF; font-weight:bold;">${cardName}</div>
-                </div>
-            </div>`
-        );
+        if (isUnlocked) {
+            // TCG解放後（カードとして認識）
+            msg = bonusLevel > 0 
+                ? `✨ 第${generation}世代 ボーナス強化適用カードを獲得！ ✨`
+                : `✨ 新しいサポートカードのアイデアをひらめいた！ ✨`;
+        } else {
+            // TCG未解放時（思い出として記録）
+            msg = bonusLevel > 0 
+                ? `✨ 第${generation}世代 強化された特別な思い出を記録！ ✨`
+                : `✨ AIとの新しい思い出がアルバムに追加された！ ✨`;
+        }
+        
+        window.showCardUnlockPopup(newCard, msg);
+    } else if (typeof window.showGameTutorial === 'function') {
+        const isUnlocked = window.TCG.myCollection.length >= 60;
+        const title = isUnlocked ? "🃏 カード獲得！" : "📖 思い出を記録！";
+        const desc = isUnlocked ? `${cardName} を手に入れた！` : `${cardName} の思い出を記録した！`;
+        window.showGameTutorial(title, desc);
     }
+
+    // ボタンの表示（偽装）を更新
+    if (typeof window.updateTcgButtonAppearance === 'function') window.updateTcgButtonAppearance();
 };
 
 // AIの頭脳側に、アイテムを拾った時のカード化チェック処理を復活

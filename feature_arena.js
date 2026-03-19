@@ -98,6 +98,11 @@ window.ARENA_RECEPTION_STATE = { party: [], available: [] };
 // 1. 受付画面
 // ==========================================
 window.openArenaReception = function() {
+    // ▼▼▼ 追加：城に入った時のカードアンロック ▼▼▼
+    if (window.aiPet && typeof window.triggerTCGUnlock === 'function') {
+        window.triggerTCGUnlock('visit_castle', window.aiPet.generation);
+    }
+    // ▲▲▲ 追加おわり ▲▲▲
     if (typeof window.ARENA_RECEPTION_STATE === 'undefined' || !window.ARENA_RECEPTION_STATE) window.ARENA_RECEPTION_STATE = { party: [], available: [] };
     const encounterUi = document.getElementById('encounterOverlay'); if (encounterUi) encounterUi.classList.remove('active');
     const statusUi = document.getElementById('statusOverlay'); if (statusUi) statusUi.classList.remove('active');

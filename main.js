@@ -85,6 +85,25 @@ window.closeLoginBonus = function() {
     if (overlay) overlay.classList.remove('active');
 };
 
+// ▼▼▼ 追加：TCGボタン偽装＆アップデート処理 ▼▼▼
+window.updateTcgButtonAppearance = function() {
+    const btn = document.getElementById('btnTcgDeck');
+    if (!btn) return;
+
+    // 現在の所持枚数をチェック
+    const collectionCount = (window.TCG && window.TCG.myCollection) ? window.TCG.myCollection.length : 0;
+
+    if (collectionCount >= 60) {
+        // TCG解禁後（本来の姿）
+        btn.innerHTML = '🃏 TCG';
+        btn.style.background = '#9C27B0'; // 元の紫カラー
+    } else {
+        // TCG未解放時（アルバムに偽装）
+        btn.innerHTML = '📖 アルバム';
+        btn.style.background = '#795548'; // アルバム風のブラウンカラー
+    }
+};
+
 function startGameSequence() {
     if(gameStarted) return;
     gameStarted = true;
@@ -129,6 +148,11 @@ function startGameSequence() {
         });
         setTimeout(checkLoginBonus, 500);
     }
+
+    // ▼▼▼ 追加：UIが表示されるタイミングでボタン表示を更新 ▼▼▼
+    if (typeof window.updateTcgButtonAppearance === 'function') window.updateTcgButtonAppearance();
+    // ▲▲▲ 追加おわり ▲▲▲
+
     requestAnimationFrame(render);
 }
 
