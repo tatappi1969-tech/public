@@ -364,21 +364,21 @@ window.TCG_MASTER = {
     "dragon_type2_3_0": { "name": "プリズマティカ", "type": "dragon_type2_3", "image": "dragon_type2_3_card.png", "imageIndex": 0, "offsetX": 0, "offsetY": 0, "zoomX": 300, "zoomY": 500, "baseCost": 8, "baseHp": 110, "skillName": "オーロラ・レイ", "skillCost": 4, "baseDmg": 70, "ability": "magic_reflect", "evolvesFrom": "dragon_type2" },
 
     // 🎒 サポートカード
-    'support_0': { name: "鉄鉱石の塊", type: "item", image: "support_card.png", imageIndex: 0, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 1, baseHp: 0, skillName: "錬成", skillCost: 0, baseDmg: 0, ability: "mana_ramp" },
-    'support_3': { name: "建築用の木材", type: "item", image: "support_card.png", imageIndex: 3, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 2, baseHp: 0, skillName: "拠点補修", skillCost: 0, baseDmg: 0, ability: "heal_self" },
-    'support_6': { name: "三種の霊薬", type: "item", image: "support_card.png", imageIndex: 6, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 3, baseHp: 0, skillName: "ガブ飲み", skillCost: 0, baseDmg: 0, ability: "heal_self" },
-    'support_9': { name: "古の魔導書", type: "item", image: "support_card.png", imageIndex: 9, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 3, baseHp: 0, skillName: "知識の探求", skillCost: 0, baseDmg: 0, ability: "draw_card" },
-    'support_12': { name: "輝くクリスタル", type: "item", image: "support_card.png", imageIndex: 12, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 2, baseHp: 0, skillName: "マナ抽出", skillCost: 0, baseDmg: 0, ability: "mana_ramp" },
-    'support_1': { name: "静寂の森の小屋", type: "field", image: "support_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 2, baseHp: 20, skillName: "拠点防衛", skillCost: 0, baseDmg: 0, ability: "taunt" },
-    'support_4': { name: "栄華を極めた城", type: "field", image: "support_card.png", imageIndex: 4, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 5, baseHp: 50, skillName: "城壁", skillCost: 0, baseDmg: 0, ability: "taunt" },
-    'support_7': { name: "廃れたカジノ", type: "field", image: "support_card.png", imageIndex: 7, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 3, baseHp: 10, skillName: "一攫千金", skillCost: 0, baseDmg: 0, ability: "draw_card" },
-    'support_10': { name: "ドクロの洞窟", type: "field", image: "support_card.png", imageIndex: 10, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 3, baseHp: 30, skillName: "恐怖のオーラ", skillCost: 0, baseDmg: 0, ability: "stealth" },
-    'support_13': { name: "結晶の鉱脈", type: "field", image: "support_card.png", imageIndex: 13, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 4, baseHp: 40, skillName: "採掘場", skillCost: 0, baseDmg: 0, ability: "mana_ramp" },
-    'support_2': { name: "みんなで大漁", type: "action", image: "support_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 2, baseHp: 0, skillName: "釣り上げる", skillCost: 0, baseDmg: 0, ability: "draw_card" },
-    'support_5': { name: "武器の鍛造", type: "action", image: "support_card.png", imageIndex: 5, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 3, baseHp: 0, skillName: "カンカン", skillCost: 0, baseDmg: 20, ability: "damage_enemy" },
-    'support_8': { name: "未知の洞窟探検", type: "action", image: "support_card.png", imageIndex: 8, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 3, baseHp: 0, skillName: "お宝発見", skillCost: 0, baseDmg: 0, ability: "draw_card" },
-    'support_11': { name: "豊穣の畑仕事", type: "action", image: "support_card.png", imageIndex: 11, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 2, baseHp: 0, skillName: "収穫", skillCost: 0, baseDmg: 0, ability: "heal_self" },
-    'support_14': { name: "キャンプファイヤー", type: "action", image: "support_card.png", imageIndex: 14, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 1, baseHp: 0, skillName: "大宴会", skillCost: 0, baseDmg: 0, ability: "heal_self" }
+    'support_0': { name: "鉄鉱石の塊", type: "item", image: "support_card.png", imageIndex: 0, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 1, baseHp: 0, skillName: "錬成", skillCost: 0, baseDmg: 0, ability: "item_hp_up" },
+    'support_3': { name: "建築用の木材", type: "item", image: "support_card.png", imageIndex: 3, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 2, baseHp: 0, skillName: "拠点補修", skillCost: 0, baseDmg: 0, ability: "item_taunt" },
+    'support_6': { name: "三種の霊薬", type: "item", image: "support_card.png", imageIndex: 6, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 3, baseHp: 0, skillName: "ガブ飲み", skillCost: 0, baseDmg: 0, ability: "item_heal_cleanse" },
+    'support_9': { name: "古の魔導書", type: "item", image: "support_card.png", imageIndex: 9, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 3, baseHp: 0, skillName: "知識の探求", skillCost: 0, baseDmg: 0, ability: "item_draw" },
+    'support_12': { name: "輝くクリスタル", type: "item", image: "support_card.png", imageIndex: 12, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 2, baseHp: 0, skillName: "マナ抽出", skillCost: 0, baseDmg: 0, ability: "item_mana_boost" },
+    'support_1': { name: "静寂の森の小屋", type: "field", image: "support_card.png", imageIndex: 1, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 2, baseHp: 20, skillName: "拠点防衛", skillCost: 0, baseDmg: 0, ability: "field_forest" },
+    'support_4': { name: "栄華を極めた城", type: "field", image: "support_card.png", imageIndex: 4, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 5, baseHp: 50, skillName: "城壁", skillCost: 0, baseDmg: 0, ability: "field_castle" },
+    'support_7': { name: "廃れたカジノ", type: "field", image: "support_card.png", imageIndex: 7, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 3, baseHp: 10, skillName: "一攫千金", skillCost: 0, baseDmg: 0, ability: "field_casino" },
+    'support_10': { name: "ドクロの洞窟", type: "field", image: "support_card.png", imageIndex: 10, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 3, baseHp: 30, skillName: "恐怖のオーラ", skillCost: 0, baseDmg: 0, ability: "field_miasma" },
+    'support_13': { name: "結晶の鉱脈", type: "field", image: "support_card.png", imageIndex: 13, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 4, baseHp: 40, skillName: "採掘場", skillCost: 0, baseDmg: 0, ability: "field_mana" },
+    'support_2': { name: "みんなで大漁", type: "action", image: "support_card.png", imageIndex: 2, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 2, baseHp: 0, skillName: "釣り上げる", skillCost: 0, baseDmg: 0, ability: "action_draw_3" },
+    'support_5': { name: "武器の鍛造", type: "action", image: "support_card.png", imageIndex: 5, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 3, baseHp: 0, skillName: "カンカン", skillCost: 0, baseDmg: 20, ability: "action_atk_up" },
+    'support_8': { name: "未知の洞窟探検", type: "action", image: "support_card.png", imageIndex: 8, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 3, baseHp: 0, skillName: "お宝発見", skillCost: 0, baseDmg: 0, ability: "action_search_evo" },
+    'support_11': { name: "豊穣の畑仕事", type: "action", image: "support_card.png", imageIndex: 11, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 2, baseHp: 0, skillName: "収穫", skillCost: 0, baseDmg: 0, ability: "action_heal_face" },
+    'support_14': { name: "キャンプファイヤー", type: "action", image: "support_card.png", imageIndex: 14, offsetX: 0, offsetY: 0, zoomX: 300, zoomY: 500, baseCost: 1, baseHp: 0, skillName: "大宴会", skillCost: 0, baseDmg: 0, ability: "action_heal_all" }
 };
 
 // // ==========================================
@@ -6646,7 +6646,25 @@ window.renderCardHTML = function(card) {
             "rebirth": "【輪廻転生】(破壊された時、一度だけ復活し敵を焼く)", "absolute_evasion": "【絶対回避】(敵からの攻撃を高い確率で無効化する)",
             "piercing_juggernaut": "【暴走貫通】(攻撃するたび火力が上がり、かばう無視)", "fossilize": "【化石化】(登場時、敵1体を確率で「スタン」させる)",
             "mass_bounce": "【全バウンス】(破壊された時、全敵を山札に戻す)", "nova_burst": "【超新星爆発】(破壊された時、敵全体に最大HP分ダメ)",
-            "time_manipulation": "【時空操作】(登場時、行動済みの味方を未行動にする)", "raise_dead": "【死霊復活】(ターン終了時、破壊された味方を半分の力で蘇生)"
+            "time_manipulation": "【時空操作】(登場時、行動済みの味方を未行動にする)", "raise_dead": "【死霊復活】(ターン終了時、破壊された味方を半分の力で蘇生)",
+            // フィールド
+            "field_forest": "【森の加護】(場にある間、自然系[精霊/草/虫]が出た時に最大HP+20)",
+            "field_castle": "【鉄壁の陣】(場にある間、全プレイヤーの[守護化]コストが0になる)",
+            "field_casino": "【ギャンブル】(ターン開始時、50%で1ドロー、50%でリーダーに10ダメ)",
+            "field_miasma": "【瘴気】(ターン終了時、お互いのリーダーと全モンスターに10ダメ)",
+            "field_mana": "【マナ活性】(お互いの最大マナが常に+2される)",
+            // アクション
+            "action_draw_3": "【大量ドロー】(山札からカードを3枚引く)",
+            "action_atk_up": "【超強化】(指定した味方1体の攻撃力を永続で+40する)",
+            "action_search_evo": "【確定サーチ】(山札から[進化後]のカードをランダムに1枚引く)",
+            "action_heal_face": "【大回復】(リーダーのHPを100回復する)",
+            "action_heal_all": "【全体回復】(リーダーと味方全員のHPを全回復する)",
+            // アイテム
+            "item_hp_up": "【装甲付与】(指定した味方1体の最大HPを+20する)",
+            "item_taunt": "【拠点防衛】(指定した味方1体に[守護]を付与する)",
+            "item_heal_cleanse": "【状態異常回復】(指定した味方1体を全回復し、状態異常を解除)",
+            "item_draw": "【知恵】(山札からカードを1枚引く)",
+            "item_mana_boost": "【マナブースト】(このターン中、マナを+2する)"
         };
         abilityText = texts[card.ability] || "";
     }
