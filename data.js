@@ -158,6 +158,7 @@ const monsterBookData = {
     "stone_type4_3": { name: "メテオ・タイタン", desc: "宇宙から飛来した隕石を核にして生まれた超弩級の巨人。星を砕くほどの剛腕で大地を揺るがす。" },
     "stone_type5": { name: "モノリス・ルイン", desc: "風雨にさらされ、遺跡の一部と化してしまったゴーレム。ほとんど動かないが、その場所の守り神となっている。" },
     "stone_type5_2": { name: "アストラル・モノリス", desc: "背中に本物の森や川を宿した、生きた箱庭のような巨石。大地と完全に一体化し、悠久の時を生きる。" },
+    "stone_type5_3": { name: "エレメント・ハイブリッド", desc: "悠久の時を経たモノリス・ルインが、その身に宿した相反する『地熱』と『冷気』のエネルギーを完全に制御し、目覚めた姿。左半身から放つ灼熱と、右半身から放つ極寒は、触れるものすべてを砕き去る。" },
     "stone_type1": { name: "カースド・ガーゴイル", desc: "邪悪な魔力を吸収し続け、悪魔のような姿に変貌した石像。夜な夜な動き出し、村人を脅かしている。" },
     "stone_type1_2": { name: "ヴォイド・オブシディアン", desc: "光すら吸い込む漆黒の黒曜石でできた災厄の塊。周囲の生命力を奪いながら、ただそこにあるだけの恐怖の象徴。" },
     "stone_type3": { name: "ルーン・ゴーレム", desc: "表面に神秘的な古代文字（ルーン）が刻まれたゴーレム。自らの意思で魔法を使いこなす知性を持つ。" },
@@ -175,6 +176,7 @@ const monsterBookData = {
     "balloon_type1_2": { name: "ダーク・マイン", desc: "触れた瞬間に大爆発を起こす、機雷のような危険なバルーン。悪意を持って対象にゆっくりと近づいていく。" },
     "balloon_type1_3": { name: "ナイトメア・ブラスト", desc: "人々の悪夢のガスで極限まで膨れ上がったバルーン。破裂すれば周囲一帯を絶望に陥れるという。" },
     "balloon_type5": { name: "デフレート・スライム", desc: "ガスが抜けてしまい、地面でしわしわになっているスライム。ほとんど動けないが、なぜかとても長生きする。" },
+    "balloon_type5_2": { name: "フォッシル・バルーン", desc: "気が遠くなるほど長い年月を経て、しわしわだった体が岩のように硬化し、内部の残留ガスが超高温で発火した姿。気難しそうな顔をしているが、実はおじいちゃんのように頑固なだけ。" },
     "balloon_type3": { name: "ウェザー・バルーン", desc: "空気を読んで天候を予測する気象観測気球。頭脳明晰で、村人たちに明日の天気を教えてくれる。" },
     "balloon_type3_2": { name: "スコープ・バルーン", desc: "巨大なレンズを搭載し、上空から地上のあらゆるデータを収集する観測用の風船モンスター。" },
     "balloon_type3_3": { name: "サテライト・アイ", desc: "ついに大気圏を突破し、人工衛星のような姿になったバルーン。宇宙からすべての情報を受信・解析している。" },
@@ -191,7 +193,7 @@ const monsterBookData = {
     "ghost_type1_2": { name: "デス・ブリンガー", desc: "冥界の使者として覚醒し、死の宣告をもたらす存在。その姿を見た者は、数日以内に原因不明の病に倒れる。" },
     "ghost_type3": { name: "アカデミー・ゴースト", desc: "図書館に棲みつき、世界中の知識を吸収し続ける学者幽霊。本のページを勝手にめくって読み漁っている。" },
     "ghost_type3_2": { name: "テレパス・ソウル", desc: "言葉を介さず、他者の脳内に直接思考を送り込む精神感応能力に目覚めた幽霊。隠し事すら見透かしてしまう。" },
-    "ghost_type3_3": { name: "マスター・リッチ", desc: "究極の魔法を極めるため、自ら進んで肉体を捨て去った大魔導師。不死の叡智をもって世界の真理を探求する。" },
+    // "ghost_type3_3": { name: "マスター・リッチ", desc: "究極の魔法を極めるため、自ら進んで肉体を捨て去った大魔導師。不死の叡智をもって世界の真理を探求する。" },
 
     // Beetle
     "beetle": { name: "アーマービートル", desc: "硬い外殻と鋭い角を持つカブトムシ型モンスター。非常にタフで、どれだけ力仕事をしてもなかなか疲れない。" },
@@ -421,6 +423,7 @@ const charaTraits = {
     stone_type4_3: { name: "星砕きの剛腕", desc: "圧倒的な破壊力と引き換えに燃費が悪い", statBonus: { power: 3.5, intel: 0.2, mood: 0.5 }, consumption: 1.0, lifespan: 800 },
     stone_type5: { name: "悠久の風化", desc: "超燃費で、とてつもなく長生きする", statBonus: { power: 1.0, intel: 1.0, mood: 0.8 }, consumption: 0.1, lifespan: 1500 },
     stone_type5_2: { name: "母なる大地", desc: "自然回復を持ち、永遠に生き続ける", statBonus: { power: 0.5, intel: 1.5, mood: 1.5 }, consumption: 0.0, natureHeal: true, lifespan: 9999 },
+    stone_type5_3: { name: "混成エレメント", desc: "相反する属性を統合し、あらゆる環境に適応する。機嫌が安定している。", statBonus: { power: 1.8, intel: 1.8, mood: 1.2 }, consumption: 0.4, lifespan: 1200 },
     stone_type1: { name: "邪気放出", desc: "活力が高いが、機嫌が常に最悪", statBonus: { power: 2.0, intel: 1.0, mood: 0.1 }, consumption: 0.4, lifespan: 300 },
     stone_type1_2: { name: "虚無の器", desc: "絶対に疲れないが、性格が破綻している", statBonus: { power: 3.0, intel: 0.1, mood: 0.1 }, consumption: 0.0, lifespan: 100 },
     stone_type3: { name: "ルーンの知恵", desc: "燃費が良く、賢さが上がりやすい", statBonus: { power: 0.8, intel: 2.0, mood: 1.0 }, consumption: 0.3, lifespan: 700 },
@@ -437,6 +440,7 @@ const charaTraits = {
     balloon_type1_2: { name: "浮遊機雷", desc: "活力が高いが、燃費が悪く短命", statBonus: { power: 2.5, intel: 0.5, mood: 0.1 }, consumption: 1.5, lifespan: 50 },
     balloon_type1_3: { name: "破裂の恐怖", desc: "絶対に疲れないが、寿命が極端に短い", statBonus: { power: 3.0, intel: 1.5, mood: 0.1 }, consumption: 0.0, lifespan: 20 },
     balloon_type5: { name: "ガス抜け", desc: "超燃費で、長生きする", statBonus: { power: 0.1, intel: 0.5, mood: 0.8 }, consumption: 0.1, lifespan: 150 },
+    balloon_type5_2: { name: "古代の熱源", desc: "非常に長寿で頑丈。怒ると手がつけられない", statBonus: { power: 1.5, intel: 1.0, mood: 0.5 }, consumption: 0.4, lifespan: 180 },
     balloon_type3: { name: "上空観測", desc: "賢さが上がりやすい", statBonus: { power: 0.2, intel: 2.0, mood: 1.5 }, consumption: 0.8, lifespan: 110 },
     balloon_type3_2: { name: "索敵レンズ", desc: "燃費が良く、賢さも高い", statBonus: { power: 0.1, intel: 2.2, mood: 1.2 }, consumption: 0.7, lifespan: 120 },
     balloon_type3_3: { name: "全天候レーダー", desc: "非常に賢く、燃費も良い", statBonus: { power: 0.5, intel: 3.0, mood: 1.5 }, consumption: 0.5, lifespan: 200 },
@@ -452,7 +456,7 @@ const charaTraits = {
     ghost_type1_2: { name: "死の宣告", desc: "絶対に疲れないが、破滅的な短命", statBonus: { power: 2.5, intel: 2.5, mood: 0.1 }, consumption: 0.0, lifespan: 20 },
     ghost_type3: { name: "読書家", desc: "燃費が良く、賢さが上がりやすい", statBonus: { power: 0.2, intel: 2.2, mood: 1.0 }, consumption: 0.5, lifespan: 80 },
     ghost_type3_2: { name: "精神感応", desc: "超燃費で、賢さが非常に高い", statBonus: { power: 0.3, intel: 2.5, mood: 1.2 }, consumption: 0.4, lifespan: 90 },
-    ghost_type3_3: { name: "不死の叡智", desc: "極限の賢さと超燃費を誇る", statBonus: { power: 0.1, intel: 3.5, mood: 1.0 }, consumption: 0.2, lifespan: 150 },
+    // ghost_type3_3: { name: "不死の叡智", desc: "極限の賢さと超燃費を誇る", statBonus: { power: 0.1, intel: 3.5, mood: 1.0 }, consumption: 0.2, lifespan: 150 },
 
     // Beetle Evolutions
     beetle_type4: { name: "タイタン・ホーン", desc: "活力が異常に高いが、少し燃費が悪い", statBonus: { power: 2.8, intel: 0.1, mood: 1.0 }, consumption: 1.0, lifespan: 90 },
@@ -724,7 +728,10 @@ const evolutionRequirements = {
     "stone_type2": [ { next: "stone_type2_2", name: "美しさ2段", req: { beauty: 200 } } ],
     "stone_type4": [ { next: "stone_type4_3", name: "活力2段", req: { power: 200 } } ],
     "stone_type4_2": [ { next: "stone_type4_3", name: "活力2段", req: { power: 200 } } ],
-    "stone_type5": [ { next: "stone_type5_2", name: "老化2段", req: { old: true } } ],
+    "stone_type5": [
+        { next: "stone_type5_2", name: "老化2段A", req: { old: true } },
+        { next: "stone_type5_3", name: "老化2段B", req: { old: true } }
+    ],
     "stone_type1": [ { next: "stone_type1_2", name: "闇落ち2段", req: { dark: 50 } } ],
     "stone_type3": [ { next: "stone_type3_2", name: "賢さ2段", req: { intel: 200 } } ],
 
@@ -744,6 +751,7 @@ const evolutionRequirements = {
     "balloon_type2_2": [ { next: "balloon_type2_3", name: "美しさ2段", req: { beauty: 200 } } ],
     "balloon_type4": [ { next: "balloon_type4_3", name: "活力2段", req: { power: 200 } } ],
     "balloon_type4_2": [ { next: "balloon_type4_3", name: "活力2段", req: { power: 200 } } ],
+    "balloon_type5": [ { next: "balloon_type5_2", name: "老化2段", req: { old: true } } ],
     "balloon_type1": [ { next: "balloon_type1_3", name: "闇落ち2段", req: { dark: 50 } } ],
     "balloon_type1_2": [ { next: "balloon_type1_3", name: "闇落ち2段", req: { dark: 50 } } ],
     "balloon_type3": [ { next: "balloon_type3_3", name: "賢さ2段", req: { intel: 200 } } ],
