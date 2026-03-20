@@ -181,6 +181,42 @@ function render() {
     else if (!isDefense) { 
         if (currentMode === 'ai_adjust') {
             drawAICharacter();
+            
+            // ▼▼▼ 追加：AI Adjustモード時の赤枠（補助フレーム）描画 ▼▼▼
+            if (editingTarget === 'ai') {
+                const target = typeof getAdjustTarget === 'function' ? getAdjustTarget() : null;
+                if (target) {
+                    ctx.save();
+                    let scaleX = target.scaleX !== undefined ? target.scaleX : (target.scale !== undefined ? target.scale : 1);
+                    let scaleY = target.scaleY !== undefined ? target.scaleY : (target.scale !== undefined ? target.scale : 1);
+                    
+                    if (typeof aiConfigs !== 'undefined' && aiConfigs[selectedAIType]) {
+                        scaleX = aiConfigs[selectedAIType].scale || 0.25;
+                        scaleY = scaleX;
+                    }
+                    
+                    const dw = target.sw * scaleX;
+                    const dh = target.sh * scaleY;
+                    
+                    // スクリーン上のキャラクター座標を計算（カメラ追従時は自動的に画面中央になります）
+                    const cx = aiPet.x - camera.x;
+                    const cy = aiPet.y - camera.y;
+                    
+                    ctx.strokeStyle = "red";
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([4, 4]); // 見やすい点線
+                    
+                    // 中心基準の描画枠（キャラクターを囲う四角形）
+                    ctx.strokeRect(cx - dw / 2, cy - dh / 2, dw, dh);
+                    
+                    // 基準点（アンカー）のクロスヘア表示
+                    ctx.fillStyle = "rgba(255, 0, 0, 0.8)";
+                    ctx.fillRect(cx - 15, cy - 1, 30, 2); // 横線
+                    ctx.fillRect(cx - 1, cy - 15, 2, 30); // 縦線
+                }
+            }
+            // ▲▲▲ 追加おわり ▲▲▲
+
         } else {
             let mainPetBackup = aiPet; 
             if (typeof party !== 'undefined' && party.length > 0) {
