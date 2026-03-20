@@ -403,9 +403,15 @@ function drawAICharacter() {
     if (img && img.complete && img.naturalWidth !== 0) {
         ctx.save(); ctx.translate(px, py); if (targetPet.flip) ctx.scale(-1, 1);
         
-        // 防衛戦の敵の場合は赤黒いフィルターをかける
-        if (currentMode === 'defense' && targetPet.team === 'enemy') {
-            ctx.filter = 'brightness(0.6) sepia(1) hue-rotate(-50deg) saturate(3)';
+        // ★追加・修正：防衛戦のフィルターと行動済みフィルターの適用
+        if (currentMode === 'defense') {
+            if (targetPet.team === 'enemy') {
+                ctx.filter = 'brightness(0.6) sepia(1) hue-rotate(-50deg) saturate(3)'; // 敵の色
+            } else if (targetPet.hasActed) {
+                ctx.filter = 'brightness(0.4)'; // ★味方の行動済みの色（かなり暗く）
+            } else {
+                ctx.filter = 'none'; // 通常
+            }
         }
         
         ctx.drawImage(img, f.sx || 0, f.sy || 0, sw, sh, -drawW/2, -drawH/2, drawW, drawH); ctx.restore();
@@ -660,6 +666,14 @@ function drawCharacterInWindow(action, cx, cy, targetPet) {
     let sc = 0.3; const drawW = (f.sw || 300) * sc; const drawH = (f.sh || 300) * sc;
     if (img && img.complete && img.naturalWidth !== 0) {
         ctx.save(); ctx.translate(cx, cy); 
+
+        // ★追加：行動済みの場合はPIP（ワイプ）内でも暗くする
+        if (currentMode === 'defense' && targetPet.hasActed) {
+            ctx.filter = 'brightness(0.4)';
+        } else {
+            ctx.filter = 'none';
+        }
+
         ctx.drawImage(img, f.sx || 0, f.sy || 0, f.sw || 300, f.sh || 300, -drawW/2, -drawH/2, drawW, drawH); ctx.restore();
     }
 }

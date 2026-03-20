@@ -8,6 +8,7 @@ window.DEFENSE_CONFIG = {
     facilities: {
         'castle': { name: '王城', maxHp: 2000, rebuildCost: 50000, effect: 'def_up', desc: '防御力大アップ' },
         'house': { name: '農家', maxHp: 500, rebuildCost: 2000, effect: 'heal_10', desc: '毎ターンHP10%回復' },
+        'hut': { name: '小屋', maxHp: 300, rebuildCost: 500 }, // ★追加：小屋
         'restaurant': { name: 'レストラン', maxHp: 600, rebuildCost: 5000, effect: 'heal_20', desc: '毎ターンHP20%回復' },
         'smith': { name: '鍛冶屋', maxHp: 800, rebuildCost: 8000, effect: 'atk_up', desc: '攻撃力アップ' },
         'casino': { name: 'カジノ', maxHp: 1000, rebuildCost: 30000, effect: 'money_up', desc: '戦闘報酬アップ' },
@@ -23,6 +24,12 @@ window.DEFENSE_SKILL_DB = {
     'bird': [ { req: 0, name: 'つつく', type: 'melee', power: 1.2, range: 1, effect: 'slash' }, { req: 40, name: 'ウィンドカッター', type: 'shoot', power: 1.4, range: 3, effect: 'slash' }, { req: 100, name: 'トルネード', type: 'shoot', power: 2.2, range: 3, effect: 'explosion' } ],
     'dragon': [ { req: 0, name: 'かみつく', type: 'melee', power: 1.3, range: 1, effect: 'slash' }, { req: 60, name: 'ファイアブレス', type: 'shoot', power: 1.8, range: 3, effect: 'explosion' }, { req: 150, name: 'メテオストライク', type: 'shoot', power: 3.0, range: 5, effect: 'explosion' } ],
     'ghost': [ { req: 0, name: 'おどかす', type: 'melee', power: 1.1, range: 1, effect: 'impact' }, { req: 40, name: 'ポルターガイスト', type: 'shoot', power: 1.5, range: 3, effect: 'explosion' }, { req: 100, name: 'カオティックフレア', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+    'magician': [ { req: 0, name: 'マジックスタッフ', type: 'melee', power: 1.1, range: 1, effect: 'impact' }, { req: 40, name: 'ファイアボール', type: 'shoot', power: 1.6, range: 3, effect: 'explosion' }, { req: 100, name: 'アルテマ', type: 'shoot', power: 2.6, range: 4, effect: 'beam' } ],
+    'machine': [ { req: 0, name: 'ドリルアタック', type: 'melee', power: 1.3, range: 1, effect: 'slash' }, { req: 50, name: 'ガトリングガン', type: 'shoot', power: 1.4, range: 3, effect: 'impact' }, { req: 120, name: 'サテライトキャノン', type: 'shoot', power: 2.8, range: 5, effect: 'beam' } ],
+    'stone': [ { req: 0, name: 'ロッククラッシュ', type: 'melee', power: 1.4, range: 1, effect: 'impact' }, { req: 50, name: 'ストーンエッジ', type: 'shoot', power: 1.5, range: 2, effect: 'slash' }, { req: 110, name: 'アースクエイク', type: 'shoot', power: 2.4, range: 3, effect: 'explosion' } ],
+    'balloon': [ { req: 0, name: 'バウンス', type: 'melee', power: 1.0, range: 1, effect: 'impact' }, { req: 30, name: 'エアショット', type: 'shoot', power: 1.3, range: 2, effect: 'impact' }, { req: 90, name: 'バーストストーム', type: 'shoot', power: 2.1, range: 3, effect: 'explosion' } ],
+    'seed': [ { req: 0, name: 'つるのムチ', type: 'melee', power: 1.1, range: 2, effect: 'slash' }, { req: 40, name: 'タネマシンガン', type: 'shoot', power: 1.4, range: 3, effect: 'impact' }, { req: 100, name: 'ソーラービーム', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+    'beetle': [ { req: 0, name: 'ホーンタックル', type: 'melee', power: 1.3, range: 1, effect: 'impact' }, { req: 50, name: 'ソニックブーム', type: 'shoot', power: 1.4, range: 3, effect: 'slash' }, { req: 110, name: 'ギガインパクト', type: 'melee', power: 2.8, range: 1, effect: 'explosion' } ],
     'default': [ { req: 0, name: 'たいあたり', type: 'melee', power: 1.1, range: 1, effect: 'impact' }, { req: 50, name: '気合弾', type: 'shoot', power: 1.5, range: 2, effect: 'beam' } ]
 };
 
@@ -205,6 +212,10 @@ window.triggerEmergency = function() {
             
             if (targetFac) {
                 targetFac.hp -= 50; 
+                // ★追加: 放置ダメージを大元データにも同期
+                let currentAssets = (typeof assets !== 'undefined') ? assets : (window.assets || {});
+                if (currentAssets[targetFac.id]) currentAssets[targetFac.id].hp = targetFac.hp;
+
                 if (typeof floatingTexts !== 'undefined') {
                     let pos = window.getGridPixelPos(targetFac.gridX, targetFac.gridY);
                     floatingTexts.push({ text: `-50`, x: pos.x, y: pos.y - 50, color: "#ff5252", life: 60, dy: -1 });
@@ -246,6 +257,7 @@ window.openArenaReception = function() {
         `<div style="padding:15px; font-size:16px; color:#555; background:#111; border:2px solid #333; border-radius:8px; text-align:center; margin-bottom:15px;">🔒 エンドレス防衛戦（WAVE10クリアで解放）</div>`;
 
     let choiceUi = document.createElement('div');
+    choiceUi.id = 'castle-reception-overlay'; // ★追加: 削除しやすいようにIDを付与
     choiceUi.style.cssText = `position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); z-index: 55000; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; font-family: sans-serif;`;
     choiceUi.innerHTML = `
         <div style="background:#1a1a1a; border:4px solid #FFD700; border-radius:12px; padding:30px; width:80%; max-width:500px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.8);">
@@ -254,16 +266,60 @@ window.openArenaReception = function() {
             ${emergencyHtml}
             ${endlessHtml}
             <button onclick="this.parentElement.parentElement.remove(); document.getElementById('dungeon-ranking-ui').classList.add('active'); window.switchRankingCategory('defense');" style="padding:15px; font-size:18px; font-weight:bold; background:#004D40; color:#fff; border:2px solid #00695C; border-radius:8px; cursor:pointer; width:100%; margin-bottom:20px;">👥 フレンド模擬戦（ランキングから選択）</button>
-            <button onclick="this.parentElement.parentElement.remove();" style="padding:12px; font-size:16px; background:#444; color:white; border:2px solid #777; border-radius:8px; cursor:pointer; width:100%;">退出する</button>
+            <button onclick="window.exitCastleReception();" style="padding:12px; font-size:16px; background:#444; color:white; border:2px solid #777; border-radius:8px; cursor:pointer; width:100%;">退出する</button>
         </div>
     `;
     document.body.appendChild(choiceUi);
 };
 
+// ★追加: 城から完全に退出してAIを自由行動に戻す処理
+window.exitCastleReception = function() {
+    let ui = document.getElementById('castle-reception-overlay');
+    if (ui) ui.remove(); // UIを閉じる
+
+    if (window.aiPet) {
+        window.aiPet.isIndoors = false;     // 屋内判定を解除
+        window.aiPet.indoorTarget = null;   // ターゲット施設を解除
+        window.aiPet.actionState = 'idle';  // 行動状態をアイドルに戻す
+        window.aiPet.visualAction = 'idle'; // アニメーションを元に戻す
+        window.aiPet.message = "お城から出たよ！";
+        window.aiPet.messageTimer = 120;
+        
+        // 出てすぐに再入室しないよう、少しだけキャラクターを下にずらす
+        window.aiPet.y += 20; 
+        
+        if (typeof saveGameData === 'function') saveGameData();
+    }
+};
+
 window.assignSkillsToUnit = function(unit, pwr, int) {
-    let statTotal = pwr + int; let skinBase = unit.skin ? unit.skin.split('_')[0] : 'robot';
-    let skillList = window.DEFENSE_SKILL_DB[skinBase] || window.DEFENSE_SKILL_DB['default'];
-    unit.skills = skillList.filter(s => statTotal >= s.req);
+    let statTotal = pwr + int; 
+    let exactSkin = unit.skin || 'robot';
+    let skinBase = exactSkin.split('_')[0];
+    let evoLevel = exactSkin.includes('_') ? parseInt(exactSkin.split('_')[1]) || 1 : 0;
+    
+    // ベースとなる種族の技を取得
+    let skillList = window.DEFENSE_SKILL_DB[exactSkin] ? [...window.DEFENSE_SKILL_DB[exactSkin]] : [...(window.DEFENSE_SKILL_DB[skinBase] || window.DEFENSE_SKILL_DB['default'])];
+    
+    // ★ 1進化以上なら、強力な技を追加
+    if (evoLevel >= 1) {
+        skillList.push(
+            { req: 60, name: '覚醒の一撃', type: 'melee', power: 2.0, range: 1, effect: 'slash' },
+            { req: 80, name: 'エヴォルブラスター', type: 'shoot', power: 2.5, range: 3, effect: 'beam' }
+        );
+    }
+    // ★ 2進化以上なら、さらに究極技を追加
+    if (evoLevel >= 2) {
+        skillList.push(
+            { req: 120, name: '真・覚醒乱舞', type: 'melee', power: 3.5, range: 1, effect: 'explosion' },
+            { req: 150, name: 'メテオデストロイ', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' }
+        );
+    }
+
+    unit.skills = skillList.filter(s => statTotal >= s.req).map(s => {
+        return { ...s, power: s.power + (evoLevel * 0.2) }; // 進化していると既存技の威力も底上げ
+    });
+    
     if (unit.skills.length === 0) unit.skills = [window.DEFENSE_SKILL_DB['default'][0]]; 
     unit.maxRange = Math.max(...unit.skills.map(s => s.range));
     unit.minRange = Math.min(...unit.skills.map(s => s.range)); 
@@ -455,10 +511,28 @@ window.generateEnemyWave = function(wave, count) {
     let discovered = (window.aiPet && window.aiPet.discoveredMonsters) ? window.aiPet.discoveredMonsters : ['robot'];
     if (discovered.length === 0) discovered = ['robot'];
     for (let i = 0; i < count; i++) {
-        let pwr = Math.floor(10 + wave * 1.5); let int = Math.floor(8 + wave * 1.2);
         let randomSkin = discovered[Math.floor(Math.random() * discovered.length)];
         let sName = (typeof monsterBookData !== 'undefined' && monsterBookData[randomSkin]) ? monsterBookData[randomSkin].name : randomSkin;
-        let e = { name: `幻影の${sName}`, skin: randomSkin, hp: 80 + pwr, maxHp: 80 + pwr, atk: 10 + Math.floor(pwr * 0.4), def: 5, intel: int, speed: 3, team: 'enemy', isBoss: false, gridX: -100, gridY: -100 };
+        
+        // ベース種族と進化段階の取得
+        let baseSkin = randomSkin.split('_')[0]; 
+        let evoLevel = randomSkin.includes('_') ? parseInt(randomSkin.split('_')[1]) || 1 : 0; 
+        let baseSpd = window.DEFENSE_CONFIG.baseSpeed[baseSkin] || 3;
+        
+        // WAVE進行と進化段階によるステータス強化
+        let pwr = Math.floor(10 + (wave * 1.5) + (evoLevel * 5)); 
+        let int = Math.floor(8 + (wave * 1.2) + (evoLevel * 4));
+        
+        let e = { 
+            name: `幻影の${sName}`, 
+            skin: randomSkin, 
+            hp: 80 + pwr * 2, maxHp: 80 + pwr * 2, 
+            atk: 10 + Math.floor(pwr * 0.4), 
+            def: 5 + Math.floor(evoLevel * 2), 
+            intel: int, 
+            speed: baseSpd + Math.floor(evoLevel * 0.5), 
+            team: 'enemy', isBoss: false, gridX: -100, gridY: -100 
+        };
         window.assignSkillsToUnit(e, pwr, int); enemies.push(e);
     }
     return enemies;
@@ -536,7 +610,10 @@ window.startDefenseSimulation = function() {
 };
 
 window.initDefenseGridMap = async function() {
+    // ★修正: 以前の施設の状態（HP）を一時保存しておく
+    let oldFacilities = window.DEFENSE_STATE.facilities || [];
     window.DEFENSE_STATE.facilities = [];
+    
     let currentAssets = (typeof assets !== 'undefined') ? assets : (window.assets || {});
     let castleAsset = Object.values(currentAssets).find(a => a && a.type === 'castle');
     let cx = 10; let cy = 6; 
@@ -545,11 +622,18 @@ window.initDefenseGridMap = async function() {
     Object.keys(currentAssets).forEach(key => {
         let a = currentAssets[key];
         let validTypes = Object.keys(window.DEFENSE_CONFIG.facilities);
+        // if (a && validTypes.includes(a.type)) {
+        //     let conf = window.DEFENSE_CONFIG.facilities[a.type];
+        //     // ★修正: 保存しておいた以前のデータからHPを復元する
+        //     let loadedFac = oldFacilities.find(f => f.id === key);
+        //     let currentHp = loadedFac ? loadedFac.hp : conf.maxHp;
+        //     window.DEFENSE_STATE.facilities.push({ id: key, type: a.type, name: conf.name, team: 'facility', gridX: a.gridX, gridY: a.gridY, hp: currentHp, maxHp: conf.maxHp });
+        // }
         if (a && validTypes.includes(a.type)) {
             let conf = window.DEFENSE_CONFIG.facilities[a.type];
-            let loadedFac = window.DEFENSE_STATE.facilities.find(f => f.id === key);
-            let currentHp = loadedFac ? loadedFac.hp : conf.maxHp;
-            window.DEFENSE_STATE.facilities.push({ id: key, type: a.type, name: conf.name, team: 'facility', gridX: a.gridX, gridY: a.gridY, hp: currentHp, maxHp: conf.maxHp });
+            // ★修正: 大元のデータ(assets)にHPがなければMAXで初期化し、あればそれを引き継ぐ
+            if (a.hp === undefined) a.hp = conf.maxHp;
+            window.DEFENSE_STATE.facilities.push({ id: key, type: a.type, name: conf.name, team: 'facility', gridX: a.gridX, gridY: a.gridY, hp: a.hp, maxHp: conf.maxHp });
         }
     });
 
@@ -678,9 +762,19 @@ window.processPhaseAI = async function() {
     let phase = window.DEFENSE_STATE.phase; let units = (phase === 'player') ? window.DEFENSE_STATE.deployedParty : window.DEFENSE_STATE.enemies;
     let aliveUnits = units.filter(u => u.hp > 0); aliveUnits.sort((a,b) => b.speed - a.speed);
 
+    // ★ ターン開始時に全員の行動済フラグをリセットし、待機アニメにする
+    aliveUnits.forEach(u => { u.hasActed = false; u.visualAction = 'idle'; });
+
     for (let i = 0; i < aliveUnits.length; i++) {
-        let unit = aliveUnits[i]; if (!window.DEFENSE_STATE.isActive) break;
-        window.DEFENSE_STATE.activeUnit = unit; await window.thinkDefenseAI(unit);
+        let unit = aliveUnits[i]; if (!window.DEFENSE_STATE.isActive || unit.hp <= 0) continue;
+        window.DEFENSE_STATE.activeUnit = unit; 
+        
+        // ★ 自分のターンが来たアピール（一瞬歩行アニメにして待機に戻す）
+        unit.visualAction = 'move'; await window.wait(200); unit.visualAction = 'idle';
+        
+        await window.thinkDefenseAI(unit);
+        
+        unit.hasActed = true; // 行動終了フラグ（あとで黒くするのに使います）
         if (!window.DEFENSE_STATE.isActive) break; await window.wait(300); 
     }
 
@@ -746,8 +840,25 @@ window.thinkDefenseAI = async function(unit) {
     if (moveTarget) {
         let nextGrid = window.calculateSRPGPath(unit, moveTarget.gridX, moveTarget.gridY);
         if (nextGrid && (nextGrid.x !== unit.gridX || nextGrid.y !== unit.gridY)) {
-            unit.gridX = nextGrid.x; unit.gridY = nextGrid.y; await window.wait(400); 
+            unit.visualAction = 'move'; // 移動アニメ開始
+            unit.flip = (nextGrid.x < unit.gridX); // 進行方向を向く
+            
+            // ★ 1マスずつ目的地まで移動する処理
+            let curX = unit.gridX; let curY = unit.gridY;
+            while (curX !== nextGrid.x || curY !== nextGrid.y) {
+                if (curX < nextGrid.x) curX++;
+                else if (curX > nextGrid.x) curX--;
+                else if (curY < nextGrid.y) curY++;
+                else if (curY > nextGrid.y) curY--;
+                
+                unit.gridX = curX; unit.gridY = curY;
+                await window.wait(150); // 1マス進むスピード（0.15秒）
+            }
+            
+            unit.visualAction = 'idle'; // 移動完了で待機アニメへ
             window.DEFENSE_STATE.moveHighlights = []; 
+            
+            // 移動後の攻撃判定
             ax = unit.gridX; ay = unit.gridY; let afterMoveTargets = [];
             targetList.forEach(t => {
                 if (t.hp <= 0) return;
@@ -763,22 +874,45 @@ window.thinkDefenseAI = async function(unit) {
             }
         }
     }
-    window.DEFENSE_STATE.moveHighlights = []; 
+    window.DEFENSE_STATE.moveHighlights = [];
 };
 
-window.getCutsceneSpriteHtml = function(u, direction) {
+window.getCutsceneSpriteHtml = function(u, direction, domId) {
     if (u.team === 'facility') {
-        let emoji = '🏠'; if (u.type === 'castle') emoji = '🏰'; if (u.type === 'restaurant') emoji = '🏪'; if (u.type === 'smith') emoji = '⚒️'; if (u.type === 'casino') emoji = '🎰';
-        return `<div style="font-size:150px; filter:drop-shadow(0 10px 20px rgba(0,0,0,0.8));">${emoji}</div>`;
+        // ★修正: カタログから実際のマップチップデータを取得して表示
+        let conf = (typeof catalog !== 'undefined') ? catalog[u.type] : null;
+        if (!conf) {
+            let emoji = '🏠'; if (u.type === 'castle') emoji = '🏰'; if (u.type === 'farm') emoji = '🚜';
+            return `<div id="${domId}" style="font-size:150px; filter:drop-shadow(0 10px 20px rgba(0,0,0,0.8)); transition: transform 0.3s;">${emoji}</div>`;
+        }
+        let imgName = conf.img || 'field';
+        let img = (typeof images !== 'undefined') ? images[imgName] : null;
+        let iw = img ? img.naturalWidth : 1000;
+        let sc = 1.5;
+        let sx = conf.sx || 0; let sy = conf.sy || 0; let sw = conf.sw || 100; let sh = conf.sh || 100;
+        
+        return `<div id="${domId}" class="cutscene-actor-facility" style="width: ${sw * sc}px; height: ${sh * sc}px; overflow:hidden; position:relative; transition: transform 0.3s; filter:drop-shadow(0 10px 20px rgba(0,0,0,0.8));">
+                    <div style="transform: scaleX(${direction}); width:100%; height:100%;">
+                        <img src="${img ? img.src : ''}" style="position:absolute; top:-${sy * sc}px; left:-${sx * sc}px; width:${iw * sc}px; max-width:none;">
+                    </div>
+                </div>`;
     }
-    let type = u.skin ? u.skin.split('_')[0] : 'robot'; let conf = (typeof aiConfigs !== 'undefined') ? aiConfigs[type] : null;
-    let imgKey = (conf && conf.img) ? conf.img : type; let img = (typeof images !== 'undefined') ? images[imgKey] || images['robot'] : null;
-    let iw = img ? img.naturalWidth : 1000; let frame = {sx:0, sy:0, sw:300, sh:300};
-    if (conf && conf.actions && conf.actions['move']) frame = conf.actions['move'][0] || frame;
-
-    let sc = 1.2; let filter = u.team === 'enemy' ? 'brightness(0.6) sepia(1) hue-rotate(-50deg) saturate(3)' : 'none';
-    return `<div style="width:${frame.sw * sc}px; height:${frame.sh * sc}px; overflow:hidden; position:relative; filter:${filter};">
-                <div style="transform: scaleX(${direction}); width:100%; height:100%;"><img src="${img ? img.src : ''}" style="position:absolute; top:-${frame.sy * sc}px; left:-${frame.sx * sc}px; width:${iw * sc}px; max-width:none;"></div>
+    
+    let exactSkin = u.skin || 'robot'; let baseSkin = exactSkin.split('_')[0];
+    let conf = null; if (typeof aiConfigs !== 'undefined') conf = aiConfigs[exactSkin] || aiConfigs[baseSkin];
+    
+    let imgKey = (conf && conf.img) ? conf.img : exactSkin; 
+    let img = (typeof images !== 'undefined') ? (images[imgKey] || images[baseSkin] || images['robot']) : null;
+    let iw = img ? img.naturalWidth : 1000;
+    
+    let sc = 1.5; // リッチに見えるよう少し拡大
+    let filter = u.team === 'enemy' ? 'brightness(0.6) sepia(1) hue-rotate(-50deg) saturate(3)' : 'none';
+    
+    // アニメーションループで制御できるよう data属性 を付与
+    return `<div id="${domId}" class="cutscene-actor" data-skin="${exactSkin}" data-action="idle" data-frame="0" data-tick="0" data-scale="${sc}" style="width: 100px; height: 100px; overflow:hidden; position:relative; filter:${filter}; transition: transform 0.3s;">
+                <div style="transform: scaleX(${direction}); width:100%; height:100%;">
+                    <img src="${img ? img.src : ''}" style="position:absolute; top:0px; left:0px; width:${iw * sc}px; max-width:none;">
+                </div>
             </div>`;
 };
 
@@ -789,21 +923,20 @@ window.showDefenseCutscene = async function(act, def, damageVal, skill, canCount
     cutUi.style.cssText = `position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:70000; display:flex; flex-direction:column; overflow:hidden; font-family:sans-serif; transition:opacity 0.2s; background: linear-gradient(to bottom, #1976D2, #81D4FA);`;
     
     let leftUnit = act; let rightUnit = def;
-    let leftIsPlayer = leftUnit.team === 'player'; let rightIsPlayer = rightUnit.team === 'player';
     let leftHp = leftUnit.hp; let rightHp = rightUnit.hp;
 
     cutUi.innerHTML = `
         <div id="cut-speedlines" style="position:absolute; top:0; left:-50%; width:200%; height:100%; background: repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(255,255,255,0.6) 80px, rgba(255,255,255,0.6) 120px); transform: skewX(-20deg); opacity:0; transition:opacity 0.1s;"></div>
         <style>@keyframes slide-speed { 0% { transform: skewX(-20deg) translateX(0); } 100% { transform: skewX(-20deg) translateX(-160px); } } @keyframes shake-hit { 0% {transform:translate(15px,15px)} 25% {transform:translate(-15px,-15px)} 50% {transform:translate(15px,-15px)} 75% {transform:translate(-15px,15px)} 100% {transform:translate(0,0)} }</style>
-        <div style="position:absolute; top:20px; left:20px; width:40%; background:rgba(0,0,50,0.8); border:3px solid ${leftIsPlayer?'#4CAF50':'#ff5252'}; border-radius:10px; padding:10px; color:white; box-shadow:0 5px 15px rgba(0,0,0,0.5); z-index:70010;">
-            <div style="font-size:24px; font-weight:bold; color:${leftIsPlayer?'#4CAF50':'#ff5252'}; margin-bottom:5px;">${leftUnit.name}</div>
+        <div style="position:absolute; top:20px; left:20px; width:40%; background:rgba(0,0,50,0.8); border:3px solid #4CAF50; border-radius:10px; padding:10px; color:white; z-index:70010;">
+            <div style="font-size:24px; font-weight:bold; color:#4CAF50; margin-bottom:5px;">${leftUnit.name}</div>
             <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:2px;"><span>HP</span><span id="hud-l-hp-text">${leftHp} / ${leftUnit.maxHp||leftUnit.hp}</span></div>
-            <div style="width:100%; height:15px; background:#333; border-radius:5px; overflow:hidden;"><div id="hud-l-hp-bar" style="width:${(leftHp/(leftUnit.maxHp||leftUnit.hp))*100}%; height:100%; background:${leftIsPlayer?'#4CAF50':'#ff5252'}; transition:width 0.3s ease-out;"></div></div>
+            <div style="width:100%; height:15px; background:#333; border-radius:5px; overflow:hidden;"><div id="hud-l-hp-bar" style="width:${(leftHp/(leftUnit.maxHp||leftUnit.hp))*100}%; height:100%; background:#4CAF50; transition:width 0.3s ease-out;"></div></div>
         </div>
-        <div style="position:absolute; top:20px; right:20px; width:40%; background:rgba(50,0,0,0.8); border:3px solid ${rightIsPlayer?'#4CAF50':'#ff5252'}; border-radius:10px; padding:10px; color:white; box-shadow:0 5px 15px rgba(0,0,0,0.5); z-index:70010;">
-            <div style="font-size:24px; font-weight:bold; color:${rightIsPlayer?'#4CAF50':'#ff5252'}; margin-bottom:5px; text-align:right;">${rightUnit.name}</div>
+        <div style="position:absolute; top:20px; right:20px; width:40%; background:rgba(50,0,0,0.8); border:3px solid #ff5252; border-radius:10px; padding:10px; color:white; z-index:70010;">
+            <div style="font-size:24px; font-weight:bold; color:#ff5252; margin-bottom:5px; text-align:right;">${rightUnit.name}</div>
             <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:2px;"><span>HP</span><span id="hud-r-hp-text">${rightHp} / ${rightUnit.maxHp||rightUnit.hp}</span></div>
-            <div style="width:100%; height:15px; background:#333; border-radius:5px; overflow:hidden; transform:scaleX(-1);"><div id="hud-r-hp-bar" style="width:${(rightHp/(rightUnit.maxHp||rightUnit.hp))*100}%; height:100%; background:${rightIsPlayer?'#4CAF50':'#ff5252'}; transition:width 0.3s ease-out;"></div></div>
+            <div style="width:100%; height:15px; background:#333; border-radius:5px; overflow:hidden; transform:scaleX(-1);"><div id="hud-r-hp-bar" style="width:${(rightHp/(rightUnit.maxHp||rightUnit.hp))*100}%; height:100%; background:#ff5252; transition:width 0.3s ease-out;"></div></div>
         </div>
         <div id="cut-actor-stage" style="position:absolute; top:20%; left:0; width:100%; height:60%; display:flex; justify-content:center; align-items:center; z-index:70001;"></div>
         <div id="cut-flash" style="position:absolute; top:0; left:0; width:100%; height:100%; background:white; z-index:70002; opacity:0; pointer-events:none;"></div>
@@ -816,52 +949,165 @@ window.showDefenseCutscene = async function(act, def, damageVal, skill, canCount
 
     let stage = document.getElementById('cut-actor-stage'); let dialogue = document.getElementById('cut-dialogue'); let speedlines = document.getElementById('cut-speedlines'); let dmgText = document.getElementById('cut-dmg-text');
 
+    // カットシーン専用アニメーションループ
+    let isCutsceneActive = true;
+    let cutsceneLoop = () => {
+        if (!isCutsceneActive) return;
+        document.querySelectorAll('.cutscene-actor').forEach(el => {
+            let exactSkin = el.getAttribute('data-skin'); let action = el.getAttribute('data-action');
+            let baseSkin = exactSkin.split('_')[0];
+            let conf = (typeof aiConfigs !== 'undefined') ? (aiConfigs[exactSkin] || aiConfigs[baseSkin]) : null;
+            if (conf && conf.actions && conf.actions[action]) {
+                let frames = conf.actions[action]; let tick = parseInt(el.getAttribute('data-tick')) + 1; let frameIdx = parseInt(el.getAttribute('data-frame'));
+                if (tick >= 8) { 
+                    tick = 0; 
+                    if (action === 'sleep' && frameIdx >= frames.length - 1) frameIdx = frames.length - 1; // 死亡時は倒れたまま
+                    else frameIdx = (frameIdx + 1) % frames.length; 
+                }
+                el.setAttribute('data-tick', tick); el.setAttribute('data-frame', frameIdx);
+                let f = frames[frameIdx]; let sc = parseFloat(el.getAttribute('data-scale') || "1.5");
+                el.style.width = (f.sw * sc) + 'px'; el.style.height = (f.sh * sc) + 'px';
+                let imgEl = el.querySelector('img'); if (imgEl) { imgEl.style.left = -(f.sx * sc) + 'px'; imgEl.style.top = -(f.sy * sc) + 'px'; }
+            }
+        });
+        requestAnimationFrame(cutsceneLoop);
+    };
+    requestAnimationFrame(cutsceneLoop);
+
     const playAnimPhase = async (aUnit, dUnit, damageVal, useSkill, isCounter) => {
-        let isActLeft = aUnit === leftUnit; let actDir = isActLeft ? 1 : -1;
-        let verb = useSkill.type === 'shoot' ? 'いっけぇぇぇ！！' : 'おおおおぉッ！！';
-        dialogue.innerHTML = isCounter ? `${aUnit.name}「甘いッ！ 反撃だ！！」<br><span style="color:#FFC107;">『${useSkill.name}』！！</span>` : `${aUnit.name}「${verb}」<br><span style="color:#00E5FF;">『${useSkill.name}』！！</span>`;
-        stage.innerHTML = window.getCutsceneSpriteHtml(aUnit, actDir);
-        let actorDiv = stage.firstElementChild; actorDiv.style.transform = `translateX(${isActLeft ? '-50vw' : '50vw'})`; 
-        await window.wait(50);
-        actorDiv.style.transition = 'transform 0.4s cubic-bezier(0.1, 0.8, 0.2, 1)'; actorDiv.style.transform = 'translateX(0)';
-        await window.wait(600);
+        let isActLeft = (aUnit === leftUnit);
+        
+        dialogue.innerHTML = isCounter ? `${aUnit.name}「甘いッ！ 反撃だ！！」<br><span style="color:#FFC107;">『${useSkill.name}』！！</span>` : `${aUnit.name}「いくぞッ！」<br><span style="color:#00E5FF;">『${useSkill.name}』！！</span>`;
+        
+        // --- 1. アタッカー側の画面のみ表示 ---
+        stage.innerHTML = window.getCutsceneSpriteHtml(aUnit, isActLeft ? 1 : -1, 'actor-act');
+        let actDom = document.getElementById('actor-act');
+        actDom.style.position = 'absolute';
+        actDom.style.transform = `translateX(0)`; // 画面中央
+        await window.wait(800);
 
+        // --- 2. 突撃 or 発射 ---
         if (useSkill.type === 'melee') {
-            speedlines.style.opacity = '1'; speedlines.style.animation = 'slide-speed 0.2s infinite linear'; actorDiv.style.transition = 'transform 0.15s ease-in'; actorDiv.style.transform = `translateX(${isActLeft ? '100vw' : '-100vw'}) scale(1.2)`;
-            await window.wait(150); speedlines.style.opacity = '0'; speedlines.style.animation = 'none';
+            actDom.setAttribute('data-action', 'move');
+            actDom.style.transition = 'transform 0.3s ease-in';
+            actDom.style.transform = `translateX(${isActLeft ? '100vw' : '-100vw'})`;
+            await window.wait(300);
         } else {
-            actorDiv.style.transition = 'transform 0.1s ease-out, filter 0.1s'; actorDiv.style.transform = `translateX(${isActLeft ? '-40px' : '40px'}) scale(1.05)`; actorDiv.querySelector('div').style.filter = 'brightness(1.5) drop-shadow(0 0 20px cyan)'; 
+            actDom.setAttribute('data-action', 'idle');
+            actDom.style.filter = 'brightness(1.5) drop-shadow(0 0 20px cyan)';
             await window.wait(200);
+
+            let fxOut = document.createElement('div'); cutUi.appendChild(fxOut);
+            if (useSkill.name.includes('アースクエイク')) {
+                actDom.style.animation = 'shake-hit 0.5s infinite'; // 地震は自分が揺れる
+            } else if (useSkill.effect === 'beam') {
+                // ★修正: 発射位置をキャラクターの前方(45vw)に調整
+                fxOut.style.cssText = `position:absolute; top:50%; ${isActLeft ? 'left:45vw' : 'right:45vw'}; width:150vw; height:100px; background:linear-gradient(to ${isActLeft ? 'right' : 'left'}, cyan, white, transparent); box-shadow:0 0 50px cyan; mix-blend-mode:screen; z-index:70005;`;
+                fxOut.animate([{ transform: `translateY(-50%) scaleX(0)`, opacity: 1, transformOrigin: isActLeft ? 'left' : 'right' }, { transform: `translateY(-50%) scaleX(1)`, opacity: 1, transformOrigin: isActLeft ? 'left' : 'right' }], { duration: 300, fill: 'forwards' });
+            } else if (useSkill.effect === 'explosion' || useSkill.name.includes('スターダスト') || useSkill.name.includes('ファイア')) {
+                // ★修正: 上空に向けて光球（エネルギー）を放ち上げる演出に変更！
+                fxOut.style.cssText = `position:absolute; top:50%; ${isActLeft ? 'left:40vw' : 'right:40vw'}; width:80px; height:80px; background:radial-gradient(circle, white, #FF9800, transparent); border-radius:50%; box-shadow: 0 0 30px #FF9800; z-index:70005;`;
+                fxOut.animate([
+                    { transform: `translate(-50%, -50%) scale(0.5)`, top: '50%', opacity: 1 },
+                    { transform: `translate(-50%, -50%) scale(1.5)`, top: '-20%', opacity: 0 }
+                ], { duration: 400, fill: 'forwards', easing: 'ease-out' });
+            } else {
+                // 通常の飛ぶエフェクト
+                let rot = isActLeft ? 45 : -45;
+                fxOut.style.cssText = `position:absolute; top:50%; left:50%; width:100vw; height:20px; background:white; box-shadow:0 0 20px yellow; border-radius:50%; z-index:70005;`;
+                fxOut.animate([{ transform: `translate(-50%,-50%) rotate(${rot}deg) scaleX(0) translateX(${isActLeft ? '0vw' : '0vw'})`, opacity: 1 }, { transform: `translate(-50%,-50%) rotate(${rot}deg) scaleX(1) translateX(${isActLeft ? '50vw' : '-50vw'})`, opacity: 1 }], { duration: 300, fill: 'forwards', easing: 'ease-out' });
+            }
+            await window.wait(400);
+            if(fxOut) fxOut.remove();
+            if(actDom.style.animation) actDom.style.animation = 'none';
         }
 
-        stage.innerHTML = window.getCutsceneSpriteHtml(dUnit, isActLeft ? -1 : 1); 
-        let targetDiv = stage.firstElementChild; let fxDiv = document.createElement('div'); cutUi.appendChild(fxDiv);
-        
-        if (useSkill.effect === 'slash') {
-            let rot = isActLeft ? 45 : -45; fxDiv.style.cssText = `position:absolute; top:50%; left:50%; width:150vw; height:50px; background:white; box-shadow:0 0 40px yellow; border-radius:50%; z-index:70005;`; fxDiv.animate([{ transform: `translate(-50%,-50%) rotate(${rot}deg) scaleX(0)`, opacity: 1 }, { transform: `translate(-50%,-50%) rotate(${rot}deg) scaleX(1)`, opacity: 1, offset: 0.5 }, { transform: `translate(-50%,-50%) rotate(${rot}deg) scaleX(1.5) scaleY(0)`, opacity: 0 }], { duration: 300, fill: 'forwards', easing: 'ease-out' });
-        } else if (useSkill.effect === 'beam') {
-            fxDiv.style.cssText = `position:absolute; top:50%; left:0; width:100vw; height:250px; background:linear-gradient(to bottom, transparent, cyan, white, cyan, transparent); box-shadow:0 0 50px cyan; mix-blend-mode:screen; z-index:70005;`; fxDiv.animate([{ transform: `translateY(-50%) scaleY(0)`, opacity: 1 }, { transform: `translateY(-50%) scaleY(1.2)`, opacity: 1, offset: 0.2 }, { transform: `translateY(-50%) scaleY(0)`, opacity: 0 }], { duration: 400, fill: 'forwards', easing: 'ease-out' });
-        } else if (useSkill.effect === 'explosion') {
-            fxDiv.style.cssText = `position:absolute; top:50%; left:50%; width:400px; height:400px; background:radial-gradient(circle, white 10%, yellow 30%, red 70%, transparent 100%); border-radius:50%; mix-blend-mode:screen; z-index:70005;`; fxDiv.animate([{ transform: `translate(-50%,-50%) scale(0)`, opacity: 1, filter: 'brightness(2)' }, { transform: `translate(-50%,-50%) scale(1.5)`, opacity: 1, filter: 'brightness(1)', offset: 0.5 }, { transform: `translate(-50%,-50%) scale(2.5)`, opacity: 0, filter: 'brightness(0.5)' }], { duration: 500, fill: 'forwards', easing: 'ease-out' });
+        // --- 3. ディフェンダー側の画面に切り替え ---
+        stage.innerHTML = window.getCutsceneSpriteHtml(dUnit, isActLeft ? -1 : 1, 'actor-def');
+        let defDom = document.getElementById('actor-def');
+        defDom.style.position = 'absolute';
+        defDom.style.transform = `translateX(0)`; // 防御側を中央に
+        await window.wait(100);
+
+        // --- 4. 攻撃の着弾 ---
+        let fxDiv = document.createElement('div'); cutUi.appendChild(fxDiv);
+        if (useSkill.type === 'melee') {
+            stage.innerHTML += window.getCutsceneSpriteHtml(aUnit, isActLeft ? 1 : -1, 'actor-act');
+            actDom = document.getElementById('actor-act');
+            actDom.style.position = 'absolute';
+            actDom.setAttribute('data-action', 'move');
+            actDom.style.transform = `translateX(${isActLeft ? '-50vw' : '50vw'})`;
+            await window.wait(50);
+            
+            actDom.style.transition = 'transform 0.15s ease-out';
+            actDom.style.transform = `translateX(${isActLeft ? '-15vw' : '15vw'})`; 
+            speedlines.style.opacity = '1'; speedlines.style.animation = 'slide-speed 0.2s infinite linear'; 
+            await window.wait(150);
+            speedlines.style.opacity = '0'; speedlines.style.animation = 'none';
         } else {
-            fxDiv.style.cssText = `position:absolute; top:50%; left:50%; width:300px; height:300px; background:radial-gradient(circle, white 0%, transparent 70%); border-radius:50%; z-index:70005;`; fxDiv.animate([{ transform: `translate(-50%,-50%) scale(0)`, opacity: 1 }, { transform: `translate(-50%,-50%) scale(1)`, opacity: 1, offset: 0.5 }, { transform: `translate(-50%,-50%) scale(1.5)`, opacity: 0 }], { duration: 300, fill: 'forwards', easing: 'ease-out' });
+            // ★修正: 遠距離技ごとの多彩な「着弾」エフェクト
+            if (useSkill.name.includes('アースクエイク')) {
+                // 地震の着弾エフェクト (土煙)
+                fxDiv.style.cssText = `position:absolute; bottom:0; left:50%; width:600px; height:300px; background:radial-gradient(ellipse, rgba(139,69,19,0.8) 0%, transparent 70%); z-index:70005;`;
+                fxDiv.animate([{ transform: `translate(-50%, 50px) scale(0.5)`, opacity: 1 }, { transform: `translate(-50%, -50px) scale(1.5)`, opacity: 0 }], { duration: 500, fill: 'forwards', easing: 'ease-out' });
+                defDom.style.animation = 'shake-hit 0.5s infinite'; // 激しく揺らす
+            } else if (useSkill.effect === 'beam') {
+                fxDiv.style.cssText = `position:absolute; top:50%; left:50%; width:100vw; height:250px; background:linear-gradient(to bottom, transparent, cyan, white, cyan, transparent); box-shadow:0 0 50px cyan; mix-blend-mode:screen; z-index:70005;`;
+                fxDiv.animate([{ transform: `translate(-50%, -50%) scaleY(0)`, opacity: 1 }, { transform: `translate(-50%, -50%) scaleY(1.2)`, opacity: 1, offset: 0.2 }, { transform: `translate(-50%, -50%) scaleY(0)`, opacity: 0 }], { duration: 400, fill: 'forwards', easing: 'ease-out' });
+            } else if (useSkill.effect === 'explosion') {
+                fxDiv.style.cssText = `position:absolute; top:50%; left:50%; width:400px; height:400px; background:radial-gradient(circle, white 10%, yellow 30%, red 70%, transparent 100%); border-radius:50%; mix-blend-mode:screen; z-index:70005;`;
+                fxDiv.animate([{ transform: `translate(-50%,-50%) scale(0)`, opacity: 1, filter: 'brightness(2)' }, { transform: `translate(-50%,-50%) scale(1.5)`, opacity: 1, filter: 'brightness(1)', offset: 0.5 }, { transform: `translate(-50%,-50%) scale(2.5)`, opacity: 0, filter: 'brightness(0.5)' }], { duration: 500, fill: 'forwards', easing: 'ease-out' });
+            } else {
+                let rot = isActLeft ? 45 : -45;
+                fxDiv.style.cssText = `position:absolute; top:50%; left:50%; width:150vw; height:50px; background:white; box-shadow:0 0 40px yellow; border-radius:50%; z-index:70005;`;
+                fxDiv.animate([{ transform: `translate(-50%,-50%) rotate(${rot}deg) scaleX(0) translateX(${isActLeft ? '-50vw' : '50vw'})`, opacity: 1 }, { transform: `translate(-50%,-50%) rotate(${rot}deg) scaleX(1) translateX(0)`, opacity: 1 }], { duration: 300, fill: 'forwards', easing: 'ease-out' });
+            }
+            await window.wait(300);
+            if(defDom.style.animation === 'shake-hit 0.5s infinite') defDom.style.animation = 'none';
         }
-        
+
+        // ダメージと振動
         let flash = document.getElementById('cut-flash'); flash.style.transition = 'none'; flash.style.opacity = '0.8'; setTimeout(() => { flash.style.transition = 'opacity 0.4s'; flash.style.opacity = '0'; }, 50);
-        targetDiv.style.animation = 'shake-hit 0.3s'; targetDiv.style.filter = "brightness(2) sepia(1) hue-rotate(-50deg) saturate(5)";
+        defDom.style.animation = 'shake-hit 0.3s'; defDom.style.filter = "brightness(2) sepia(1) hue-rotate(-50deg) saturate(5)";
         dmgText.innerText = damageVal; dmgText.style.transition = 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.1s'; dmgText.style.transform = 'translate(-50%,-50%) scale(1)'; dmgText.style.opacity = '1';
 
+        // HPバー更新
         if (dUnit === leftUnit) { 
             leftHp = Math.max(0, leftHp - damageVal); document.getElementById('hud-l-hp-text').innerText = `${leftHp} / ${leftUnit.maxHp||leftUnit.hp}`; document.getElementById('hud-l-hp-bar').style.width = `${(leftHp / (leftUnit.maxHp||leftUnit.hp)) * 100}%`;
         } else { 
             rightHp = Math.max(0, rightHp - damageVal); document.getElementById('hud-r-hp-text').innerText = `${rightHp} / ${rightUnit.maxHp||rightUnit.hp}`; document.getElementById('hud-r-hp-bar').style.width = `${(rightHp / (rightUnit.maxHp||rightUnit.hp)) * 100}%`;
         }
-        await window.wait(1000);
+
+        // --- 5. 死亡演出 ---
+        let currentDefHp = (dUnit === leftUnit) ? leftHp : rightHp;
+        if (currentDefHp <= 0) {
+            await window.wait(500);
+            if (dUnit.team !== 'facility') {
+                defDom.style.animation = 'none'; 
+                defDom.setAttribute('data-action', 'sleep'); // 睡眠アニメ（死亡）に変更
+                dialogue.innerHTML = `${dUnit.name}「ぐあああっ……ここまで、か……」`;
+                defDom.style.transition = 'transform 1s ease-in, opacity 1s, filter 1s';
+                defDom.style.transform = `translateX(${isActLeft ? '20vw' : '-20vw'}) translateY(50px) rotate(${isActLeft ? 90 : -90}deg)`; // 倒れる
+                defDom.style.opacity = '0.5'; defDom.style.filter = 'grayscale(1)';
+                await window.wait(1500); // 倒れるのをしっかり見せる
+            } else {
+                dialogue.innerHTML = `${dUnit.name} が破壊された！！`;
+                defDom.style.transition = 'opacity 1s'; defDom.style.opacity = '0';
+                await window.wait(1500);
+            }
+        } else {
+            await window.wait(1000);
+        }
+        
         fxDiv.remove(); dmgText.style.transform = 'translate(-50%,-50%) scale(0)'; dmgText.style.opacity = '0'; stage.innerHTML = '';
     };
 
     await window.wait(200); await playAnimPhase(act, def, damageVal, skill, false);
-    if (canCounter) { await window.wait(200); await playAnimPhase(def, act, counterDmg, counterSkill, true); }
+    if (canCounter && leftHp > 0 && rightHp > 0) { 
+        await window.wait(200); await playAnimPhase(def, act, counterDmg, counterSkill, true); 
+    }
+    
+    isCutsceneActive = false; // アニメーションループ停止
     cutUi.style.opacity = '0'; await window.wait(200); cutUi.remove();
 };
 
@@ -880,6 +1126,12 @@ window.executeDefenseBattle = async function(attacker, defender, actSkill) {
     if (window.DEFENSE_STATE.animMode) await window.showDefenseCutscene(attacker, defender, dmg, actSkill, canCounter, counterDmg, counterSkill);
 
     defender.hp -= dmg;
+    // ★追加: 施設が攻撃された場合、大元データにも同期
+    if (defender.team === 'facility') {
+        let currentAssets = (typeof assets !== 'undefined') ? assets : (window.assets || {});
+        if (currentAssets[defender.id]) currentAssets[defender.id].hp = defender.hp;
+    }
+
     let color = attacker.team === 'player' ? '#4CAF50' : '#ff5252';
     window.addDefenseLog(`<span style="color:${color};">${attacker.name}の『${actSkill.name}』！ ${defender.name} に ${dmg} のダメージ！</span>`);
 
@@ -999,7 +1251,8 @@ window.showDefenseResultUI = function(overlay) {
 
 window.showRebuildUI = function(overlay) {
     let destroyed = window.DEFENSE_STATE.facilities.filter(f => f.hp <= 0);
-    let currentMoney = window.money !== undefined ? window.money : (window.aiPet && window.aiPet.money ? window.aiPet.money : 0);
+    // ★修正1：正しい所持金変数（aiPet.gold）を参照する
+    let currentMoney = (window.aiPet && window.aiPet.gold) ? window.aiPet.gold : 0;
 
     if (destroyed.length === 0) {
         overlay.innerHTML = `<div style="background:#222; border:4px solid #F44336; border-radius:12px; padding:40px; text-align:center;"><h1 style="color:#F44336;">防衛戦終了</h1><p style="color:#fff;">破壊された施設はありませんでした。</p><button onclick="window.closeDefenseResult()" style="padding:15px 40px; font-size:20px; cursor:pointer;">島へ戻る</button></div>`;
@@ -1011,18 +1264,22 @@ window.showRebuildUI = function(overlay) {
         return `<label style="display:flex; justify-content:space-between; align-items:center; background:#1a1a1a; padding:15px; border:1px solid #444; border-radius:6px; margin-bottom:10px; cursor:pointer;"><div style="display:flex; align-items:center; gap:15px;"><input type="checkbox" class="rebuild-checkbox" data-id="${f.id}" data-cost="${cost}" onchange="window.updateRebuildCost()" style="width:20px; height:20px; cursor:pointer;"><span style="color:#fff; font-size:18px; font-weight:bold;">${f.name}</span></div><div style="color:#FFC107; font-size:18px;">${cost} G</div></label>`;
     }).join('');
 
+    // ★修正2：flexboxを使って、リスト部分だけがスクロールし、ボタンは常に画面内に残るようにする
     overlay.innerHTML = `
-        <div style="background:#222; border:4px solid #F44336; border-radius:12px; padding:40px; text-align:center; box-shadow:0 0 30px #F44336; width:90%; max-width:700px; max-height:90vh; overflow-y:auto;">
-            <h1 style="color:#F44336; font-size:36px; margin-bottom:10px;">☠️ 島が荒れ果ててしまった... ☠️</h1>
-            <p style="color:#ccc; font-size:16px; margin-bottom:20px;">魔物の攻撃により、いくつかの施設が破壊されました。<br>所持金を支払うことで直ちに復興できますが、<strong style="color:#ff5252;">復興しない施設は島から完全に消滅します。</strong></p>
-            <div style="text-align:right; color:#fff; font-size:18px; margin-bottom:10px;">現在の所持金：<span style="color:#FFC107;">${currentMoney} G</span></div>
-            <div style="background:#111; padding:15px; border-radius:8px; margin-bottom:20px; max-height:300px; overflow-y:auto; text-align:left;">${listHtml}</div>
-            <div style="display:flex; justify-content:space-between; align-items:center; background:#333; padding:15px; border-radius:8px; margin-bottom:30px;">
+        <div style="background:#222; border:4px solid #F44336; border-radius:12px; padding:25px; text-align:center; box-shadow:0 0 30px #F44336; width:90%; max-width:700px; max-height:85vh; display:flex; flex-direction:column; box-sizing:border-box;">
+            <h1 style="color:#F44336; font-size:32px; margin-top:0; margin-bottom:10px; flex-shrink:0;">☠️ 島が荒れ果ててしまった... ☠️</h1>
+            <p style="color:#ccc; font-size:16px; margin-bottom:15px; flex-shrink:0;">魔物の攻撃により、いくつかの施設が破壊されました。<br><strong style="color:#ff5252;">復興しない施設は島から完全に消滅します。</strong></p>
+            <div style="text-align:right; color:#fff; font-size:18px; margin-bottom:10px; flex-shrink:0;">現在の所持金：<span style="color:#FFC107;">${currentMoney} G</span></div>
+            
+            <div style="background:#111; padding:15px; border-radius:8px; margin-bottom:20px; flex:1; overflow-y:auto; text-align:left;">${listHtml}</div>
+            
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#333; padding:15px; border-radius:8px; margin-bottom:20px; flex-shrink:0;">
                 <div style="color:#fff; font-size:20px;">復興費用の合計：</div><div id="rebuild-total-cost" style="color:#FFC107; font-size:28px; font-weight:bold;">0 G</div>
             </div>
-            <div style="display:flex; gap:20px; justify-content:center;">
-                <button id="btn-rebuild-exec" onclick="window.executeRebuild()" style="padding:15px 30px; font-size:20px; font-weight:bold; background:#4CAF50; color:white; border:none; border-radius:8px; cursor:pointer;">選択した施設を復興</button>
-                <button onclick="window.executeAbandon()" style="padding:15px 30px; font-size:20px; font-weight:bold; background:#444; color:#aaa; border:2px solid #666; border-radius:8px; cursor:pointer;">復興を諦める</button>
+            
+            <div style="display:flex; gap:20px; justify-content:center; flex-shrink:0;">
+                <button id="btn-rebuild-exec" onclick="window.executeRebuild()" style="flex:1; padding:15px; font-size:18px; font-weight:bold; background:#4CAF50; color:white; border:none; border-radius:8px; cursor:pointer;">選択した施設を復興</button>
+                <button onclick="window.executeAbandon()" style="flex:1; padding:15px; font-size:18px; font-weight:bold; background:#444; color:#aaa; border:2px solid #666; border-radius:8px; cursor:pointer;">復興を諦める</button>
             </div>
         </div>
     `;
@@ -1031,39 +1288,98 @@ window.showRebuildUI = function(overlay) {
 window.updateRebuildCost = function() {
     let checkboxes = document.querySelectorAll('.rebuild-checkbox'); let total = 0;
     checkboxes.forEach(cb => { if (cb.checked) total += parseInt(cb.dataset.cost); });
-    let currentMoney = window.money !== undefined ? window.money : (window.aiPet && window.aiPet.money ? window.aiPet.money : 0);
+    
+    // ★修正1：正しい所持金変数（aiPet.gold）を参照
+    let currentMoney = (window.aiPet && window.aiPet.gold) ? window.aiPet.gold : 0;
+    
     let costText = document.getElementById('rebuild-total-cost'); let execBtn = document.getElementById('btn-rebuild-exec');
     costText.innerText = `${total} G`;
     if (total > currentMoney) { costText.style.color = '#ff5252'; execBtn.style.opacity = '0.5'; execBtn.style.pointerEvents = 'none'; execBtn.innerText = '所持金が足りません'; } 
     else { costText.style.color = '#FFC107'; execBtn.style.opacity = '1'; execBtn.style.pointerEvents = 'auto'; execBtn.innerText = '選択した施設を復興'; }
 };
 
+// ==========================================
+// ★追加: 防衛機能専用のリッチなアラート＆確認ダイアログ
+// ==========================================
+window.showDefenseAlert = function(title, message, callback) {
+    let overlay = document.createElement('div');
+    overlay.style.cssText = `position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:95000; display:flex; justify-content:center; align-items:center; font-family:sans-serif;`;
+    overlay.innerHTML = `
+        <div style="background:#222; border:3px solid #FFD700; border-radius:12px; padding:30px; width:80%; max-width:400px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.8); color:#fff;">
+            <h2 style="color:#FFD700; margin-top:0; margin-bottom:15px; font-size:24px;">${title}</h2>
+            <p style="font-size:16px; color:#ccc; margin-bottom:25px; line-height:1.5;">${message}</p>
+            <button id="def-alert-ok" style="padding:12px 40px; font-size:18px; font-weight:bold; background:#2196F3; color:white; border:none; border-radius:6px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.5);">確認</button>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    document.getElementById('def-alert-ok').onclick = () => { overlay.remove(); if(callback) callback(); };
+};
+
+window.showDefenseConfirm = function(title, message, onYes) {
+    let overlay = document.createElement('div');
+    overlay.style.cssText = `position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:95000; display:flex; justify-content:center; align-items:center; font-family:sans-serif;`;
+    overlay.innerHTML = `
+        <div style="background:#222; border:3px solid #ff5252; border-radius:12px; padding:30px; width:80%; max-width:400px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.8); color:#fff;">
+            <h2 style="color:#ff5252; margin-top:0; margin-bottom:15px; font-size:24px;">${title}</h2>
+            <p style="font-size:16px; color:#ccc; margin-bottom:25px; line-height:1.5;">${message}</p>
+            <div style="display:flex; gap:15px; justify-content:center;">
+                <button id="def-conf-yes" style="flex:1; padding:12px; font-size:18px; font-weight:bold; background:#b71c1c; color:white; border:none; border-radius:6px; cursor:pointer;">はい</button>
+                <button id="def-conf-no" style="flex:1; padding:12px; font-size:18px; font-weight:bold; background:#555; color:white; border:none; border-radius:6px; cursor:pointer;">いいえ</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    document.getElementById('def-conf-yes').onclick = () => { overlay.remove(); if(onYes) onYes(); };
+    document.getElementById('def-conf-no').onclick = () => { overlay.remove(); };
+};
+
+// ==========================================
+// ★修正: リッチUIを呼び出すように実行処理を変更
+// ==========================================
 window.executeRebuild = function() {
     let checkboxes = document.querySelectorAll('.rebuild-checkbox'); let totalCost = 0; let toDelete = [];
     checkboxes.forEach(cb => { if (cb.checked) totalCost += parseInt(cb.dataset.cost); else toDelete.push(cb.dataset.id); });
-    let currentMoney = window.money !== undefined ? window.money : (window.aiPet && window.aiPet.money ? window.aiPet.money : 0);
+    
+    let currentMoney = (window.aiPet && window.aiPet.gold) ? window.aiPet.gold : 0;
     if (totalCost > currentMoney) return; 
     
-    if (typeof window.money !== 'undefined') window.money -= totalCost;
-    else if (window.aiPet && typeof window.aiPet.money !== 'undefined') window.aiPet.money -= totalCost;
-    if (typeof updateStatusUI === 'function') updateStatusUI();
+    if (window.aiPet && typeof window.aiPet.gold !== 'undefined') window.aiPet.gold -= totalCost;
+    if (typeof updateStatusUI === 'function') updateStatusUI(); 
 
     let currentAssets = (typeof assets !== 'undefined') ? assets : (window.assets || {});
     toDelete.forEach(id => { if (currentAssets && currentAssets[id]) delete currentAssets[id]; });
     
-    if (totalCost > 0) alert(`${totalCost}G 支払って施設を復興しました！\n（チェックしなかった施設は消滅しました）`);
-    else if (toDelete.length > 0) alert("破壊された施設はすべて消滅しました...");
-    window.closeDefenseResult();
+    // アラートの中身を判定
+    let msgTitle = ""; let msgBody = "";
+    if (totalCost > 0) {
+        msgTitle = "🛠️ 復興完了";
+        msgBody = `<span style="color:#FFD700; font-weight:bold; font-size:20px;">${totalCost} G</span> を支払って施設を復興しました！<br><span style="color:#ff5252; font-size:14px; display:block; margin-top:10px;">（チェックしなかった施設は消滅しました）</span>`;
+    } else if (toDelete.length > 0) {
+        msgTitle = "🏚️ 施設消滅";
+        msgBody = "復興しなかったため、破壊された施設はすべて消滅しました...";
+    }
+
+    if (msgTitle) {
+        window.showDefenseAlert(msgTitle, msgBody, () => { window.closeDefenseResult(); });
+    } else {
+        window.closeDefenseResult();
+    }
 };
 
 window.executeAbandon = function() {
-    if (confirm("本当にすべての復興を諦めますか？\n（破壊された施設は完全に島から消滅します）")) {
-        let destroyed = window.DEFENSE_STATE.facilities.filter(f => f.hp <= 0);
-        let currentAssets = (typeof assets !== 'undefined') ? assets : (window.assets || {});
-        destroyed.forEach(f => { if (currentAssets && currentAssets[f.id]) delete currentAssets[f.id]; });
-        alert("破壊された施設はすべて消滅しました...");
-        window.closeDefenseResult();
-    }
+    window.showDefenseConfirm(
+        "⚠️ 復興の放棄", 
+        '本当にすべての復興を諦めますか？<br><span style="color:#ff5252; font-size:14px; display:block; margin-top:10px;">（破壊された施設は完全に島から消滅します）</span>', 
+        () => {
+            let destroyed = window.DEFENSE_STATE.facilities.filter(f => f.hp <= 0);
+            let currentAssets = (typeof assets !== 'undefined') ? assets : (window.assets || {});
+            destroyed.forEach(f => { if (currentAssets && currentAssets[f.id]) delete currentAssets[f.id]; });
+            
+            window.showDefenseAlert("🏚️ 施設消滅", "復興を放棄したため、破壊された施設はすべて消滅しました...", () => {
+                window.closeDefenseResult();
+            });
+        }
+    );
 };
 
 window.closeDefenseResult = function() {
@@ -1100,7 +1416,16 @@ window.giveUpDefense = function(skipConfirm = false) {
     document.getElementById('btn-giveup-yes').onclick = () => {
         modal.remove();
         if (isMock) { window.endDefenseBattle(false); } 
-        else { window._executeGiveUp(); }
+        else { 
+            // ★修正: 撤退した場合は「王城が破壊された（敗北）」として復興UIを呼び出す！
+            let castle = window.DEFENSE_STATE.facilities.find(f => f.type === 'castle');
+            if (castle) {
+                castle.hp = 0;
+                let currentAssets = (typeof assets !== 'undefined') ? assets : (window.assets || {});
+                if (currentAssets[castle.id]) currentAssets[castle.id].hp = 0;
+            }
+            window.endDefenseBattle(false); 
+        }
     };
     document.getElementById('btn-giveup-no').onclick = () => { modal.remove(); };
 };
@@ -1201,3 +1526,180 @@ window.renderDefenseRankingList = async function(mode = 'normal') {
     });
     list.innerHTML = html;
 };
+
+// 🛡️ 防衛モニター（襲撃判定）の起動処理
+if (!window._defenseMonitorStarted) {
+    window.startDefenseMonitor();
+    window._defenseMonitorStarted = true;
+    console.log("Defense monitor started.");
+}
+
+// ==========================================
+// 🔧 デバッグ用：防衛機能テスト ＆ 演出確認 ＆ 施設HP管理 UI
+// ==========================================
+setTimeout(() => {
+    const debugOverlay = document.getElementById('debugOverlay');
+    if (debugOverlay) {
+        let existing = document.getElementById('debug-defense-ui');
+        if(existing) existing.remove();
+
+        // --- 全スキルのリスト作成 ---
+        let skillOptions = '';
+        for (let race in window.DEFENSE_SKILL_DB) {
+            window.DEFENSE_SKILL_DB[race].forEach(s => {
+                skillOptions += `<option value="${s.name}">${s.name} (${s.type==='melee'?'近接':'遠距離'})</option>`;
+            });
+        }
+
+        const deployUI = document.createElement('div');
+        deployUI.id = 'debug-defense-ui';
+        deployUI.style.cssText = "margin-top: 20px; padding: 15px; background: rgba(10, 20, 40, 0.9); border: 2px solid #00E5FF; border-radius: 8px; font-family: sans-serif; text-align: left; max-height: 400px; overflow-y: auto;";
+        
+        deployUI.innerHTML = `
+            <div style="color: #00E5FF; font-weight: bold; margin-bottom: 10px; font-size: 18px; border-bottom:1px solid #00E5FF; padding-bottom:5px;">🛠️ 防衛＆演出 デバッグツール</div>
+            
+            <div style="margin-bottom: 15px; background:#111; padding:10px; border-radius:6px;">
+                <div style="color:#FFD700; font-weight:bold; margin-bottom:5px;">① 基本設定</div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom:10px;">
+                    <span style="color: white; font-size: 14px;">最大出撃数:</span>
+                    <input type="number" id="debug-max-deploy" value="${window.DEFENSE_CONFIG.maxDeploy}" min="1" max="15" style="width: 50px; background: #222; color: #fff; border: 1px solid #777; padding: 4px; text-align: center; border-radius: 4px;">
+                    <button onclick="window.applyDebugMaxDeploy()" style="padding: 4px 10px; background: #4CAF50; color: white; border: none; cursor: pointer; border-radius: 4px;">適用</button>
+                </div>
+                <button onclick="window.forceTriggerDefense()" style="width:100%; padding: 10px; background: #b71c1c; color: white; font-weight: bold; border: 2px solid #ff5252; cursor: pointer; border-radius: 6px; box-shadow: 0 0 10px rgba(255,0,0,0.5);">🚨 緊急防衛（襲撃）を強制発生させる</button>
+                
+                <button onclick="window.debugForceRebuildUI()" style="width:100%; padding: 10px; background: #9C27B0; color: white; font-weight: bold; border: 2px solid #E040FB; cursor: pointer; border-radius: 6px; box-shadow: 0 0 10px rgba(156,39,176,0.5); margin-top: 10px;">🏚️ 復興テスト（全施設を破壊して敗北）</button>
+            </div>
+
+            <div style="margin-bottom: 15px; background:#111; padding:10px; border-radius:6px;">
+                <div style="color:#FF9800; font-weight:bold; margin-bottom:5px;">② バトル演出（スパロボ風）テスト</div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <div><span style="color:#ccc; font-size:12px;">味方種族</span><br><input type="text" id="dbg-atk-skin" value="robot_2" style="width:100%; background:#222; color:#fff; border:1px solid #555; padding:4px;"></div>
+                    <div><span style="color:#ccc; font-size:12px;">敵種族</span><br><input type="text" id="dbg-def-skin" value="dragon_1" style="width:100%; background:#222; color:#fff; border:1px solid #555; padding:4px;"></div>
+                </div>
+                <div style="margin-bottom:10px;">
+                    <span style="color:#ccc; font-size:12px;">使用する技</span><br>
+                    <select id="dbg-skill-name" style="width:100%; background:#222; color:#fff; border:1px solid #555; padding:4px;">
+                        ${skillOptions}
+                    </select>
+                </div>
+                <div style="display:flex; gap:15px; margin-bottom:10px;">
+                    <label style="color:#fff; font-size:13px;"><input type="checkbox" id="dbg-do-counter"> 敵が反撃する</label>
+                    <label style="color:#fff; font-size:13px;"><input type="checkbox" id="dbg-do-kill"> 攻撃で敵を倒す</label>
+                </div>
+                <button onclick="window.runDebugCutscene()" style="width:100%; padding: 8px; background: #2196F3; color: white; font-weight: bold; border: none; cursor: pointer; border-radius: 6px;">🎬 この設定で演出テストを実行</button>
+            </div>
+
+            <div style="background:#111; padding:10px; border-radius:6px;">
+                <div style="color:#8BC34A; font-weight:bold; margin-bottom:5px;">③ マップ上の施設HP管理 <button onclick="window.refreshDebugFacilities()" style="font-size:11px; padding:2px 5px;">更新</button></div>
+                <div id="dbg-facility-list" style="max-height:120px; overflow-y:auto; border:1px solid #333; padding:5px;"></div>
+            </div>
+        `;
+        debugOverlay.appendChild(deployUI);
+
+        // --- 共通機能 ---
+        window.applyDebugMaxDeploy = function() {
+            let val = parseInt(document.getElementById('debug-max-deploy').value);
+            if (val >= 1 && val <= 15) { window.DEFENSE_CONFIG.maxDeploy = val; alert("適用しました"); }
+        };
+
+        window.forceTriggerDefense = function() {
+            let currentAssets = (typeof assets !== 'undefined') ? assets : (window.assets || {});
+            let hasCastle = Object.values(currentAssets).some(a => a && a.type === 'castle');
+            if (!hasCastle) { alert("⚠️ 島に「王城」が建っていないため、襲撃イベントを開始できません！"); return; }
+            if (typeof switchMode === 'function') switchMode('play');
+            window.triggerEmergency();
+        };
+
+        // --- 復興UI 強制テスト実行関数 ---
+        window.debugForceRebuildUI = function() {
+            let currentAssets = (typeof assets !== 'undefined') ? assets : (window.assets || {});
+            let hasCastle = Object.values(currentAssets).some(a => a && a.type === 'castle');
+            if (!hasCastle) { alert("⚠️ 島に「王城」が建っていないため、テストできません！"); return; }
+            
+            // 全施設を強制的にHP0にして敗北処理へ流し込む
+            window.DEFENSE_STATE.facilities = [];
+            Object.keys(currentAssets).forEach(key => {
+                let a = currentAssets[key];
+                if (a && window.DEFENSE_CONFIG.facilities[a.type]) {
+                    let conf = window.DEFENSE_CONFIG.facilities[a.type];
+                    window.DEFENSE_STATE.facilities.push({ id: key, type: a.type, name: conf.name, team: 'facility', gridX: a.gridX, gridY: a.gridY, hp: 0, maxHp: conf.maxHp });
+                    currentAssets[key].hp = 0; // マップ上の大元データも0にする
+                }
+            });
+
+            if (typeof switchMode === 'function') switchMode('play');
+            window.DEFENSE_STATE.mode = 'normal';
+            window.endDefenseBattle(false); // 敗北扱いで終了
+        };
+
+        // --- 演出テスト実行関数 ---
+        window.runDebugCutscene = async function() {
+            let atkSkin = document.getElementById('dbg-atk-skin').value || 'robot';
+            let defSkin = document.getElementById('dbg-def-skin').value || 'dragon';
+            let skillName = document.getElementById('dbg-skill-name').value;
+            let doCounter = document.getElementById('dbg-do-counter').checked;
+            let doKill = document.getElementById('dbg-do-kill').checked;
+
+            let atk = { name: 'テスト攻撃手', skin: atkSkin, hp: 100, maxHp: 100, team: 'player', atk: 30 };
+            let def = { name: 'テスト防衛手', skin: defSkin, hp: doKill ? 40 : 100, maxHp: 100, team: 'enemy', atk: 20, def: 5 };
+            
+            let skill = window.DEFENSE_SKILL_DB['default'][0];
+            for (let k in window.DEFENSE_SKILL_DB) {
+                let found = window.DEFENSE_SKILL_DB[k].find(s => s.name === skillName);
+                if (found) { skill = found; break; }
+            }
+
+            let cSkill = window.DEFENSE_SKILL_DB['dragon'][0] || window.DEFENSE_SKILL_DB['default'][0];
+
+            window.DEFENSE_STATE.animMode = true; // 強制的にアニメON
+            await window.showDefenseCutscene(atk, def, 50, skill, doCounter, 10, cSkill);
+        };
+
+        // --- 施設HPリスト更新＆変更関数 ---
+        window.refreshDebugFacilities = function() {
+            let currentAssets = (typeof assets !== 'undefined') ? assets : (window.assets || {});
+            let listHtml = '';
+            Object.keys(currentAssets).forEach(key => {
+                let a = currentAssets[key];
+                if (a && window.DEFENSE_CONFIG.facilities[a.type]) {
+                    let conf = window.DEFENSE_CONFIG.facilities[a.type];
+                    let currentHp = a.hp !== undefined ? a.hp : conf.maxHp;
+                    listHtml += `
+                        <div style="display:flex; justify-content:space-between; align-items:center; background:#222; padding:5px; margin-bottom:4px; border-radius:4px; font-size:12px; color:#fff;">
+                            <span>${conf.name} (${key.substring(0,4)}...)</span>
+                            <div>
+                                <input type="number" id="fac-hp-${key}" value="${Math.floor(currentHp)}" style="width:50px; background:#111; color:#fff; border:1px solid #555;"> / ${conf.maxHp}
+                                <button onclick="window.applyDebugFacilityHp('${key}', ${conf.maxHp})" style="background:#4CAF50; color:#fff; border:none; padding:2px 5px; cursor:pointer;">反映</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            let listDom = document.getElementById('dbg-facility-list');
+            if (listDom) listDom.innerHTML = listHtml || '<div style="color:#888;">施設がありません</div>';
+        };
+
+        window.applyDebugFacilityHp = function(key, maxHp) {
+            let input = document.getElementById(`fac-hp-${key}`);
+            if(!input) return;
+            let newHp = parseInt(input.value);
+            let currentAssets = (typeof assets !== 'undefined') ? assets : (window.assets || {});
+            
+            if (currentAssets[key]) {
+                // 1. 大元のセーブデータを更新
+                currentAssets[key].hp = Math.max(0, Math.min(maxHp, newHp));
+                
+                // 2. 現在画面に表示されている「防衛用のHPバー」も同時に更新！
+                if (window.DEFENSE_STATE && window.DEFENSE_STATE.facilities) {
+                    let activeFac = window.DEFENSE_STATE.facilities.find(f => f.id === key);
+                    if (activeFac) activeFac.hp = currentAssets[key].hp;
+                }
+                
+                alert("HPを更新しました！マップに即座に反映されます。");
+            }
+        };
+
+        // デバッグメニューを開いた時に一度リストを生成
+        setTimeout(window.refreshDebugFacilities, 500);
+    }
+}, 2000);
