@@ -100,7 +100,7 @@ window.isGridOccupied = function(gx, gy) {
 };
 
 window.getMovableGrids = function(unit) {
-    let speed = Math.min(unit.speed, 8); let cx = unit.gridX; let cy = unit.gridY; let grids = [];
+    let speed = Math.min(Math.floor(unit.speed), 30); let cx = unit.gridX; let cy = unit.gridY; let grids = [];
     for (let x = cx - speed; x <= cx + speed; x++) {
         for (let y = cy - speed; y <= cy + speed; y++) {
             let dist = Math.abs(x - cx) + Math.abs(y - cy); if (dist > speed) continue; 
@@ -124,7 +124,7 @@ window.getAttackableGrids = function(unit) {
 };
 
 window.calculateSRPGPath = function(unit, targetX, targetY) {
-    let speed = Math.min(unit.speed, 8); let curX = unit.gridX; let curY = unit.gridY; let bestX = curX; let bestY = curY;
+    let speed = Math.min(Math.floor(unit.speed), 30); let curX = unit.gridX; let curY = unit.gridY; let bestX = curX; let bestY = curY;
     let minDist = Math.abs(curX - targetX) + Math.abs(curY - targetY);
     for (let x = curX - speed; x <= curX + speed; x++) {
         for (let y = curY - speed; y <= curY + speed; y++) {
@@ -348,12 +348,16 @@ window.openDefenseSortieUI = function(mode) {
     
     // ★ 修正：出撃メンバー（meとpast）に元ステータスの `pwr` を持たせておく！
     let pwr = Math.floor(window.aiPet.stats.power || 10); let int = Math.floor(window.aiPet.stats.intel || 10);
+    // ★修正: 実際の素早さステータスを取得
+    let realSpd = Math.floor(window.aiPet.stats.speed || 10);
     let baseSpd = window.DEFENSE_CONFIG.baseSpeed[window.aiPet.currentSkin ? window.aiPet.currentSkin.split('_')[0] : 'robot'] || 3;
     
     let currentAI = {
         id: "me", name: window.aiPet.name || "現在のAI", skin: window.aiPet.currentSkin || 'robot',
         hp: Math.floor(100 + (pwr * 2)), maxHp: Math.floor(100 + (pwr * 2)),
-        atk: Math.floor(10 + pwr * 0.5), def: Math.floor(5 + pwr * 0.2), intel: int, pwr: pwr, speed: Math.floor(baseSpd + (pwr * 0.1) + (int * 0.1)), isMe: true
+        atk: Math.floor(10 + pwr * 0.5), def: Math.floor(5 + pwr * 0.2), intel: int, pwr: pwr, 
+        // ★修正: 素早さステータス10につき移動力が1マス増えるようにする（ベース値＋ボーナス）
+        speed: Math.floor(baseSpd + (realSpd / 20)), isMe: true
     };
     window.assignSkillsToUnit(currentAI, pwr, int);
 
@@ -365,14 +369,20 @@ window.openDefenseSortieUI = function(mode) {
     discovered.forEach(skinKey => {
         if (skinKey === window.aiPet.currentSkin) return;
         let sName = (typeof monsterBookData !== 'undefined' && monsterBookData[skinKey]) ? monsterBookData[skinKey].name : skinKey;
-        let sPwr = 10; let sInt = 10;
-        if (savedStats[skinKey] && savedStats[skinKey].stats) { sPwr = Math.floor(savedStats[skinKey].stats.power || sPwr); sInt = Math.floor(savedStats[skinKey].stats.intel || sInt); }
+        let sPwr = 10; let sInt = 10; let sSpd = 10;
+        if (savedStats[skinKey] && savedStats[skinKey].stats) { 
+            sPwr = Math.floor(savedStats[skinKey].stats.power || sPwr); 
+            sInt = Math.floor(savedStats[skinKey].stats.intel || sInt); 
+            sSpd = Math.floor(savedStats[skinKey].stats.speed || sSpd); // ★追加
+        }
         let bSpd = window.DEFENSE_CONFIG.baseSpeed[skinKey.split('_')[0]] || 3;
 
         let pastAI = {
             id: "past_" + pastId++, name: `${sName}`, skin: skinKey, 
             hp: Math.floor(80 + sPwr * 2), maxHp: Math.floor(80 + sPwr * 2),
-            atk: Math.floor(8 + sPwr * 0.4), def: 5, intel: sInt, pwr: sPwr, speed: Math.floor(bSpd + (sPwr * 0.1) + (sInt * 0.1)), isMe: false
+            atk: Math.floor(8 + sPwr * 0.4), def: 5, intel: sInt, pwr: sPwr, 
+            // ★修正: 過去AIも実際の素早さステータスを反映
+            speed: Math.floor(bSpd + (sSpd / 20)), isMe: false
         };
         window.assignSkillsToUnit(pastAI, sPwr, sInt); availableAIs.push(pastAI);
     });
@@ -769,12 +779,29 @@ window.processPhaseAI = async function() {
         let unit = aliveUnits[i]; if (!window.DEFENSE_STATE.isActive || unit.hp <= 0) continue;
         window.DEFENSE_STATE.activeUnit = unit; 
         
-        // ★ 自分のターンが来たアピール（一瞬歩行アニメにして待機に戻す）
+        // ★ 自分のターンが来たアピール
         unit.visualAction = 'move'; await window.wait(200); unit.visualAction = 'idle';
         
-        await window.thinkDefenseAI(unit);
+        // ★追加: 素早さに応じた「連続行動（攻撃）」の計算！
+        // ※移動力（speed）のパラメータに応じて行動回数が増えます
+        let actionCount = 1 + Math.floor(unit.speed / 10);
+        if (actionCount > 1) {
+            window.addDefenseLog(`<span style="color:#00e676; font-weight:bold;">💨 ${unit.name} は素早さを活かして ${actionCount}回 連続行動する！</span>`);
+        }
+
+        // 行動回数ぶんループして動かす
+        for (let act = 0; act < actionCount; act++) {
+            if (!window.DEFENSE_STATE.isActive || unit.hp <= 0) break;
+            
+            await window.thinkDefenseAI(unit);
+            
+            // 連続行動の間に少しウェイトを入れる
+            if (act < actionCount - 1) {
+                await window.wait(300);
+            }
+        }
         
-        unit.hasActed = true; // 行動終了フラグ（あとで黒くするのに使います）
+        unit.hasActed = true; // 行動終了フラグ
         if (!window.DEFENSE_STATE.isActive) break; await window.wait(300); 
     }
 
@@ -1066,16 +1093,28 @@ window.showDefenseCutscene = async function(act, def, damageVal, skill, canCount
             if(defDom.style.animation === 'shake-hit 0.5s infinite') defDom.style.animation = 'none';
         }
 
-        // ダメージと振動
-        let flash = document.getElementById('cut-flash'); flash.style.transition = 'none'; flash.style.opacity = '0.8'; setTimeout(() => { flash.style.transition = 'opacity 0.4s'; flash.style.opacity = '0'; }, 50);
-        defDom.style.animation = 'shake-hit 0.3s'; defDom.style.filter = "brightness(2) sepia(1) hue-rotate(-50deg) saturate(5)";
-        dmgText.innerText = damageVal; dmgText.style.transition = 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.1s'; dmgText.style.transform = 'translate(-50%,-50%) scale(1)'; dmgText.style.opacity = '1';
+        // ★修正: ダメージと振動（回避演出の追加）
+        let flash = document.getElementById('cut-flash'); 
+        if (damageVal > 0) {
+            flash.style.transition = 'none'; flash.style.opacity = '0.8'; setTimeout(() => { flash.style.transition = 'opacity 0.4s'; flash.style.opacity = '0'; }, 50);
+            defDom.style.animation = 'shake-hit 0.3s'; defDom.style.filter = "brightness(2) sepia(1) hue-rotate(-50deg) saturate(5)";
+            dmgText.innerText = damageVal; dmgText.style.color = "#ff5252";
+        } else {
+            // MISS時の回避演出（スッと横に避ける）
+            defDom.style.transition = 'transform 0.1s';
+            defDom.style.transform = `translateX(${isActLeft ? '30vw' : '-30vw'})`; // 少し後ろに下がる
+            dmgText.innerText = "MISS"; dmgText.style.color = "#aaa";
+        }
+        
+        dmgText.style.transition = 'transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.1s'; dmgText.style.transform = 'translate(-50%,-50%) scale(1)'; dmgText.style.opacity = '1';
 
         // HPバー更新
-        if (dUnit === leftUnit) { 
-            leftHp = Math.max(0, leftHp - damageVal); document.getElementById('hud-l-hp-text').innerText = `${leftHp} / ${leftUnit.maxHp||leftUnit.hp}`; document.getElementById('hud-l-hp-bar').style.width = `${(leftHp / (leftUnit.maxHp||leftUnit.hp)) * 100}%`;
-        } else { 
-            rightHp = Math.max(0, rightHp - damageVal); document.getElementById('hud-r-hp-text').innerText = `${rightHp} / ${rightUnit.maxHp||rightUnit.hp}`; document.getElementById('hud-r-hp-bar').style.width = `${(rightHp / (rightUnit.maxHp||rightUnit.hp)) * 100}%`;
+        if (damageVal > 0) {
+            if (dUnit === leftUnit) { 
+                leftHp = Math.max(0, leftHp - damageVal); document.getElementById('hud-l-hp-text').innerText = `${leftHp} / ${leftUnit.maxHp||leftUnit.hp}`; document.getElementById('hud-l-hp-bar').style.width = `${(leftHp / (leftUnit.maxHp||leftUnit.hp)) * 100}%`;
+            } else { 
+                rightHp = Math.max(0, rightHp - damageVal); document.getElementById('hud-r-hp-text').innerText = `${rightHp} / ${rightUnit.maxHp||rightUnit.hp}`; document.getElementById('hud-r-hp-bar').style.width = `${(rightHp / (rightUnit.maxHp||rightUnit.hp)) * 100}%`;
+            }
         }
 
         // --- 5. 死亡演出 ---
@@ -1112,44 +1151,75 @@ window.showDefenseCutscene = async function(act, def, damageVal, skill, canCount
 };
 
 window.executeDefenseBattle = async function(attacker, defender, actSkill) {
-    let dmg = Math.max(1, Math.floor(attacker.atk * actSkill.power) - Math.floor((defender.def || 0) * 0.5));
-    let canCounter = false; let counterDmg = 0; let counterSkill = null;
+    // ★追加: 回避判定（素早さ1差につき5%回避、最大80%）
+    let isHit = true;
+    if (defender.speed > attacker.speed && defender.team !== 'facility') {
+        let dodgeChance = Math.min(0.8, (defender.speed - attacker.speed) * 0.05);
+        if (Math.random() < dodgeChance) isHit = false;
+    }
+    // 回避時はダメージ0にする
+    let dmg = isHit ? Math.max(1, Math.floor(attacker.atk * actSkill.power) - Math.floor((defender.def || 0) * 0.5)) : 0;
+
+    let canCounter = false; let counterDmg = 0; let counterSkill = null; let isCounterHit = true;
     if (defender.hp - dmg > 0 && defender.team !== 'facility') {
         let dist = Math.abs(attacker.gridX - defender.gridX) + Math.abs(attacker.gridY - defender.gridY);
         let usableCounterSkills = defender.skills.filter(s => s.range >= dist);
         if (usableCounterSkills.length > 0) {
             canCounter = true; usableCounterSkills.sort((a,b) => b.power - a.power); counterSkill = usableCounterSkills[0];
-            counterDmg = Math.max(1, Math.floor(defender.atk * counterSkill.power) - Math.floor((attacker.def || 0) * 0.5));
+            
+            // ★追加: 反撃の回避判定
+            if (attacker.speed > defender.speed) {
+                let cDodgeChance = Math.min(0.8, (attacker.speed - defender.speed) * 0.05);
+                if (Math.random() < cDodgeChance) isCounterHit = false;
+            }
+            counterDmg = isCounterHit ? Math.max(1, Math.floor(defender.atk * counterSkill.power) - Math.floor((attacker.def || 0) * 0.5)) : 0;
         }
     }
 
     if (window.DEFENSE_STATE.animMode) await window.showDefenseCutscene(attacker, defender, dmg, actSkill, canCounter, counterDmg, counterSkill);
 
-    defender.hp -= dmg;
-    // ★追加: 施設が攻撃された場合、大元データにも同期
-    if (defender.team === 'facility') {
-        let currentAssets = (typeof assets !== 'undefined') ? assets : (window.assets || {});
-        if (currentAssets[defender.id]) currentAssets[defender.id].hp = defender.hp;
+    // 攻撃の反映
+    let color = attacker.team === 'player' ? '#4CAF50' : '#ff5252';
+    if (dmg > 0) {
+        defender.hp -= dmg;
+        if (defender.team === 'facility') {
+            let currentAssets = (typeof assets !== 'undefined') ? assets : (window.assets || {});
+            if (currentAssets[defender.id]) currentAssets[defender.id].hp = defender.hp;
+        }
+        window.addDefenseLog(`<span style="color:${color};">${attacker.name}の『${actSkill.name}』！ ${defender.name} に ${dmg} のダメージ！</span>`);
+    } else {
+        window.addDefenseLog(`<span style="color:${color};">${attacker.name}の『${actSkill.name}』！ しかし ${defender.name} に避けられた！(MISS)</span>`);
     }
 
-    let color = attacker.team === 'player' ? '#4CAF50' : '#ff5252';
-    window.addDefenseLog(`<span style="color:${color};">${attacker.name}の『${actSkill.name}』！ ${defender.name} に ${dmg} のダメージ！</span>`);
-
     if (!window.DEFENSE_STATE.animMode) {
-        let mainUi = document.getElementById('main-container'); if (mainUi) { mainUi.classList.add('arena-shake'); setTimeout(() => mainUi.classList.remove('arena-shake'), 300); }
-        let pos = window.getGridPixelPos(defender.gridX, defender.gridY);
-        if (typeof floatingTexts !== 'undefined') floatingTexts.push({ text: `-${dmg}`, x: pos.x, y: pos.y - 50, color: "#ff5252", life: 60, dy: -1 });
+        if (dmg > 0) {
+            let mainUi = document.getElementById('main-container'); if (mainUi) { mainUi.classList.add('arena-shake'); setTimeout(() => mainUi.classList.remove('arena-shake'), 300); }
+            let pos = window.getGridPixelPos(defender.gridX, defender.gridY);
+            if (typeof floatingTexts !== 'undefined') floatingTexts.push({ text: `-${dmg}`, x: pos.x, y: pos.y - 50, color: "#ff5252", life: 60, dy: -1 });
+        } else {
+            let pos = window.getGridPixelPos(defender.gridX, defender.gridY);
+            if (typeof floatingTexts !== 'undefined') floatingTexts.push({ text: `MISS`, x: pos.x, y: pos.y - 50, color: "#aaa", life: 60, dy: -1 });
+        }
         attacker.visualAction = 'move'; await window.wait(300); attacker.visualAction = 'idle'; await window.wait(200);
     }
 
+    // 反撃の反映
     if (canCounter) {
-        attacker.hp -= counterDmg;
         let cColor = defender.team === 'player' ? '#4CAF50' : '#ff5252';
-        window.addDefenseLog(`<span style="color:${cColor};">${defender.name}の反撃『${counterSkill.name}』！ ${attacker.name} に ${counterDmg} のダメージ！</span>`);
-        if (!window.DEFENSE_STATE.animMode) {
-            let pos = window.getGridPixelPos(attacker.gridX, attacker.gridY);
-            if (typeof floatingTexts !== 'undefined') floatingTexts.push({ text: `-${counterDmg}`, x: pos.x, y: pos.y - 50, color: "#ff5252", life: 60, dy: -1 });
-            defender.visualAction = 'move'; await window.wait(300); defender.visualAction = 'idle'; await window.wait(200);
+        if (counterDmg > 0) {
+            attacker.hp -= counterDmg;
+            window.addDefenseLog(`<span style="color:${cColor};">${defender.name}の反撃『${counterSkill.name}』！ ${attacker.name} に ${counterDmg} のダメージ！</span>`);
+            if (!window.DEFENSE_STATE.animMode) {
+                let pos = window.getGridPixelPos(attacker.gridX, attacker.gridY);
+                if (typeof floatingTexts !== 'undefined') floatingTexts.push({ text: `-${counterDmg}`, x: pos.x, y: pos.y - 50, color: "#ff5252", life: 60, dy: -1 });
+                defender.visualAction = 'move'; await window.wait(300); defender.visualAction = 'idle'; await window.wait(200);
+            }
+        } else {
+            window.addDefenseLog(`<span style="color:${cColor};">${defender.name}の反撃『${counterSkill.name}』！ しかし避けられた！(MISS)</span>`);
+            if (!window.DEFENSE_STATE.animMode) {
+                let pos = window.getGridPixelPos(attacker.gridX, attacker.gridY);
+                if (typeof floatingTexts !== 'undefined') floatingTexts.push({ text: `MISS`, x: pos.x, y: pos.y - 50, color: "#aaa", life: 60, dy: -1 });
+            }
         }
     }
 

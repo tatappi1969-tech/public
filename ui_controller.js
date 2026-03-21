@@ -85,13 +85,14 @@ window.switchRightPanel = function(panelId) {
 function applyTranslations() {
     const trans = (typeof translations !== 'undefined' && translations[currentLang]) ? translations[currentLang] : {
         gen: "世代", age: "年齢", energy: "体力", hunger: "満腹",
-        intel: "賢さ", power: "活力", mood: "機嫌", beauty: "美しさ", type: "性格", gold: "所持金", trait: "特性", weather: "天気", time: "日時"
+        intel: "賢さ", power: "活力", mood: "機嫌", beauty: "美しさ", speed: "素早さ", type: "性格", gold: "所持金", trait: "特性", weather: "天気", time: "日時"
     };
     const map = {
         'label-gen': trans.gen, 'label-age': trans.age, 'label-energy': trans.energy, 'label-hunger': trans.hunger,
         'label-intel': trans.intel, 'label-power': trans.power, 'label-mood': trans.mood, 'label-type': trans.type,
-        'label-gold': trans.gold, 'label-beauty': trans.beauty, 'label-trait': trans.trait, 'label-weather': trans.weather, 'label-time': trans.time || "日時",
-        'label-detail-beauty': trans.beauty // ←★これを追加！
+        'label-gold': trans.gold, 'label-beauty': trans.beauty, 'label-speed': trans.speed, 'label-trait': trans.trait, 'label-weather': trans.weather, 'label-time': trans.time || "日時",
+        'label-detail-beauty': trans.beauty,
+        'label-detail-speed': trans.speed
     };
     for (let id in map) { const el = document.getElementById(id); if (el) el.innerText = map[id]; }
 }
@@ -193,6 +194,10 @@ window.openStatusMenu = function() {
     
     const beautyEl = document.getElementById('s-beauty');
     if (beautyEl) beautyEl.innerText = window.formatLargeNumber(aiPet.stats.beauty);
+
+    // ★追加: 詳細ステータス画面への素早さの表示
+    const speedEl = document.getElementById('s-speed');
+    if (speedEl) speedEl.innerText = window.formatLargeNumber(aiPet.stats.speed);
 
     document.getElementById('s-gold').innerText = window.formatLargeNumber(aiPet.gold) + " G";
 
@@ -496,6 +501,10 @@ function updateStatUI() {
     if (typeof aiPet.stats.beauty === 'undefined') aiPet.stats.beauty = 10;
     setText('stat-beauty', window.formatLargeNumber(aiPet.stats.beauty));
 
+    // ★追加: 素早さの表示（古いセーブデータ対策で初期値10を設定）
+    if (typeof aiPet.stats.speed === 'undefined') aiPet.stats.speed = 10;
+    setText('stat-speed', window.formatLargeNumber(aiPet.stats.speed));
+
     // ★修正: 進化ボタンの表示制御を変数化して確実に見せる
     const btnEvolve = document.getElementById('btnEvolve');
     if (btnEvolve && typeof aiPet.getAvailableEvolutions === 'function') {
@@ -583,7 +592,8 @@ window.updateCommandHUD = function() {
     if (knows("食事")) categories['🏠 生活・回復'].push({ label: "食事", base: "食事" });
     if (knows("勉強")) categories['💪 育成・訓練'].push({ label: "勉強", base: "勉強" });
     if (knows("筋トレ")) categories['💪 育成・訓練'].push({ label: "筋トレ", base: "筋トレ" });
-    
+    // ★追加: ランニングを育成・訓練カテゴリへ
+    if (knows("ランニング")) categories['💪 育成・訓練'].push({ label: "ランニング", base: "ランニング" });
     if (knows("探検")) categories['⚔️ 冒険・作業'].push({ label: "探検", base: "探検" });
     if (knows("ニンジン")) categories['⚔️ 冒険・作業'].push({ label: "ニンジン育てて", base: "ニンジン" });
     if (knows("ピーマン")) categories['⚔️ 冒険・作業'].push({ label: "ピーマン育てて", base: "ピーマン" });
@@ -606,7 +616,7 @@ window.updateCommandHUD = function() {
     if (knows("カジノ")) categories['🏪 施設・その他'].push({ label: "カジノ", base: "カジノ" });
 
     const systemWords = [
-        "睡眠", "食事", "勉強", "筋トレ", "探検", "料理", "鍛冶", "建築", 
+        "睡眠", "食事", "勉強", "筋トレ", "ランニング", "探検", "料理", "鍛冶", "建築", // ★追加
         "買い物", "城", "カジノ", "釣り", "ニンジン", "ピーマン", "トマト", "退治", "農業", 
         "冒険家", "農家", "漁師", "料理人", "鍛冶師", "建築士", "バイト"
     ];
@@ -761,7 +771,8 @@ window.sendChat = function() {
         "ピーマン": ["ピーマン", "ぴーまん"],
         
         "勉強": ["学ぶ", "学んで", "まなぶ", "まなんで", "賢く", "かしこく", "知性", "知恵", "本", "勉強"],
-        "筋トレ": ["筋肉", "鍛え", "きたえ", "体力", "活力", "運動", "トレーニング", "走", "筋トレ"],
+        "筋トレ": ["筋肉", "鍛え", "きたえ", "体力", "活力", "運動", "トレーニング", "筋トレ"], // 「走」を削除
+        "ランニング": ["走る", "走って", "はしって", "ダッシュ", "ランニング", "マラソン", "ジョギング"], // ★追加
         "睡眠": ["寝る", "寝て", "ねて", "休", "やす", "休憩", "おやすみ", "眠", "睡眠"],
         "食事": ["食べる", "食べて", "たべて", "ご飯", "ごはん", "メシ", "めし", "腹", "はら", "食事"],
         "探検": ["冒険", "出かけ", "でかけ", "外", "散歩", "さんぽ", "探索", "探検"],
@@ -988,6 +999,8 @@ window.sendChat = function() {
         } else { aiPet.message = "破門中だから会いに行けない..."; aiPet.messageTimer = 120; }
     }
     else if (interpretedWord === "睡眠" && knows("睡眠")) { aiPet.schedule.push({type:'sleep', duration:60}); actionTriggered = true; }
+    // ★追加: ランニングのスケジュール実行
+    else if (interpretedWord === "ランニング" && knows("ランニング")) { aiPet.schedule.push({type:'run', duration:60}); actionTriggered = true; }
     else if (interpretedWord === "食事" && knows("食事")) { aiPet.schedule.push({type:'eat', duration:30}); actionTriggered = true; }
     else if (interpretedWord === "勉強" && knows("勉強")) { aiPet.schedule.push({type:'study', duration:60}); actionTriggered = true; }
     else if (interpretedWord === "筋トレ" && knows("筋トレ")) { aiPet.schedule.push({type:'train', duration:60}); actionTriggered = true; } 
@@ -1505,6 +1518,8 @@ window.loadDebugData = function() {
     if(document.getElementById('dbg-mood')) document.getElementById('dbg-mood').value = Math.floor((aiPet.stats && aiPet.stats.mood) || 100);
 
     if(document.getElementById('dbg-stat-beauty')) document.getElementById('dbg-stat-beauty').value = Math.floor((aiPet.stats && aiPet.stats.beauty) || 10);
+    // ★追加: デバッグ画面を開く際に SPEED を読み込む
+    if(document.getElementById('dbg-stat-speed')) document.getElementById('dbg-stat-speed').value = Math.floor((aiPet.stats && aiPet.stats.speed) || 10);
     if(document.getElementById('dbg-darkness')) document.getElementById('dbg-darkness').value = Math.floor(aiPet.darknessCounter || 0);
     if(document.getElementById('dbg-gold')) document.getElementById('dbg-gold').value = aiPet.gold || 0;
 
@@ -1581,6 +1596,11 @@ window.saveDebugData = function() {
 
     const beautyInput = document.getElementById('dbg-stat-beauty');
     if(beautyInput) aiPet.stats.beauty = parseFloat(beautyInput.value) || 10;
+
+    // ★追加: 保存時に SPEED をデータに反映する
+    const speedInput = document.getElementById('dbg-stat-speed');
+    if(speedInput) aiPet.stats.speed = parseFloat(speedInput.value) || 10;
+
     const darkInput = document.getElementById('dbg-darkness');
     if(darkInput) aiPet.darknessCounter = parseFloat(darkInput.value) || 0;
 

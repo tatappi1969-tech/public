@@ -50,6 +50,7 @@
                 <div class="stat-box"><span class="stat-label" id="label-power">POWER</span><span class="stat-val" id="stat-power" style="color:#ff5252;">0</span></div>
                 <div class="stat-box"><span class="stat-label" id="label-mood">MOOD</span><span class="stat-val" id="stat-mood" style="color:#ffd600;">0</span></div>
                 <div class="stat-box"><span class="stat-label" id="label-beauty">BEAUTY</span><span class="stat-val" id="stat-beauty" style="color:#e040fb;">0</span></div>
+                <div class="stat-box"><span class="stat-label" id="label-speed">SPEED</span><span class="stat-val" id="stat-speed" style="color:#00e676;">0</span></div>
                 <div class="stat-box"><span class="stat-label" id="label-type">TYPE</span><span class="stat-val" id="stat-type" style="color:#fff; font-size:14px;">普通</span></div>
                 <div class="stat-box"><span class="stat-label" id="label-trait">TRAIT</span><span class="stat-val" id="stat-trait" style="color:#00e5ff; font-size:12px;">-</span></div>
                 <div class="stat-box"><span class="stat-label" id="label-gold">GOLD</span><span class="stat-val" id="stat-gold" style="color:#ffd700;">0 G</span></div>
@@ -226,6 +227,9 @@
                             <div>活力: <span id="s-power" style="color:#ff5252; font-weight:bold;"></span></div>
                             <div>機嫌: <span id="s-mood" style="color:#ffd600; font-weight:bold;"></span></div>
                             <div><span id="label-detail-beauty">美しさ</span>: <span id="s-beauty" style="color:#e040fb; font-weight:bold;"></span></div>
+                            <div style="grid-column: 1 / -1;">
+                                <span id="label-detail-speed">素早さ</span>: <span id="s-speed" style="color:#00e676; font-weight:bold;"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -327,6 +331,7 @@
                 <label>Power: <input type="number" id="dbg-power" style="width:40px; background:#333; color:white; border:1px solid #555;"></label><br>
                 <label>Mood: <input type="number" id="dbg-mood" style="width:40px; background:#333; color:white; border:1px solid #555;"></label><br>
                 <label>Beauty: <input type="number" id="dbg-stat-beauty" style="width:40px; background:#333; color:white; border:1px solid #555;"></label><br>
+                <label>Speed: <input type="number" id="dbg-stat-speed" style="width:40px; background:#333; color:white; border:1px solid #555;"></label><br>
                 <label>Dark: <input type="number" id="dbg-darkness" style="width:40px; background:#333; color:white; border:1px solid #555;"></label><br>
                 </div><div style="background:#222; padding:10px; border-radius:4px;"><div style="color:#FFC107; font-weight:bold; margin-bottom:5px;">資産</div><label>Gold: <input type="number" id="dbg-gold" style="width:60px; background:#333; color:white; border:1px solid #555;"></label></div>
             </div>

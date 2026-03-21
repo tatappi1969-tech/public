@@ -560,7 +560,7 @@ function applyInitialPet(skinKey) {
     aiPet.sh = 50; // 高さ
     // ==========================================
 
-    aiPet.stats = { intel: baseStats.intel, power: baseStats.power, mood: baseStats.mood };
+    aiPet.stats = { intel: baseStats.intel, power: baseStats.power, mood: baseStats.mood, speed: baseStats.speed || 10 };
     aiPet.energy = 100;
     aiPet.hunger = 100;
     aiPet.age = 0;

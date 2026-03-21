@@ -36,19 +36,19 @@ if (typeof window.DUNGEON_SPRITES !== 'undefined') {
     window.DUNGEON_SPRITES["arena_explore"] = { "img": "adventurer_battle_enemy.png", "sx": 794, "sy": 0, "sw": 1344, "sh": 1536, "scale": 0.15000000000000002 };
 }
 
-// ★修正：全11種族の専用二つ名と基礎ステータスの定義
+// ★修正：全11種族の専用二つ名と基礎ステータス（speed追加）
 window.ARENA_ENEMIES = {
-    "robot": { name: "試作決戦兵器プロト・ロボ", hp: 150, atk: 25, def: 10, spriteKey: "arena_robot", type: "robot" },
-    "ghost": { name: "彷徨えるプチゴースト", hp: 120, atk: 30, def: 5, spriteKey: "arena_ghost", type: "ghost" },
-    "balloon": { name: "浮遊するバルーンスライム", hp: 180, atk: 20, def: 5, spriteKey: "arena_balloon", type: "balloon" },
-    "stone": { name: "剛腕のロックゴーレム", hp: 250, atk: 30, def: 20, spriteKey: "arena_stone", type: "stone" },
-    "machine": { name: "暴走ゼンマイギア", hp: 130, atk: 28, def: 12, spriteKey: "arena_machine", type: "machine" },
-    "bird": { name: "疾風のアネモバード", hp: 110, atk: 35, def: 8, spriteKey: "arena_bird", type: "bird" },
-    "dragon": { name: "荒ぶるベビードラゴン", hp: 200, atk: 40, def: 15, spriteKey: "arena_dragon", type: "dragon" },
-    "seed": { name: "猛毒のプラントシード", hp: 140, atk: 22, def: 10, spriteKey: "arena_seed", type: "seed" },
-    "magician": { name: "炎の魔術見習い", hp: 100, atk: 45, def: 5, spriteKey: "arena_magician", type: "magician" },
-    "spirit": { name: "怒れる森の精霊", hp: 160, atk: 20, def: 15, spriteKey: "arena_spirit", type: "spirit" },
-    "beetle": { name: "鉄壁のアーマービートル", hp: 220, atk: 25, def: 25, spriteKey: "arena_beetle", type: "beetle" }
+    "robot": { name: "試作決戦兵器プロト・ロボ", hp: 150, atk: 25, def: 10, speed: 20, spriteKey: "arena_robot", type: "robot" },
+    "ghost": { name: "彷徨えるプチゴースト", hp: 120, atk: 30, def: 5, speed: 40, spriteKey: "arena_ghost", type: "ghost" },
+    "balloon": { name: "浮遊するバルーンスライム", hp: 180, atk: 20, def: 5, speed: 30, spriteKey: "arena_balloon", type: "balloon" },
+    "stone": { name: "剛腕のロックゴーレム", hp: 250, atk: 30, def: 20, speed: 5, spriteKey: "arena_stone", type: "stone" },
+    "machine": { name: "暴走ゼンマイギア", hp: 130, atk: 28, def: 12, speed: 35, spriteKey: "arena_machine", type: "machine" },
+    "bird": { name: "疾風のアネモバード", hp: 110, atk: 35, def: 8, speed: 60, spriteKey: "arena_bird", type: "bird" },
+    "dragon": { name: "荒ぶるベビードラゴン", hp: 200, atk: 40, def: 15, speed: 25, spriteKey: "arena_dragon", type: "dragon" },
+    "seed": { name: "猛毒のプラントシード", hp: 140, atk: 22, def: 10, speed: 15, spriteKey: "arena_seed", type: "seed" },
+    "magician": { name: "炎の魔術見習い", hp: 100, atk: 45, def: 5, speed: 25, spriteKey: "arena_magician", type: "magician" },
+    "spirit": { name: "怒れる森の精霊", hp: 160, atk: 20, def: 15, speed: 35, spriteKey: "arena_spirit", type: "spirit" },
+    "beetle": { name: "鉄壁のアーマービートル", hp: 220, atk: 25, def: 25, speed: 10, spriteKey: "arena_beetle", type: "beetle" }
 };
 
 // ★すべての新コマンド・陣形・召喚スキルを登録
@@ -114,11 +114,12 @@ window.openArenaReception = function() {
         document.body.appendChild(ui);
     }
     
-    let pwr = Math.floor(window.aiPet.stats.power || 10); let int = Math.floor(window.aiPet.stats.intel || 10);
+    let pwr = Math.floor(window.aiPet.stats.power || 10); let int = Math.floor(window.aiPet.stats.intel || 10); 
+    let spd = Math.floor(window.aiPet.stats.speed || 10); // ★追加
     window.ARENA_RECEPTION_STATE.party = [{
         id: "me", name: window.aiPet.name || "現在のAI", skin: window.aiPet.currentSkin || 'robot',
         hp: Math.floor(100 + (pwr * 2)), maxHp: Math.floor(100 + (pwr * 2)), mp: Math.floor(int * 2), maxMp: Math.floor(int * 2),
-        atk: Math.floor(10 + pwr * 0.5), def: Math.floor(5 + pwr * 0.2), intel: int,
+        atk: Math.floor(10 + pwr * 0.5), def: Math.floor(5 + pwr * 0.2), intel: int, speed: spd, // ★speed追加
         words: window.aiPet.apprentice && window.aiPet.apprentice.learnedWords ? [...window.aiPet.apprentice.learnedWords] : [],
         isMe: true
     }];
@@ -130,15 +131,19 @@ window.openArenaReception = function() {
     discovered.forEach(skinKey => {
         if (skinKey === window.aiPet.currentSkin) return;
         let sName = (typeof monsterBookData !== 'undefined' && monsterBookData[skinKey]) ? monsterBookData[skinKey].name : skinKey;
-        let sPwr = Math.floor(Math.max(5, pwr - 5)); let sInt = Math.floor(Math.max(5, int - 5));
+        let sPwr = Math.floor(Math.max(5, pwr - 5)); let sInt = Math.floor(Math.max(5, int - 5)); let sSpd = Math.floor(Math.max(5, spd - 5)); // ★追加
         let sWords = ["たたかう", "かいふく", ["ほのお", "まもる", "いのる"][Math.floor(Math.random() * 3)]];
         if (savedStats[skinKey]) {
-            if (savedStats[skinKey].stats) { sPwr = Math.floor(savedStats[skinKey].stats.power || sPwr); sInt = Math.floor(savedStats[skinKey].stats.intel || sInt); }
+            if (savedStats[skinKey].stats) { 
+                sPwr = Math.floor(savedStats[skinKey].stats.power || sPwr); 
+                sInt = Math.floor(savedStats[skinKey].stats.intel || sInt); 
+                sSpd = Math.floor(savedStats[skinKey].stats.speed || sSpd); // ★追加
+            }
             if (savedStats[skinKey].learnedWords && savedStats[skinKey].learnedWords.length > 0) sWords = [...savedStats[skinKey].learnedWords];
         }
         window.ARENA_RECEPTION_STATE.available.push({
             id: "past_" + pastId++, name: `幻影の${sName}`, skin: skinKey, hp: Math.floor(80 + sPwr), maxHp: Math.floor(80 + sPwr), mp: Math.floor(sInt * 2), maxMp: Math.floor(sInt * 2),
-            atk: Math.floor(8 + sPwr * 0.4), def: 5, intel: sInt, words: sWords, isMe: false
+            atk: Math.floor(8 + sPwr * 0.4), def: 5, intel: sInt, speed: sSpd, words: sWords, isMe: false // ★speed追加
         });
     });
     if (typeof window.renderArenaReception === 'function') window.renderArenaReception();
@@ -382,6 +387,7 @@ window.startArenaWave = function() {
     let hpMultiplier = 1 + (waveMinus * 0.3) + (Math.pow(1.04, waveMinus) - 1);
     let atkMultiplier = 1 + (waveMinus * 0.2) + (Math.pow(1.03, waveMinus) - 1);
     let defMultiplier = 1 + (waveMinus * 0.1) + (Math.pow(1.02, waveMinus) - 1);
+    let spdMultiplier = 1 + (waveMinus * 0.05); // ★追加（素早さもWAVEで微増）
 
     if (isBossWave) {
         let bossType = state.bossQueue[state.bossesDefeated] || state.bossQueue[state.bossQueue.length - 1];
@@ -393,10 +399,11 @@ window.startArenaWave = function() {
         let eHp = Math.floor(base.hp * hpMultiplier * 3 + 2000);
         let eAtk = Math.floor(base.atk * atkMultiplier * 1.5 + 50);
         let eDef = Math.floor(base.def * defMultiplier * 2);
+        let eSpd = Math.floor(base.speed * spdMultiplier * 1.5); // ★追加
 
         state.enemies.push({
             id: `e_boss`, baseName: base.name, name: `【BOSS】巨魁なる${base.name}`, spriteKey: base.spriteKey, type: base.type,
-            hp: eHp, maxHp: eHp, atk: eAtk, def: eDef,
+            hp: eHp, maxHp: eHp, atk: eAtk, def: eDef, speed: eSpd, // ★speed追加
             buffAtk: 1.0, buffDef: 1.0, isBoss: true, patternStep: 0,
             bossTypeKey: bossType, row: 'front' 
         });
@@ -423,10 +430,11 @@ window.startArenaWave = function() {
             let eHp = fp.maxHp || 100;
             let eAtk = fp.atk || 20;
             let eDef = fp.def || 10;
+            let eSpd = fp.speed || 10; // ★追加
 
             state.enemies.push({
                 id: `e_f_${i}`, baseName: fp.name, name: `幻影の${fp.name}`, spriteKey: spriteKey, type: aType, skin: fp.skin || 'robot',
-                hp: eHp, maxHp: eHp, atk: eAtk, def: eDef,
+                hp: eHp, maxHp: eHp, atk: eAtk, def: eDef, speed: eSpd, // ★speed追加
                 intel: fp.intel || 20, mp: fp.maxMp || 100, maxMp: fp.maxMp || 100, words: fp.words || ["たたかう"],
                 buffAtk: 1.0, buffDef: 1.0, isFriend: true, row: i < 2 ? 'front' : 'back', col: i % 2
             });
@@ -454,6 +462,7 @@ window.startArenaWave = function() {
             let eHp = Math.floor(base.hp * hpMultiplier + (state.wave * 10));
             let eAtk = Math.floor(base.atk * atkMultiplier + (state.wave * 2));
             let eDef = Math.floor(base.def * defMultiplier + (state.wave * 1));
+            let eSpd = Math.floor(base.speed * spdMultiplier); // ★追加
 
             state.enemySpawnCounts[base.name] = (state.enemySpawnCounts[base.name] || 0) + 1;
             let spawnIndex = state.enemySpawnCounts[base.name] - 1; 
@@ -463,7 +472,7 @@ window.startArenaWave = function() {
 
             state.enemies.push({
                 id: `e_${i}`, baseName: base.name, name: finalName, spriteKey: base.spriteKey, type: base.type,
-                hp: eHp, maxHp: eHp, atk: eAtk, def: eDef, buffAtk: 1.0, buffDef: 1.0,
+                hp: eHp, maxHp: eHp, atk: eAtk, def: eDef, speed: eSpd, buffAtk: 1.0, buffDef: 1.0, // ★speed追加
                 row: i < 4 ? 'front' : 'back' 
             });
         }
@@ -739,7 +748,7 @@ window.evaluateArenaSkillScore = function(p, skillName, state, isEnemy = false) 
 };
 
 // ==========================================
-// ★究極改修：全システムを統括する最強のターン処理
+// ★究極改修：素早さ順行動＆連続行動＆回避搭載の最強ターン処理
 // ==========================================
 window.processArenaTurn = async function() {
     let state = window.ARENA_STATE;
@@ -749,7 +758,6 @@ window.processArenaTurn = async function() {
     const wait = async (ms) => { if (!state.skipMode) await new Promise(r => setTimeout(r, ms)); };
     const render = () => { if (!state.skipMode) window.renderArenaBattle(); };
 
-    // ★修正：パーティの平均火力のほか、「平均HP」「平均防御力」も計算する
     let alivePartyForAvg = state.party.filter(p => p.hp > 0);
     let avgAtk = 20; let avgInt = 20; let avgHp = 100; let avgDef = 10;
     if (alivePartyForAvg.length > 0) {
@@ -759,7 +767,7 @@ window.processArenaTurn = async function() {
         avgDef = alivePartyForAvg.reduce((s, p) => s + p.def, 0) / alivePartyForAvg.length;
     }
 
-    // --- ① ターン開始時：タイマー・ゲスト処理 ---
+    // --- ① ターン開始時：タイマー・ゲスト・回復処理 ---
     let startLogs = [];
     
     if (state.farmTimer > 0) {
@@ -785,8 +793,7 @@ window.processArenaTurn = async function() {
             p.exploreTimer--;
             if (p.exploreTimer === 0) {
                 if (p.exploreOriginalTurn === 2) {
-                    let healHp = Math.max(30, Math.floor(p.maxHp * 0.2));
-                    let healMp = Math.max(20, Math.floor(p.maxMp * 0.2));
+                    let healHp = Math.max(30, Math.floor(p.maxHp * 0.2)); let healMp = Math.max(20, Math.floor(p.maxMp * 0.2));
                     p.hp = Math.min(p.maxHp, p.hp + healHp); p.mp = Math.min(p.maxMp, p.mp + healMp);
                     startLogs.push(`${p.name} が探検から帰還！見つけた食料で回復した！🍖`);
                 } else if (p.exploreOriginalTurn === 3) {
@@ -806,8 +813,7 @@ window.processArenaTurn = async function() {
         }
         if (p.isSleeping && p.exploreTimer === 0) {
             p.hp = Math.min(p.maxHp, p.hp + Math.floor(p.maxHp * 0.2)); p.mp = Math.min(p.maxMp, p.mp + 15);
-            startLogs.push(`${p.name} は眠って体力・MPを回復した！(💤)`);
-            p.isSleeping = false; 
+            startLogs.push(`${p.name} は眠って体力・MPを回復した！(💤)`); p.isSleeping = false; 
         }
         if (p.hutHp > 0 && p.exploreTimer === 0 && !p.isSleeping) {
             let healHp = Math.max(15, Math.floor(p.maxHp * 0.1));
@@ -842,8 +848,7 @@ window.processArenaTurn = async function() {
         }
         if (e.isSleeping && e.exploreTimer === 0) {
             e.hp = Math.min(e.maxHp, e.hp + Math.floor(e.maxHp * 0.2));
-            startLogs.push(`<span style="color:#ff5252;">${e.name} は眠って体力を回復した！(💤)</span>`);
-            e.isSleeping = false; 
+            startLogs.push(`<span style="color:#ff5252;">${e.name} は眠って体力を回復した！(💤)</span>`); e.isSleeping = false; 
         }
         if (e.hutHp > 0 && e.exploreTimer === 0 && !e.isSleeping) {
             let healHp = Math.max(15, Math.floor(e.maxHp * 0.1));
@@ -878,538 +883,520 @@ window.processArenaTurn = async function() {
         let t = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
         
         if (g.type === 'smithing') {
-            let dmg = Math.max(30, Math.floor(avgAtk * 0.8));
-            t.hp -= dmg; t.flash = true;
+            let dmg = Math.max(30, Math.floor(avgAtk * 0.8)); t.hp -= dmg; t.flash = true;
             state.log.push(`<span style="color:#FF9800;">鍛冶師のハンマー！ ${t.name} に ${dmg} のダメージ！(🔨)</span>`);
             render(); await wait(150); t.flash = false; render(); await wait(400);
         } else if (g.type === 'fishing') {
-            let dmg = Math.max(15, Math.floor(avgAtk * 0.4));
-            t.hp -= dmg; t.flash = true;
+            let dmg = Math.max(15, Math.floor(avgAtk * 0.4)); t.hp -= dmg; t.flash = true;
             state.log.push(`<span style="color:#00BCD4;">漁師の大物釣り！ ${t.name} に ${dmg} のダメージ！(🎣)</span>`);
             render(); await wait(150); t.flash = false; render(); await wait(400);
         } else if (g.type === 'explore') {
-            let defDrop = Math.max(5, Math.floor(avgInt * 0.1));
-            t.def = Math.max(0, t.def - defDrop);
+            let defDrop = Math.max(5, Math.floor(avgInt * 0.1)); t.def = Math.max(0, t.def - defDrop);
             state.log.push(`<span style="color:#E040FB;">冒険家の罠！ ${t.name} の防御力が大幅に下がった！(🗺️)</span>`);
             render(); await wait(500);
         } else if (g.type === 'soldier') {
-            let dmg = Math.max(20, Math.floor(avgAtk * 0.6));
-            t.hp -= dmg; t.flash = true;
+            let dmg = Math.max(20, Math.floor(avgAtk * 0.6)); t.hp -= dmg; t.flash = true;
             state.log.push(`<span style="color:#FFF;">城の兵士の攻撃！ ${t.name} に ${dmg} のダメージ！(⚔️)</span>`);
             render(); await wait(150); t.flash = false; render(); await wait(400);
         } else if (g.type === 'captain') {
-            let dmg = Math.max(35, Math.floor(avgAtk * 1.2));
-            t.hp -= dmg; t.flash = true;
+            let dmg = Math.max(35, Math.floor(avgAtk * 1.2)); t.hp -= dmg; t.flash = true;
             state.log.push(`<span style="color:#FFD700;">城の隊長の強撃！ ${t.name} に ${dmg} のダメージ！(🛡️)</span>`);
             render(); await wait(150); t.flash = false; render(); await wait(400);
         }
     }
 
-    // --- ② 味方パーティの行動 ---
-    for (let p of state.party) {
-        if (p.hp <= 0 || p.exploreTimer > 0 || p.isSleeping) continue; 
+    // ==========================================
+    // ★② 素早さによる行動順ソート＆連続行動キュー作成
+    // ==========================================
+    let allFighters = [];
+    state.party.forEach(p => { if (p.hp > 0 && p.exploreTimer === 0 && !p.isSleeping) allFighters.push({ isEnemy: false, obj: p }); });
+    state.enemies.forEach(e => { if (e.hp > 0 && e.exploreTimer === 0 && !e.isSleeping) allFighters.push({ isEnemy: true, obj: e }); });
+    
+    // 素早さ順に行動順を並び替える
+    allFighters.sort((a, b) => (b.obj.speed || 10) - (a.obj.speed || 10));
 
-        aliveEnemies = state.enemies.filter(e => e.hp > 0);
-        if (aliveEnemies.length === 0) break;
+    for (let fighter of allFighters) {
+        let actor = fighter.obj;
+        if (actor.hp <= 0) continue; 
+        
+        let alivePartyCheck = state.party.filter(p => p.hp > 0);
+        let aliveEnemiesCheck = state.enemies.filter(e => e.hp > 0);
+        if (alivePartyCheck.length === 0 || aliveEnemiesCheck.length === 0) break; // 勝負がついた
 
-        let validWords = p.words.length > 0 ? [...p.words] : ["たたかう"];
-        let chosenSkillName = "たたかう";
-        let typeStr = (p.skin || 'robot').split('_')[0];
+        let actionCount = 1 + Math.floor((actor.speed || 10) / 50);
+        if (actionCount > 1) {
+            let color = fighter.isEnemy ? "#ff5252" : "#00e676";
+            state.log.push(`<span style="color:${color}; font-weight:bold;">💨 ${actor.name} は素早さを活かして ${actionCount}回 連続行動する！</span>`);
+            render(); await wait(400);
+        }
 
-        let scoredSkills = validWords.map(w => {
-            return { name: w, score: window.evaluateArenaSkillScore(p, w, state, false) };
-        }).filter(s => s.score > -100);
+        // ==========================================
+        // ③ キャラクターごとの行動ループ
+        // ==========================================
+        for (let act = 0; act < actionCount; act++) {
+            if (actor.hp <= 0) break;
+            alivePartyCheck = state.party.filter(p => p.hp > 0);
+            aliveEnemiesCheck = state.enemies.filter(e => e.hp > 0);
+            if (alivePartyCheck.length === 0 || aliveEnemiesCheck.length === 0) break;
 
-        let smartChance = Math.min(0.95, (p.intel || 10) / 100); 
+            if (!fighter.isEnemy) {
+                // ---------- 味方のアクション ----------
+                let p = actor;
+                let typeStr = (p.skin || 'robot').split('_')[0];
+                let validWords = p.words.length > 0 ? [...p.words] : ["たたかう"];
+                let chosenSkillName = "たたかう";
 
-        if (scoredSkills.length === 0) {
-            chosenSkillName = "たたかう";
-        } else {
-            scoredSkills.sort((a, b) => b.score - a.score); 
-            if (Math.random() < smartChance) {
-                let topScore = scoredSkills[0].score;
-                let topSkills = scoredSkills.filter(s => s.score === topScore);
-                chosenSkillName = topSkills[Math.floor(Math.random() * topSkills.length)].name;
+                let scoredSkills = validWords.map(w => {
+                    return { name: w, score: window.evaluateArenaSkillScore(p, w, state, false) };
+                }).filter(s => s.score > -100);
+
+                let smartChance = Math.min(0.95, (p.intel || 10) / 100); 
+                if (scoredSkills.length === 0) { chosenSkillName = "たたかう"; }
+                else {
+                    scoredSkills.sort((a, b) => b.score - a.score); 
+                    if (Math.random() < smartChance) {
+                        let topScore = scoredSkills[0].score;
+                        let topSkills = scoredSkills.filter(s => s.score === topScore);
+                        chosenSkillName = topSkills[Math.floor(Math.random() * topSkills.length)].name;
+                    } else {
+                        chosenSkillName = scoredSkills[Math.floor(Math.random() * scoredSkills.length)].name;
+                    }
+                }
+
+                let skill = window.ARENA_SKILLS[chosenSkillName] || window.ARENA_SKILLS["たたかう"];
+
+                if (skill.allowedTypes !== "all" && !skill.allowedTypes.includes(typeStr)) {
+                    state.log.push(`<span style="color:#4fc3f7;">${p.name} は「${chosenSkillName}」を使おうとしたが失敗した...</span>`); render(); await wait(400); continue;
+                }
+                if (p.mp < skill.cost) {
+                    state.log.push(`<span style="color:#4fc3f7;">${p.name} は「${chosenSkillName}」を使おうとしたがMPが足りない！</span>`); render(); await wait(400); continue;
+                }
+
+                state.log.push(`<span style="color:#4fc3f7;">${p.name} は「${chosenSkillName}」を使った！</span>`);
+                render(); await wait(400);
+                p.mp -= skill.cost;
+
+                if (skill.type === "move") {
+                    if (skill.dir === 'up') p.row = 'front'; if (skill.dir === 'down') p.row = 'back';
+                    if (skill.dir === 'left') p.col = Math.max(0, p.col - 1); if (skill.dir === 'right') p.col = Math.min(3, p.col + 1);
+                    state.log.push(`<span style="color:#FFF;">陣形を「${skill.name}」に変更した！</span>`); render(); await wait(500);
+                }
+                else if (skill.type === "buff") {
+                    if (skill.stat === 'atk') p.buffAtk += 0.5; if (skill.stat === 'intel') p.buffIntel += 0.5;
+                    state.log.push(`<span style="color:#FFC107;">気合が入り、${skill.name}した！</span>`); render(); await wait(500);
+                }
+                else if (skill.type === "sleep") {
+                    p.isSleeping = true; state.log.push(`<span style="color:#aaa;">${p.name} は その場でぐっすり眠りについた...💤</span>`); render(); await wait(500); break; // 眠ったら連続行動もストップ
+                }
+                else if (skill.type === "summon") {
+                    if (!state.guests.some(g => g.type === skill.master)) {
+                        let masterHP = Math.max(10, Math.floor(avgHp * (skill.master === 'farming' ? 1.5 : 0.3))); 
+                        state.guests.push({ type: skill.master, hp: masterHP, maxHp: masterHP });
+                        state.log.push(`<span style="color:#E91E63; font-weight:bold;">${skill.name}により師匠が駆けつけた！！</span>`);
+                    } else { state.log.push(`<span style="color:#aaa;">しかし、既に呼ばれていた！(失敗)</span>`); }
+                    render(); await wait(500);
+                }
+                else if (skill.type === "call_rescue") {
+                    let rTypes = ['soldier', 'soldier', 'captain', 'king']; let gType = rTypes[Math.floor(Math.random() * rTypes.length)];
+                    let gHp = Math.floor(avgHp * (gType === 'captain' ? 0.8 : (gType === 'soldier' ? 0.5 : 0.3))); gHp = Math.max(10, gHp);
+                    state.guests.push({ type: gType, hp: gHp, maxHp: gHp });
+                    state.log.push(`<span style="color:#FFD700; font-weight:bold;">城から援軍が到着した！</span>`); render(); await wait(500);
+                }
+                else if (skill.type === "build_hut") {
+                    p.hutHp = 5; state.log.push(`<span style="color:#FFF;">${p.name} は頑丈な小屋に立てこもった！(🏠)</span>`); render(); await wait(500);
+                }
+                else if (skill.type === "build_bridge") {
+                    state.party.forEach(pt => { if (pt.hp > 0 && pt.exploreTimer === 0) pt.row = 'back'; });
+                    state.log.push(`<span style="color:#00BCD4;">橋を架けて、味方全員が後衛に退避した！</span>`); render(); await wait(500);
+                }
+                else if (skill.type === "build_farm") {
+                    state.farmTimer = 4; state.log.push(`<span style="color:#4CAF50;">急いで畑を耕した！</span>`); render(); await wait(500);
+                }
+                else if (skill.type === "random_build") {
+                    let rnd = Math.random();
+                    if (rnd < 0.25) { p.hutHp = 5; state.log.push(`<span style="color:#FFF;">小屋が完成し、中に立てこもった！</span>`); }
+                    else if (rnd < 0.5) { state.party.forEach(pt => pt.row = 'back'); state.log.push(`<span style="color:#00BCD4;">橋が完成し、全員で後衛に退避した！</span>`); }
+                    else if (rnd < 0.75) { state.farmTimer = 4; state.log.push(`<span style="color:#4CAF50;">畑が完成した！収穫を待とう...</span>`); }
+                    else { 
+                        let bHp = Math.max(10, Math.floor(avgHp * 0.5)); state.guests.push({ type: 'soldier', hp: bHp, maxHp: bHp }); 
+                        state.log.push(`<span style="color:#FFD700;">城の設備を作り、兵士を呼び込んだ！</span>`); 
+                    }
+                    render(); await wait(500);
+                }
+                else if (skill.type === "explore") {
+                    p.exploreOriginalTurn = 2 + Math.floor(Math.random() * 3); p.exploreTimer = p.exploreOriginalTurn;
+                    state.log.push(`<span style="color:#E040FB;">「ちょっと探検してくる！」 ${p.name} は戦場から姿を消した...</span>`); render(); await wait(500); break; // 探検に出たら連続行動ストップ
+                }
+                else if (skill.type === "fishing") {
+                    let r = Math.random();
+                    if (r < 0.33) {
+                        let t = aliveEnemiesCheck[Math.floor(Math.random() * aliveEnemiesCheck.length)];
+                        
+                        // ★回避判定
+                        let dodgeChance = Math.min(0.8, Math.max(0, (t.speed||10 - p.speed||10) * 0.05));
+                        if (Math.random() < dodgeChance) {
+                            state.log.push(`<span style="color:#aaa;">大物が釣れたが、${t.name} は素早く躱した！(MISS)</span>`);
+                        } else {
+                            let fishDmg = Math.max(30, Math.floor(p.atk * p.buffAtk * 0.6));
+                            t.hp -= fishDmg; t.flash = true;
+                            state.log.push(`<span style="color:#00BCD4;">大物が釣れた！暴れる魚が ${t.name} に ${fishDmg} のダメージ！🎣</span>`);
+                            render(); await wait(150); t.flash = false;
+                        }
+                        render(); await wait(500);
+                    } else if (r < 0.66) {
+                        let fishHeal = Math.max(40, Math.floor(p.maxHp * 0.2)); p.hp = Math.min(p.maxHp, p.hp + fishHeal); 
+                        state.log.push(`<span style="color:#76ff03;">新鮮な魚を刺身にして食べた！HP回復！🍣</span>`); render(); await wait(500);
+                    } else {
+                        state.log.push(`<span style="color:#aaa;">...空き缶が釣れた。(失敗)</span>`); render(); await wait(500);
+                    }
+                }
+                else if (skill.type === "eat") {
+                    let eatHealHp = Math.max(50, Math.floor(p.maxHp * 0.25)); let eatHealMp = Math.max(20, Math.floor(p.maxMp * 0.15));
+                    p.hp = Math.min(p.maxHp, p.hp + eatHealHp); p.mp = Math.min(p.maxMp, p.mp + eatHealMp);
+                    state.log.push(`<span style="color:#76ff03;">持っていた食料を食べた！HPとMPが大回復！🍖</span>`); render(); await wait(500);
+                }
+                else if (skill.type === "equip") {
+                    p.buffAtk += 0.5; p.isEquipped = true; state.log.push(`<span style="color:#FFC107;">武器を構えた！攻撃力大幅アップ！🗡️</span>`); render(); await wait(500);
+                }
+                else if (skill.type === "unequip") {
+                    if (p.isEquipped) { p.buffAtk = Math.max(1.0, p.buffAtk - 0.5); p.isEquipped = false; state.log.push(`<span style="color:#aaa;">重い装備を外して身軽になった。</span>`); }
+                    else { state.log.push(`<span style="color:#aaa;">しかし何も装備していなかった。</span>`); }
+                    render(); await wait(500);
+                }
+                else if (skill.type === "attack" || skill.type === "magic") {
+                    let target = aliveEnemiesCheck[Math.floor(Math.random() * aliveEnemiesCheck.length)];
+                    let targets = skill.target === "all" ? aliveEnemiesCheck : [target];
+                    
+                    for(let t of targets) { if(!state.skipMode) window.showArenaEffect(t.id, typeStr); }
+                    await wait(350); 
+                    for(let t of targets) { t.flash = true; }
+                    render(); await wait(150);
+                    for(let t of targets) { t.flash = false; }
+                    render();
+                    
+                    for(let t of targets) {
+                        // ★回避判定
+                        let dodgeChance = Math.min(0.8, Math.max(0, (t.speed||10 - p.speed||10) * 0.05));
+                        if (Math.random() < dodgeChance) {
+                            state.log.push(`<span style="color:#aaa;">${t.name} は攻撃をヒラリと避けた！(MISS)</span>`);
+                            continue;
+                        }
+
+                        let finalAtk = p.atk * p.buffAtk;
+                        if (skill.type === "magic") finalAtk = p.intel * p.buffIntel;
+                        let dmgMultiplier = 1.0;
+                        if (p.row === 'back' && skill.type === "attack") dmgMultiplier = 0.7; 
+                        if (p.hutHp > 0) dmgMultiplier *= 0.8; 
+                        
+                        let dmg = Math.floor(finalAtk * skill.power * dmgMultiplier) - Math.floor(t.def * 0.5);
+                        dmg = Math.max(1, dmg); 
+                        t.hp -= dmg;
+                        state.log.push(`<span style="color:#FFF;">${t.name} に ${dmg} のダメージ！</span>`);
+                    }
+                    render(); await wait(600);
+                } 
+                else if (skill.type === "heal") {
+                    p.hp = Math.min(p.maxHp, p.hp + skill.power + Math.floor(p.intel * p.buffIntel * 0.5));
+                    state.log.push(`<span style="color:#76ff03;">${p.name} のHPが回復した！</span>`); render(); await wait(600);
+                } else if (skill.type === "heal_all") {
+                    for (let pt of state.party) { if(pt.hp > 0 && pt.exploreTimer === 0) pt.hp = Math.min(pt.maxHp, pt.hp + skill.power + Math.floor(p.intel * pt.buffIntel * 0.3)); }
+                    state.log.push(`<span style="color:#76ff03;">味方全員のHPが回復した！</span>`); render(); await wait(600);
+                } else if (skill.type === "defend") {
+                    p.shield = true; state.log.push(`<span style="color:#FFF;">${p.name} は身を固めている！（次ダメージ半減）</span>`); render(); await wait(600);
+                }
+
             } else {
-                chosenSkillName = scoredSkills[Math.floor(Math.random() * scoredSkills.length)].name;
-            }
-        }
+                // ---------- 敵のアクション ----------
+                let e = actor;
+                
+                let targets = [];
+                state.party.forEach(pt => { if (pt.hp > 0 && pt.exploreTimer === 0 && !pt.isSleeping) targets.push({ obj: pt, isGuest: false, row: pt.row, col: pt.col }); });
+                state.guests.forEach(g => { if (g.hp > 0 && ['farming', 'soldier', 'captain', 'king'].includes(g.type)) targets.push({ obj: g, isGuest: true, type: g.type, row: 'front', col: 1.5 }); });
+                
+                if (targets.length === 0) {
+                    state.party.forEach(pt => { if (pt.hp > 0 && pt.exploreTimer === 0) targets.push({ obj: pt, isGuest: false, row: pt.row, col: pt.col }); });
+                    if (targets.length === 0) break;
+                }
 
-        let skill = window.ARENA_SKILLS[chosenSkillName] || window.ARENA_SKILLS["たたかう"];
+                let hateList = targets.map(t => {
+                    let hate = 10;
+                    if (t.row === 'back') hate -= 6; 
+                    if (t.isGuest) {
+                        if (t.type === 'captain') hate += 100; 
+                        if (t.type === 'farming') hate += 200; 
+                        if (t.type === 'soldier') hate += 5;
+                        if (t.type === 'king') hate += 5;
+                    } else { hate += (3 - t.col) * 2; }
+                    return { target: t, hate: Math.max(1, hate) };
+                });
+                
+                let totalHate = hateList.reduce((s, i) => s + i.hate, 0);
+                let rHate = Math.random() * totalHate;
+                let finalTargetData = hateList[0].target;
+                for (let item of hateList) {
+                    rHate -= item.hate;
+                    if (rHate <= 0) { finalTargetData = item.target; break; }
+                }
 
-        if (skill.allowedTypes !== "all" && !skill.allowedTypes.includes(typeStr)) {
-            state.log.push(`<span style="color:#4fc3f7;">${p.name} は「${chosenSkillName}」を使おうとした！</span>`); render(); await wait(200);
-            state.log.push(`<span style="color:#aaa;">しかし、種族的に上手く扱えなかった...(失敗)</span>`); render(); await wait(300); continue;
-        }
-        if (p.mp < skill.cost) {
-            state.log.push(`<span style="color:#4fc3f7;">${p.name} は「${chosenSkillName}」を使おうとした！</span>`); render(); await wait(200);
-            state.log.push(`<span style="color:#aaa;">しかし、MPが足りない！(失敗)</span>`); render(); await wait(300); continue;
-        }
-
-        state.log.push(`<span style="color:#4fc3f7;">${p.name} は「${chosenSkillName}」を使った！</span>`);
-        render(); await wait(400);
-        p.mp -= skill.cost;
-
-        if (skill.type === "move") {
-            if (skill.dir === 'up') p.row = 'front';
-            if (skill.dir === 'down') p.row = 'back';
-            if (skill.dir === 'left') p.col = Math.max(0, p.col - 1);
-            if (skill.dir === 'right') p.col = Math.min(3, p.col + 1);
-            state.log.push(`<span style="color:#FFF;">素早く陣形を「${skill.name}」に変更した！</span>`); render(); await wait(600);
-        }
-        else if (skill.type === "buff") {
-            if (skill.stat === 'atk') p.buffAtk += 0.5;
-            if (skill.stat === 'intel') p.buffIntel += 0.5;
-            state.log.push(`<span style="color:#FFC107;">気合が入り、${skill.name}した！（効果アップ）</span>`); render(); await wait(600);
-        }
-        else if (skill.type === "sleep") {
-            p.isSleeping = true;
-            state.log.push(`<span style="color:#aaa;">${p.name} は その場でぐっすり眠りについた...💤</span>`); render(); await wait(600);
-        }
-        else if (skill.type === "summon") {
-            if (!state.guests.some(g => g.type === skill.master)) {
-                // ★修正：召喚NPCのHPも平均HP依存にする
-                let masterHP = Math.max(10, Math.floor(avgHp * (skill.master === 'farming' ? 1.5 : 0.3))); 
-                state.guests.push({ type: skill.master, hp: masterHP, maxHp: masterHP });
-                state.log.push(`<span style="color:#E91E63; font-weight:bold;">なんと！${skill.name}により師匠が駆けつけた！！</span>`);
-            } else { state.log.push(`<span style="color:#aaa;">しかし、既に呼ばれていた！(失敗)</span>`); }
-            render(); await wait(600);
-        }
-        else if (skill.type === "call_rescue") {
-            let rTypes = ['soldier', 'soldier', 'captain', 'king']; let gType = rTypes[Math.floor(Math.random() * rTypes.length)];
-            // ★修正：援軍のHPも平均HP依存にする
-            let gHp = Math.floor(avgHp * (gType === 'captain' ? 0.8 : (gType === 'soldier' ? 0.5 : 0.3)));
-            gHp = Math.max(10, gHp);
-            state.guests.push({ type: gType, hp: gHp, maxHp: gHp });
-            state.log.push(`<span style="color:#FFD700; font-weight:bold;">城から援軍（${gType === 'soldier' ? '兵士' : (gType === 'captain' ? '隊長' : '王様')}）が到着した！</span>`);
-            render(); await wait(600);
-        }
-        else if (skill.type === "build_hut") {
-            p.hutHp = 5; state.log.push(`<span style="color:#FFF;">${p.name} は頑丈な小屋に立てこもった！(🏠)</span>`); render(); await wait(600);
-        }
-        else if (skill.type === "build_bridge") {
-            state.party.forEach(pt => { if (pt.hp > 0 && pt.exploreTimer === 0) pt.row = 'back'; });
-            state.log.push(`<span style="color:#00BCD4;">橋を架けて、味方全員が後衛に退避した！</span>`); render(); await wait(600);
-        }
-        else if (skill.type === "build_farm") {
-            state.farmTimer = 4; state.log.push(`<span style="color:#4CAF50;">急いで畑を耕した！(数ターン後に何かが起きるかも...)</span>`); render(); await wait(600);
-        }
-        else if (skill.type === "random_build") {
-            let rnd = Math.random();
-            if (rnd < 0.25) { p.hutHp = 5; state.log.push(`<span style="color:#FFF;">小屋が完成し、中に立てこもった！</span>`); }
-            else if (rnd < 0.5) { state.party.forEach(pt => pt.row = 'back'); state.log.push(`<span style="color:#00BCD4;">橋が完成し、全員で後衛に退避した！</span>`); }
-            else if (rnd < 0.75) { state.farmTimer = 4; state.log.push(`<span style="color:#4CAF50;">畑が完成した！収穫を待とう...</span>`); }
-            else { 
-                let bHp = Math.max(10, Math.floor(avgHp * 0.5));
-                state.guests.push({ type: 'soldier', hp: bHp, maxHp: bHp }); 
-                state.log.push(`<span style="color:#FFD700;">城の設備を作り、兵士を呼び込んだ！</span>`); 
-            }
-            render(); await wait(600);
-        }
-        else if (skill.type === "explore") {
-            p.exploreOriginalTurn = 2 + Math.floor(Math.random() * 3); p.exploreTimer = p.exploreOriginalTurn;
-            state.log.push(`<span style="color:#E040FB;">「ちょっと探検してくる！」 ${p.name} は戦場から姿を消した...</span>`); render(); await wait(600);
-        }
-        else if (skill.type === "fishing") {
-            let r = Math.random();
-            if (r < 0.33) {
-                let t = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
-                let fishDmg = Math.max(30, Math.floor(p.atk * p.buffAtk * 0.6));
-                t.hp -= fishDmg; t.flash = true;
-                state.log.push(`<span style="color:#00BCD4;">大物が釣れた！暴れる魚が ${t.name} に ${fishDmg} のダメージ！🎣</span>`);
-                render(); await wait(150); t.flash = false; render(); await wait(500);
-            } else if (r < 0.66) {
-                let fishHeal = Math.max(40, Math.floor(p.maxHp * 0.2));
-                p.hp = Math.min(p.maxHp, p.hp + fishHeal); 
-                state.log.push(`<span style="color:#76ff03;">新鮮な魚を刺身にして食べた！HP回復！🍣</span>`); render(); await wait(600);
-            } else {
-                state.log.push(`<span style="color:#aaa;">...空き缶が釣れた。無駄な時間を過ごした。(失敗)</span>`); render(); await wait(600);
-            }
-        }
-        else if (skill.type === "eat") {
-            let eatHealHp = Math.max(50, Math.floor(p.maxHp * 0.25));
-            let eatHealMp = Math.max(20, Math.floor(p.maxMp * 0.15));
-            p.hp = Math.min(p.maxHp, p.hp + eatHealHp); p.mp = Math.min(p.maxMp, p.mp + eatHealMp);
-            state.log.push(`<span style="color:#76ff03;">持っていた食料を食べた！HPとMPが大回復！🍖</span>`); render(); await wait(600);
-        }
-        else if (skill.type === "equip") {
-            p.buffAtk += 0.5; p.isEquipped = true; state.log.push(`<span style="color:#FFC107;">武器を構えた！攻撃力大幅アップ！🗡️</span>`); render(); await wait(600);
-        }
-        else if (skill.type === "unequip") {
-            if (p.isEquipped) { p.buffAtk = Math.max(1.0, p.buffAtk - 0.5); p.isEquipped = false; state.log.push(`<span style="color:#aaa;">重い装備を外して身軽になった。</span>`); }
-            else { state.log.push(`<span style="color:#aaa;">しかし何も装備していなかった。</span>`); }
-            render(); await wait(600);
-        }
-        else if (skill.type === "attack" || skill.type === "magic") {
-            let target = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
-            let targets = skill.target === "all" ? aliveEnemies : [target];
-            
-            for(let t of targets) { if(!state.skipMode) window.showArenaEffect(t.id, typeStr); }
-            await wait(350); 
-            for(let t of targets) { t.flash = true; }
-            render(); await wait(150);
-            for(let t of targets) { t.flash = false; }
-            render();
-            
-            for(let t of targets) {
-                let finalAtk = p.atk * p.buffAtk;
-                if (skill.type === "magic") finalAtk = p.intel * p.buffIntel;
+                let targetObj = finalTargetData.obj;
+                let defValue = finalTargetData.isGuest ? Math.floor(avgDef * 0.5) : targetObj.def;
+                
+                let baseAtk = e.atk * (e.buffAtk || 1.0);
                 let dmgMultiplier = 1.0;
-                if (p.row === 'back' && skill.type === "attack") dmgMultiplier = 0.7; 
-                if (p.hutHp > 0) dmgMultiplier *= 0.8; 
+                if (e.hutHp > 0) dmgMultiplier *= 0.8;
                 
-                let dmg = Math.floor(finalAtk * skill.power * dmgMultiplier) - Math.floor(t.def * 0.5);
-                dmg = Math.max(1, dmg); 
-                t.hp -= dmg;
-                state.log.push(`<span style="color:#FFF;">${t.name} に ${dmg} のダメージ！</span>`);
-            }
-            render(); await wait(700);
-        } 
-        else if (skill.type === "heal") {
-            p.hp = Math.min(p.maxHp, p.hp + skill.power + Math.floor(p.intel * p.buffIntel * 0.5));
-            state.log.push(`<span style="color:#76ff03;">${p.name} のHPが回復した！</span>`); render(); await wait(700);
-        } else if (skill.type === "heal_all") {
-            for (let pt of state.party) { if(pt.hp > 0 && pt.exploreTimer === 0) pt.hp = Math.min(pt.maxHp, pt.hp + skill.power + Math.floor(p.intel * pt.buffIntel * 0.3)); }
-            state.log.push(`<span style="color:#76ff03;">味方全員のHPが回復した！</span>`); render(); await wait(700);
-        } else if (skill.type === "defend") {
-            p.shield = true; state.log.push(`<span style="color:#FFF;">${p.name} は身を固めている！（次ダメージ半減）</span>`); render(); await wait(700);
-        }
-    }
+                let dmg = 0; let logMsg = null;
+                let actionType = "attack"; let skillName = "通常攻撃";
+                
+                let r = Math.random();
+                if (e.isBoss) {
+                    const bossPatterns = [
+                        { actionType: "buff_atk", skillName: "王の威圧" }, 
+                        { actionType: "attack", skillName: "なぎ払い" }, 
+                        { actionType: "heavy", skillName: "粉砕撃" }, 
+                        { actionType: "magic_all", skillName: "滅びの光" }, 
+                        { actionType: "buff_def", skillName: "絶対防壁" }, 
+                        { actionType: "heavy_magic", skillName: "裁きの雷" } 
+                    ];
+                    let pat = bossPatterns[e.patternStep % bossPatterns.length];
+                    e.patternStep++; actionType = pat.actionType; skillName = pat.skillName;
+                } else if (e.isFriend) {
+                    let validWords = e.words && e.words.length > 0 ? [...e.words] : ["たたかう"];
+                    let scoredSkills = validWords.map(w => {
+                        return { name: w, score: window.evaluateArenaSkillScore(e, w, state, true) };
+                    }).filter(s => s.score > -100);
 
-    // --- ③ 敵の反撃 ---
-    aliveEnemies = state.enemies.filter(e => e.hp > 0);
-    for (let e of aliveEnemies) {
-        if (e.exploreTimer > 0 || e.isSleeping) continue;
-
-        let targets = [];
-        state.party.forEach(p => { if (p.hp > 0 && p.exploreTimer === 0 && !p.isSleeping) targets.push({ obj: p, isGuest: false, row: p.row, col: p.col }); });
-        state.guests.forEach(g => { if (g.hp > 0 && ['farming', 'soldier', 'captain', 'king'].includes(g.type)) targets.push({ obj: g, isGuest: true, type: g.type, row: 'front', col: 1.5 }); });
-        
-        if (targets.length === 0) {
-            state.party.forEach(p => { if (p.hp > 0 && p.exploreTimer === 0) targets.push({ obj: p, isGuest: false, row: p.row, col: p.col }); });
-            if (targets.length === 0) break;
-        }
-
-        let hateList = targets.map(t => {
-            let hate = 10;
-            if (t.row === 'back') hate -= 6; 
-            if (t.isGuest) {
-                if (t.type === 'captain') hate += 100; 
-                if (t.type === 'farming') hate += 200; 
-                if (t.type === 'soldier') hate += 5;
-                if (t.type === 'king') hate += 5;
-            } else { hate += (3 - t.col) * 2; }
-            return { target: t, hate: Math.max(1, hate) };
-        });
-        
-        let totalHate = hateList.reduce((s, i) => s + i.hate, 0);
-        let rHate = Math.random() * totalHate;
-        let finalTargetData = hateList[0].target;
-        for (let item of hateList) {
-            rHate -= item.hate;
-            if (rHate <= 0) { finalTargetData = item.target; break; }
-        }
-
-        let targetObj = finalTargetData.obj;
-        // ★修正：敵の攻撃を受ける際も、NPCの防御力を味方の平均防御力にする
-        let defValue = finalTargetData.isGuest ? Math.floor(avgDef * 0.5) : targetObj.def;
-        
-        let baseAtk = e.atk * (e.buffAtk || 1.0);
-        let dmgMultiplier = 1.0;
-        if (e.hutHp > 0) dmgMultiplier *= 0.8;
-        
-        let dmg = 0; let logMsg = null;
-        let actionType = "attack"; let skillName = "通常攻撃";
-        
-        let r = Math.random();
-        if (e.isBoss) {
-            const bossPatterns = [
-                { actionType: "buff_atk", skillName: "王の威圧" }, 
-                { actionType: "attack", skillName: "なぎ払い" }, 
-                { actionType: "heavy", skillName: "粉砕撃" }, 
-                { actionType: "magic_all", skillName: "滅びの光" }, 
-                { actionType: "buff_def", skillName: "絶対防壁" }, 
-                { actionType: "heavy_magic", skillName: "裁きの雷" } 
-            ];
-            let pat = bossPatterns[e.patternStep % bossPatterns.length];
-            e.patternStep++; actionType = pat.actionType; skillName = pat.skillName;
-        } else if (e.isFriend) {
-            let validWords = e.words && e.words.length > 0 ? [...e.words] : ["たたかう"];
-            let scoredSkills = validWords.map(w => {
-                return { name: w, score: window.evaluateArenaSkillScore(e, w, state, true) };
-            }).filter(s => s.score > -100);
-
-            let smartChance = Math.min(0.95, (e.intel || 10) / 100); 
-            if (scoredSkills.length === 0) skillName = "たたかう";
-            else {
-                scoredSkills.sort((a, b) => b.score - a.score); 
-                if (Math.random() < smartChance) {
-                    let topSkills = scoredSkills.filter(s => s.score === scoredSkills[0].score);
-                    skillName = topSkills[Math.floor(Math.random() * topSkills.length)].name;
+                    let smartChance = Math.min(0.95, (e.intel || 10) / 100); 
+                    if (scoredSkills.length === 0) skillName = "たたかう";
+                    else {
+                        scoredSkills.sort((a, b) => b.score - a.score); 
+                        if (Math.random() < smartChance) {
+                            let topSkills = scoredSkills.filter(s => s.score === scoredSkills[0].score);
+                            skillName = topSkills[Math.floor(Math.random() * topSkills.length)].name;
+                        } else {
+                            skillName = scoredSkills[Math.floor(Math.random() * scoredSkills.length)].name;
+                        }
+                    }
+                    
+                    let skill = window.ARENA_SKILLS[skillName] || window.ARENA_SKILLS["たたかう"];
+                    e.mp = Math.max(0, (e.mp || 0) - (skill.cost || 0)); 
+                    
+                    actionType = skill.type;
+                    if (actionType === "attack") actionType = "heavy"; 
+                    if (actionType === "magic") actionType = skill.target === "all" ? "magic_all" : "heavy_magic";
                 } else {
-                    skillName = scoredSkills[Math.floor(Math.random() * scoredSkills.length)].name;
+                    if (e.type === 'robot') { if (r < 0.3) { actionType = "heavy"; skillName = "ロケットパンチ"; } else if (r < 0.5) { actionType = "buff_atk"; skillName = "リミッター解除"; } }
+                    else if (e.type === 'dragon') { if (r < 0.4) { actionType = "magic_all"; skillName = "火炎の息"; } else if (r < 0.7) { actionType = "heavy"; skillName = "噛み砕く"; } }
+                    else if (e.type === 'magician') { if (r < 0.4) { actionType = "heavy_magic"; skillName = "ファイアボルト"; } else if (r < 0.6) { actionType = "heal_ally"; skillName = "ヒール"; } }
+                    else if (e.type === 'stone') { if (r < 0.3) { actionType = "magic_all"; skillName = "大地震"; } else if (r < 0.6) { actionType = "buff_def"; skillName = "硬化"; } }
+                    else if (e.type === 'bird') { if (r < 0.4) { actionType = "magic_all"; skillName = "突風"; } }
+                    else if (e.type === 'beetle') { if (r < 0.4) { actionType = "heavy"; skillName = "ホーンタックル"; } else if (r < 0.7) { actionType = "buff_def"; skillName = "甲殻防御"; } }
+                    else if (e.type === 'spirit') { if (r < 0.3) { actionType = "magic_all"; skillName = "自然の怒り"; } else if (r < 0.6) { actionType = "heal_all"; skillName = "癒やしの光"; } }
+                    else if (e.type === 'seed') { if (r < 0.3) { actionType = "summon_enemy"; skillName = "増殖"; } else if (r < 0.6) { actionType = "heavy"; skillName = "ポイズンシード"; } else if (r < 0.8) { actionType = "heal_self"; skillName = "光合成"; } }
+                    else if (e.type === 'balloon') { if (r < 0.3) { actionType = "summon_enemy"; skillName = "仲間を呼ぶ"; } else if (r < 0.6) { actionType = "heavy"; skillName = "のしかかり"; } else if (r < 0.8) { actionType = "heal_self"; skillName = "分裂の構え"; } }
+                    else if (e.type === 'machine') { if (r < 0.4) { actionType = "buff_atk"; skillName = "ゼンマイ巻き"; } else if (r < 0.7) { actionType = "magic_all"; skillName = "回転アタック"; } }
+                    else if (e.type === 'ghost') { if (r < 0.3) { actionType = "summon_enemy"; skillName = "霊体召喚"; } else if (r < 0.6) { actionType = "magic_all"; skillName = "ポルターガイスト"; } else if (r < 0.8) { actionType = "debuff_def"; skillName = "呪い"; } }
                 }
-            }
-            
-            let skill = window.ARENA_SKILLS[skillName] || window.ARENA_SKILLS["たたかう"];
-            e.mp = Math.max(0, (e.mp || 0) - (skill.cost || 0)); 
-            
-            actionType = skill.type;
-            if (actionType === "attack") actionType = "heavy"; 
-            if (actionType === "magic") actionType = skill.target === "all" ? "magic_all" : "heavy_magic";
-        } else {
-            if (e.type === 'robot') { if (r < 0.3) { actionType = "heavy"; skillName = "ロケットパンチ"; } else if (r < 0.5) { actionType = "buff_atk"; skillName = "リミッター解除"; } }
-            else if (e.type === 'dragon') { if (r < 0.4) { actionType = "magic_all"; skillName = "火炎の息"; } else if (r < 0.7) { actionType = "heavy"; skillName = "噛み砕く"; } }
-            else if (e.type === 'magician') { if (r < 0.4) { actionType = "heavy_magic"; skillName = "ファイアボルト"; } else if (r < 0.6) { actionType = "heal_ally"; skillName = "ヒール"; } }
-            else if (e.type === 'stone') { if (r < 0.3) { actionType = "magic_all"; skillName = "大地震"; } else if (r < 0.6) { actionType = "buff_def"; skillName = "硬化"; } }
-            else if (e.type === 'bird') { if (r < 0.4) { actionType = "magic_all"; skillName = "突風"; } }
-            else if (e.type === 'beetle') { if (r < 0.4) { actionType = "heavy"; skillName = "ホーンタックル"; } else if (r < 0.7) { actionType = "buff_def"; skillName = "甲殻防御"; } }
-            else if (e.type === 'spirit') { if (r < 0.3) { actionType = "magic_all"; skillName = "自然の怒り"; } else if (r < 0.6) { actionType = "heal_all"; skillName = "癒やしの光"; } }
-            else if (e.type === 'seed') { if (r < 0.3) { actionType = "summon_enemy"; skillName = "増殖"; } else if (r < 0.6) { actionType = "heavy"; skillName = "ポイズンシード"; } else if (r < 0.8) { actionType = "heal_self"; skillName = "光合成"; } }
-            else if (e.type === 'balloon') { if (r < 0.3) { actionType = "summon_enemy"; skillName = "仲間を呼ぶ"; } else if (r < 0.6) { actionType = "heavy"; skillName = "のしかかり"; } else if (r < 0.8) { actionType = "heal_self"; skillName = "分裂の構え"; } }
-            else if (e.type === 'machine') { if (r < 0.4) { actionType = "buff_atk"; skillName = "ゼンマイ巻き"; } else if (r < 0.7) { actionType = "magic_all"; skillName = "回転アタック"; } }
-            else if (e.type === 'ghost') { if (r < 0.3) { actionType = "summon_enemy"; skillName = "霊体召喚"; } else if (r < 0.6) { actionType = "magic_all"; skillName = "ポルターガイスト"; } else if (r < 0.8) { actionType = "debuff_def"; skillName = "呪い"; } }
-        }
 
-        if (actionType === "move") {
-            let skill = window.ARENA_SKILLS[skillName];
-            if (skill && skill.dir === 'up') e.row = 'front';
-            if (skill && skill.dir === 'down') e.row = 'back';
-            state.log.push(`<span style="color:#ff5252;">${e.name} が陣形を「${skillName}」に変更した！</span>`);
-            render(); await wait(600); continue;
-        } else if (actionType === "buff") {
-            let skill = window.ARENA_SKILLS[skillName];
-            if (skill && skill.stat === 'intel') e.buffDef = (e.buffDef||1) + 0.5; 
-            else e.buffAtk = (e.buffAtk||1) + 0.5;
-            state.log.push(`<span style="color:#ff5252;">${e.name} が気合を入れた！（効果アップ）</span>`);
-            render(); await wait(600); continue;
-        } else if (actionType === "sleep") {
-            e.isSleeping = true;
-            state.log.push(`<span style="color:#ff5252;">${e.name} は その場でぐっすり眠りについた...💤</span>`);
-            render(); await wait(600); continue;
-        } else if (actionType === "summon" || actionType === "call_rescue") {
-            let skill = window.ARENA_SKILLS[skillName];
-            let masterType = skill ? skill.master : null;
-            if (actionType === "call_rescue") {
-                let rTypes = ['soldier', 'soldier', 'captain', 'king']; 
-                masterType = rTypes[Math.floor(Math.random() * rTypes.length)];
-            }
-            if (masterType) {
-                let gHp = masterType === 'captain' ? 100 : (masterType === 'soldier' ? 50 : (masterType === 'king' ? 30 : 20));
-                if (state.mode === 'boss' || state.mode === 'normal') {
-                    let calcWave = state.mode === 'boss' ? state.wave * 50 : state.wave; 
-                    let waveMinus = calcWave - 1;
-                    let hpMult = 1 + (waveMinus * 0.3) + (Math.pow(1.04, waveMinus) - 1);
-                    gHp = Math.floor(gHp * hpMult);
+                if (actionType === "move") {
+                    let skill = window.ARENA_SKILLS[skillName];
+                    if (skill && skill.dir === 'up') e.row = 'front';
+                    if (skill && skill.dir === 'down') e.row = 'back';
+                    state.log.push(`<span style="color:#ff5252;">${e.name} が陣形を「${skillName}」に変更した！</span>`);
+                    render(); await wait(600); continue;
+                } else if (actionType === "buff" || actionType === "buff_atk") {
+                    let skill = window.ARENA_SKILLS[skillName];
+                    if (skill && skill.stat === 'intel') e.buffDef = (e.buffDef||1) + 0.5; 
+                    else e.buffAtk = (e.buffAtk||1) + 0.5;
+                    state.log.push(`<span style="color:#ff5252;">${e.name} が気合を入れた！（効果アップ）</span>`);
+                    render(); await wait(600); continue;
+                } else if (actionType === "sleep") {
+                    e.isSleeping = true; state.log.push(`<span style="color:#ff5252;">${e.name} は その場でぐっすり眠りについた...💤</span>`); render(); await wait(600); break;
+                } else if (actionType === "summon" || actionType === "call_rescue") {
+                    let skill = window.ARENA_SKILLS[skillName]; let masterType = skill ? skill.master : null;
+                    if (actionType === "call_rescue") { let rTypes = ['soldier', 'soldier', 'captain', 'king']; masterType = rTypes[Math.floor(Math.random() * rTypes.length)]; }
+                    if (masterType) {
+                        let gHp = masterType === 'captain' ? 100 : (masterType === 'soldier' ? 50 : (masterType === 'king' ? 30 : 20));
+                        if (state.mode === 'boss' || state.mode === 'normal') {
+                            let calcWave = state.mode === 'boss' ? state.wave * 50 : state.wave; 
+                            let waveMinus = calcWave - 1; let hpMult = 1 + (waveMinus * 0.3) + (Math.pow(1.04, waveMinus) - 1);
+                            gHp = Math.floor(gHp * hpMult);
+                        }
+                        let gAtk = Math.max(20, Math.floor(e.atk * 0.5)); let gDef = Math.max(5, Math.floor(e.def * 0.5));
+                        let spriteKey = "arena_" + masterType; let mName = "幻影の助っ人";
+                        if (masterType === 'soldier') mName = "城の兵士"; else if (masterType === 'captain') mName = "城の隊長"; else if (masterType === 'king') mName = "王様"; else if (masterType === 'explore') mName = "冒険家"; else if (masterType === 'fishing') { mName = "漁師"; spriteKey = "arena_fisherman"; } 
+                        else if (masterType === 'cooking') mName = "料理人"; else if (masterType === 'farming') mName = "農家"; else if (masterType === 'building') mName = "建築士"; else if (masterType === 'smithing') mName = "鍛冶師";
+                        
+                        state.enemies.push({ id: `e_${state.enemies.length}_${Date.now()}`, baseName: mName, name: mName, spriteKey: spriteKey, type: masterType, hp: gHp, maxHp: gHp, atk: gAtk, def: gDef, buffAtk: 1.0, buffDef: 1.0, row: 'back', col: 0 });
+                        state.log.push(`<span style="color:#ff5252;">なんと！${e.name} が ${mName} を呼び出した！！</span>`);
+                    }
+                    render(); await wait(600); continue;
+                } else if (actionType === "build_hut") {
+                    e.hutHp = 5; state.log.push(`<span style="color:#ff5252;">${e.name} は頑丈な小屋に立てこもった！(🏠)</span>`); render(); await wait(600); continue;
+                } else if (actionType === "build_bridge") {
+                    state.enemies.forEach(en => { if (en.hp > 0 && en.exploreTimer === 0) en.row = 'back'; });
+                    state.log.push(`<span style="color:#ff5252;">${e.name} が橋を架け、敵全員が後衛に退避した！</span>`); render(); await wait(600); continue;
+                } else if (actionType === "build_farm") {
+                    state.log.push(`<span style="color:#ff5252;">${e.name} は急いで畑を耕した！</span>`);
+                    state.enemies.forEach(en => { if(en.hp > 0) en.hp = Math.min(en.maxHp, en.hp + Math.max(50, Math.floor(en.maxHp * 0.15))); });
+                    render(); await wait(600); continue;
+                } else if (actionType === "random_build") {
+                    let rnd = Math.random();
+                    if (rnd < 0.33) { e.hutHp = 5; state.log.push(`<span style="color:#ff5252;">${e.name} は小屋を作り立てこもった！</span>`); }
+                    else if (rnd < 0.66) { state.enemies.forEach(en => en.row = 'back'); state.log.push(`<span style="color:#ff5252;">敵陣に橋が完成し、敵が退避した！</span>`); }
+                    else { e.shield = true; state.log.push(`<span style="color:#ff5252;">敵陣に防壁が完成した！</span>`); }
+                    render(); await wait(600); continue;
+                } else if (actionType === "explore") {
+                    e.exploreOriginalTurn = 2 + Math.floor(Math.random() * 3); e.exploreTimer = e.exploreOriginalTurn;
+                    state.log.push(`<span style="color:#ff5252;">${e.name} は戦場から姿を消した... (探検中)</span>`); render(); await wait(600); break;
+                } else if (actionType === "fishing") {
+                    let r = Math.random();
+                    if (r < 0.33) {
+                        // ★回避判定
+                        let dodgeChance = Math.min(0.8, Math.max(0, ((targetObj.speed||10) - (e.speed||10)) * 0.05));
+                        if (Math.random() < dodgeChance) {
+                            state.log.push(`<span style="color:#aaa;">敵が釣り上げた大物を ${targetObj.name||"味方"} はヒラリと避けた！(MISS)</span>`);
+                        } else {
+                            targetObj.flash = true;
+                            let fishDmg = Math.max(30, Math.floor(e.atk * e.buffAtk * 0.6)); targetObj.hp -= fishDmg; 
+                            state.log.push(`<span style="color:#ff5252;">${e.name} が釣った大物が ${targetObj.name||"味方"} に ${fishDmg} のダメージ！🎣</span>`);
+                            render(); await wait(150); targetObj.flash = false;
+                        }
+                        render(); await wait(500);
+                    } else if (r < 0.66) {
+                        let fishHeal = Math.max(40, Math.floor(e.maxHp * 0.2)); e.hp = Math.min(e.maxHp, e.hp + fishHeal); 
+                        state.log.push(`<span style="color:#ff5252;">${e.name} は魚を食べてHP回復！🍣</span>`); render(); await wait(600);
+                    } else { state.log.push(`<span style="color:#aaa;">${e.name} は空き缶を釣った。(失敗)</span>`); render(); await wait(600); }
+                    continue;
+                } else if (actionType === "eat") {
+                    let eatHealHp = Math.max(50, Math.floor(e.maxHp * 0.25)); let eatHealMp = Math.max(20, Math.floor((e.maxMp||100) * 0.15));
+                    e.hp = Math.min(e.maxHp, e.hp + eatHealHp); e.mp = Math.min(e.maxMp || 100, (e.mp || 0) + eatHealMp);
+                    state.log.push(`<span style="color:#ff5252;">${e.name} は食料を食べて回復した！🍖</span>`); render(); await wait(600); continue;
+                } else if (actionType === "equip") {
+                    e.buffAtk = (e.buffAtk||1) + 0.5; e.isEquipped = true; state.log.push(`<span style="color:#ff5252;">${e.name} が武器を構えた！攻撃力大幅アップ！🗡️</span>`); render(); await wait(600); continue;
+                } else if (actionType === "unequip") {
+                    if (e.isEquipped) { e.buffAtk = Math.max(1.0, e.buffAtk - 0.5); e.isEquipped = false; state.log.push(`<span style="color:#aaa;">${e.name} は装備を外した。</span>`); }
+                    else { state.log.push(`<span style="color:#aaa;">${e.name} は何も装備していなかった。</span>`); }
+                    render(); await wait(600); continue;
+                } else if (actionType === "defend" || actionType === "buff_def") {
+                    e.shield = true; state.log.push(`<span style="color:#ff5252;">${e.name} は身を固めている！（次ダメージ半減）</span>`); render(); await wait(600); continue;
+                } else if (actionType === "heal_all") {
+                    let healAmount = Math.floor(e.maxHp * 0.2); state.enemies.forEach(en => { if(en.hp>0) en.hp = Math.min(en.maxHp, en.hp + healAmount); });
+                    state.log.push(`<span style="color:#ff5252;">${e.name} の【${skillName}】！ 敵全体の体力が回復した！</span>`); render(); await wait(600); continue;
+                } else if (actionType === "heal_ally" || actionType === "heal_self" || actionType === "heal") {
+                    let healAmount = Math.floor(e.maxHp * 0.2);
+                    if (actionType === "heal_ally") {
+                        let lowestE = state.enemies.filter(en=>en.hp>0).sort((a,b)=>a.hp-b.hp)[0]; lowestE.hp = Math.min(lowestE.maxHp, lowestE.hp + healAmount);
+                    } else { e.hp = Math.min(e.maxHp, e.hp + healAmount); }
+                    state.log.push(`<span style="color:#ff5252;">${e.name} の【${skillName}】！ 敵の体力が回復した！</span>`); render(); await wait(600); continue;
+                } else if (actionType === "debuff_def") {
+                    state.party.forEach(pt => { if(pt.hp > 0) pt.def = Math.max(0, Math.floor(pt.def * 0.9)); });
+                    state.log.push(`<span style="color:#9C27B0;">${e.name} の【${skillName}】！ 味方全体の防御力が下げられた！</span>`); render(); await wait(600); continue;
+                } 
+                else if (actionType === "summon_enemy") {
+                    let aliveEnemiesCount = state.enemies.filter(en => en.hp > 0).length;
+                    if (aliveEnemiesCount < 8 && !e.isBoss && !e.isFriend) {
+                        let rKey = null;
+                        if (e.type === 'seed' || e.type === 'ghost') {
+                            let possibleKeys = Object.keys(window.ARENA_ENEMIES).filter(k => window.ARENA_ENEMIES[k].type === e.type); rKey = possibleKeys[0];
+                        } else {
+                            let discoveredTypes = (window.aiPet.discoveredMonsters || []).map(k => k.split('_')[0]);
+                            let enemyKeys = Object.keys(window.ARENA_ENEMIES).filter(k => discoveredTypes.includes(window.ARENA_ENEMIES[k].type));
+                            if (enemyKeys.length === 0) enemyKeys = ['robot']; rKey = enemyKeys[Math.floor(Math.random() * enemyKeys.length)];
+                        }
+                        
+                        let base = window.ARENA_ENEMIES[rKey]; let spawnCount = state.enemySpawnCounts[base.name] || 0;
+                        const getSuffix = (index) => String.fromCharCode(65 + (index % 26));
+
+                        if (spawnCount === 1) { let existing = state.enemies.find(en => en.baseName === base.name); if (existing && existing.name === base.name) existing.name = `${base.name} A`; }
+                        state.enemySpawnCounts[base.name] = spawnCount + 1; let spawnIndex = state.enemySpawnCounts[base.name] - 1; let newName = (state.enemySpawnCounts[base.name] > 1) ? `${base.name} ${getSuffix(spawnIndex)}` : base.name;
+
+                        let waveMinus = state.wave - 1; let hpMultiplier = 1 + (waveMinus * 0.3) + (Math.pow(1.04, waveMinus) - 1); let atkMultiplier = 1 + (waveMinus * 0.2) + (Math.pow(1.03, waveMinus) - 1); let defMultiplier = 1 + (waveMinus * 0.1) + (Math.pow(1.02, waveMinus) - 1); let spdMultiplier = 1 + (waveMinus * 0.05);
+
+                        let eHp = Math.floor(base.hp * hpMultiplier + (state.wave * 10)); let eAtk = Math.floor(base.atk * atkMultiplier + (state.wave * 2)); let eDef = Math.floor(base.def * defMultiplier + (state.wave * 1)); let eSpd = Math.floor((base.speed||10) * spdMultiplier);
+
+                        state.enemies.push({ id: `e_${state.enemies.length}_${Date.now()}`, baseName: base.name, name: newName, spriteKey: base.spriteKey, type: base.type, hp: eHp, maxHp: eHp, atk: eAtk, def: eDef, speed: eSpd, buffAtk: 1.0, buffDef: 1.0, row: 'back' });
+                        state.log.push(`<span style="color:#00BCD4;">${e.name} の【${skillName}】！ 新たな魔物（${newName}）が現れた！</span>`);
+                        render(); await wait(800); continue;
+                    } else { state.log.push(`<span style="color:#aaa;">${e.name} は【${skillName}】を使ったが、これ以上は現れなかった...</span>`); render(); await wait(800); continue; }
                 }
-                
-                let gAtk = Math.max(20, Math.floor(e.atk * 0.5));
-                let gDef = Math.max(5, Math.floor(e.def * 0.5));
 
-                let spriteKey = "arena_" + masterType;
-                let mName = "幻影の助っ人";
+                if (actionType === "magic_all") {
+                    let dmg = Math.max(1, Math.floor(baseAtk * 0.8));
+                    state.log.push(`<span style="color:#ff5252;">${e.name} の【${skillName}】！</span>`);
+                    render(); await wait(300);
 
-                if (masterType === 'soldier') mName = "城の兵士";
-                else if (masterType === 'captain') mName = "城の隊長";
-                else if (masterType === 'king') mName = "王様";
-                else if (masterType === 'explore') mName = "冒険家";
-                else if (masterType === 'fishing') { mName = "漁師"; spriteKey = "arena_fisherman"; } 
-                else if (masterType === 'cooking') mName = "料理人";
-                else if (masterType === 'farming') mName = "農家";
-                else if (masterType === 'building') mName = "建築士";
-                else if (masterType === 'smithing') mName = "鍛冶師";
-                
-                state.enemies.push({
-                    id: `e_${state.enemies.length}_${Date.now()}`, baseName: mName, name: mName, spriteKey: spriteKey, type: masterType,
-                    hp: gHp, maxHp: gHp, atk: gAtk, def: gDef, buffAtk: 1.0, buffDef: 1.0, row: 'back', col: 0
-                });
-                state.log.push(`<span style="color:#ff5252;">なんと！${e.name} が ${mName} を呼び出した！！</span>`);
-            }
-            render(); await wait(600); continue;
-        } else if (actionType === "build_hut") {
-            e.hutHp = 5; state.log.push(`<span style="color:#ff5252;">${e.name} は頑丈な小屋に立てこもった！(🏠)</span>`); render(); await wait(600); continue;
-        } else if (actionType === "build_bridge") {
-            state.enemies.forEach(en => { if (en.hp > 0 && en.exploreTimer === 0) en.row = 'back'; });
-            state.log.push(`<span style="color:#ff5252;">${e.name} が橋を架け、敵全員が後衛に退避した！</span>`); render(); await wait(600); continue;
-        } else if (actionType === "build_farm") {
-            state.log.push(`<span style="color:#ff5252;">${e.name} は急いで畑を耕した！(敵陣に恩恵が...?)</span>`);
-            state.enemies.forEach(en => { if(en.hp > 0) en.hp = Math.min(en.maxHp, en.hp + Math.max(50, Math.floor(en.maxHp * 0.15))); });
-            render(); await wait(600); continue;
-        } else if (actionType === "random_build") {
-            let rnd = Math.random();
-            if (rnd < 0.33) { e.hutHp = 5; state.log.push(`<span style="color:#ff5252;">${e.name} は小屋を作り立てこもった！</span>`); }
-            else if (rnd < 0.66) { state.enemies.forEach(en => en.row = 'back'); state.log.push(`<span style="color:#ff5252;">敵陣に橋が完成し、敵が退避した！</span>`); }
-            else { e.shield = true; state.log.push(`<span style="color:#ff5252;">敵陣に防壁が完成した！</span>`); }
-            render(); await wait(600); continue;
-        } else if (actionType === "explore") {
-            e.exploreOriginalTurn = 2 + Math.floor(Math.random() * 3); e.exploreTimer = e.exploreOriginalTurn;
-            state.log.push(`<span style="color:#ff5252;">${e.name} は戦場から姿を消した... (探検中)</span>`); render(); await wait(600); continue;
-        } else if (actionType === "fishing") {
-            let r = Math.random();
-            if (r < 0.33) {
-                targetObj.flash = true;
-                let fishDmg = Math.max(30, Math.floor(e.atk * e.buffAtk * 0.6));
-                targetObj.hp -= fishDmg; 
-                state.log.push(`<span style="color:#ff5252;">${e.name} が釣った大物が ${targetObj.name||"味方"} に ${fishDmg} のダメージ！🎣</span>`);
-                render(); await wait(150); targetObj.flash = false; render(); await wait(500);
-            } else if (r < 0.66) {
-                let fishHeal = Math.max(40, Math.floor(e.maxHp * 0.2));
-                e.hp = Math.min(e.maxHp, e.hp + fishHeal); 
-                state.log.push(`<span style="color:#ff5252;">${e.name} は魚を食べてHP回復！🍣</span>`); render(); await wait(600);
-            } else { state.log.push(`<span style="color:#aaa;">${e.name} は空き缶を釣った。(失敗)</span>`); render(); await wait(600); }
-            continue;
-        } else if (actionType === "eat") {
-            let eatHealHp = Math.max(50, Math.floor(e.maxHp * 0.25));
-            let eatHealMp = Math.max(20, Math.floor((e.maxMp||100) * 0.15));
-            e.hp = Math.min(e.maxHp, e.hp + eatHealHp); e.mp = Math.min(e.maxMp || 100, (e.mp || 0) + eatHealMp);
-            state.log.push(`<span style="color:#ff5252;">${e.name} は食料を食べて回復した！🍖</span>`); render(); await wait(600); continue;
-        } else if (actionType === "equip") {
-            e.buffAtk = (e.buffAtk||1) + 0.5; e.isEquipped = true; state.log.push(`<span style="color:#ff5252;">${e.name} が武器を構えた！攻撃力大幅アップ！🗡️</span>`); render(); await wait(600); continue;
-        } else if (actionType === "unequip") {
-            if (e.isEquipped) { e.buffAtk = Math.max(1.0, e.buffAtk - 0.5); e.isEquipped = false; state.log.push(`<span style="color:#aaa;">${e.name} は装備を外した。</span>`); }
-            else { state.log.push(`<span style="color:#aaa;">${e.name} は何も装備していなかった。</span>`); }
-            render(); await wait(600); continue;
-        } else if (actionType === "defend" || actionType === "buff_def") {
-            e.shield = true; state.log.push(`<span style="color:#ff5252;">${e.name} は身を固めている！（次ダメージ半減）</span>`); render(); await wait(600); continue;
-        } else if (actionType === "heal_all") {
-            let healAmount = Math.floor(e.maxHp * 0.2);
-            state.enemies.forEach(en => { if(en.hp>0) en.hp = Math.min(en.maxHp, en.hp + healAmount); });
-            state.log.push(`<span style="color:#ff5252;">${e.name} の【${skillName}】！ 敵全体の体力が回復した！</span>`); render(); await wait(600); continue;
-        } else if (actionType === "heal_ally" || actionType === "heal_self" || actionType === "heal") {
-            let healAmount = Math.floor(e.maxHp * 0.2);
-            if (actionType === "heal_ally") {
-                let lowestE = state.enemies.filter(en=>en.hp>0).sort((a,b)=>a.hp-b.hp)[0];
-                lowestE.hp = Math.min(lowestE.maxHp, lowestE.hp + healAmount);
-            } else { e.hp = Math.min(e.maxHp, e.hp + healAmount); }
-            state.log.push(`<span style="color:#ff5252;">${e.name} の【${skillName}】！ 敵の体力が回復した！</span>`); render(); await wait(600); continue;
-        } else if (actionType === "debuff_def") {
-            state.party.forEach(pt => { if(pt.hp > 0) pt.def = Math.max(0, Math.floor(pt.def * 0.9)); });
-            state.log.push(`<span style="color:#9C27B0;">${e.name} の【${skillName}】！ 味方全体の防御力が下げられた！</span>`); render(); await wait(600); continue;
-        } 
-        else if (actionType === "summon_enemy") {
-            let aliveEnemiesCount = state.enemies.filter(en => en.hp > 0).length;
-            if (aliveEnemiesCount < 8 && !e.isBoss && !e.isFriend) {
-                
-                let rKey = null;
-                if (e.type === 'seed' || e.type === 'ghost') {
-                    let possibleKeys = Object.keys(window.ARENA_ENEMIES).filter(k => window.ARENA_ENEMIES[k].type === e.type);
-                    rKey = possibleKeys[0];
-                } else {
-                    let discoveredTypes = (window.aiPet.discoveredMonsters || []).map(k => k.split('_')[0]);
-                    let enemyKeys = Object.keys(window.ARENA_ENEMIES).filter(k => discoveredTypes.includes(window.ARENA_ENEMIES[k].type));
-                    if (enemyKeys.length === 0) enemyKeys = ['robot'];
-                    rKey = enemyKeys[Math.floor(Math.random() * enemyKeys.length)];
+                    let allTargets = [];
+                    state.party.forEach(pt => { if(pt.hp > 0 && pt.exploreTimer === 0 && !pt.isSleeping) allTargets.push({obj: pt, isGuest: false}); });
+                    state.guests.forEach(g => { if(g.hp > 0 && ['farming', 'soldier', 'captain', 'king'].includes(g.type)) allTargets.push({obj: g, isGuest: true}); });
+                    
+                    for (let tInfo of allTargets) {
+                        let pt = tInfo.obj;
+                        // ★回避判定
+                        let dodgeChance = Math.min(0.8, Math.max(0, ((pt.speed||10) - (e.speed||10)) * 0.05));
+                        let curName = tInfo.isGuest ? (pt.type === 'farming' ? '身代わりカボチャ' : (pt.type === 'soldier' ? '兵士' : (pt.type === 'captain' ? '隊長' : '王様'))) : pt.name;
+
+                        if (Math.random() < dodgeChance) {
+                            state.log.push(`<span style="color:#aaa;">${curName} は魔法をヒラリと避けた！(MISS)</span>`);
+                            continue;
+                        }
+
+                        let pDef = tInfo.isGuest ? Math.floor(avgDef * 0.5) : pt.def;
+                        let pDmg = Math.max(1, dmg - Math.floor(pDef * 0.5));
+                        if (!tInfo.isGuest) {
+                            if (pt.shield) { pDmg = Math.floor(pDmg / 2); pt.shield = false; }
+                            if (pt.hutHp > 0) { pDmg = Math.floor(pDmg / 2); pt.hutHp--; }
+                        }
+                        pt.hp -= pDmg;
+                        
+                        state.log.push(`<span style="color:#ff5252;">${curName} は ${pDmg} のダメージを受けた！</span>`);
+                        if (!state.skipMode) { let ui = document.getElementById('arena-battle-ui'); if (ui) { ui.classList.add('arena-shake', 'arena-damage-red'); setTimeout(() => ui.classList.remove('arena-shake', 'arena-damage-red'), 200); } }
+                        render(); await wait(300); 
+                    }
+                    continue; 
                 }
-                
-                let base = window.ARENA_ENEMIES[rKey];
-                let spawnCount = state.enemySpawnCounts[base.name] || 0;
-                const getSuffix = (index) => String.fromCharCode(65 + (index % 26));
 
-                if (spawnCount === 1) {
-                    let existing = state.enemies.find(en => en.baseName === base.name);
-                    if (existing && existing.name === base.name) existing.name = `${base.name} A`;
+                let captain = state.guests.find(g => g.type === 'captain' && g.hp > 0);
+                if (captain && !finalTargetData.isGuest && Math.random() < 0.5) {
+                    targetObj = captain; finalTargetData = { obj: captain, isGuest: true }; defValue = Math.floor(avgDef * 0.5); 
+                    state.log.push(`<span style="color:#FFD700;">城の隊長が身を挺して ${targetObj.name || "味方"} をかばった！！🛡️</span>`);
+                    render(); await wait(500);
                 }
+
+                let tName = finalTargetData.isGuest ? (targetObj.type === 'farming' ? '身代わりカボチャ' : (targetObj.type === 'soldier' ? '兵士' : (targetObj.type === 'captain' ? '隊長' : '王様'))) : targetObj.name;
                 
-                state.enemySpawnCounts[base.name] = spawnCount + 1;
-                let spawnIndex = state.enemySpawnCounts[base.name] - 1;
-                let newName = (state.enemySpawnCounts[base.name] > 1) ? `${base.name} ${getSuffix(spawnIndex)}` : base.name;
-
-                let waveMinus = state.wave - 1;
-                let hpMultiplier = 1 + (waveMinus * 0.3) + (Math.pow(1.04, waveMinus) - 1);
-                let atkMultiplier = 1 + (waveMinus * 0.2) + (Math.pow(1.03, waveMinus) - 1);
-                let defMultiplier = 1 + (waveMinus * 0.1) + (Math.pow(1.02, waveMinus) - 1);
-
-                let eHp = Math.floor(base.hp * hpMultiplier + (state.wave * 10));
-                let eAtk = Math.floor(base.atk * atkMultiplier + (state.wave * 2));
-                let eDef = Math.floor(base.def * defMultiplier + (state.wave * 1));
-
-                state.enemies.push({
-                    id: `e_${state.enemies.length}_${Date.now()}`, baseName: base.name, name: newName, spriteKey: base.spriteKey, type: base.type,
-                    hp: eHp, maxHp: eHp, atk: eAtk, def: eDef, buffAtk: 1.0, buffDef: 1.0,
-                    row: 'back' 
-                });
-
-                state.log.push(`<span style="color:#00BCD4;">${e.name} の【${skillName}】！ 新たな魔物（${newName}）が現れた！</span>`);
-                render(); await wait(800); continue;
-            } else {
-                state.log.push(`<span style="color:#aaa;">${e.name} は【${skillName}】を使ったが、これ以上は現れなかった...</span>`);
-                render(); await wait(800); continue;
-            }
-        }
-
-        if (actionType === "magic_all") {
-            let dmg = Math.max(1, Math.floor(baseAtk * 0.8));
-            state.log.push(`<span style="color:#ff5252;">${e.name} の【${skillName}】！</span>`);
-            render(); await wait(300);
-
-            let allTargets = [];
-            state.party.forEach(pt => { if(pt.hp > 0 && pt.exploreTimer === 0 && !pt.isSleeping) allTargets.push({obj: pt, isGuest: false}); });
-            state.guests.forEach(g => { if(g.hp > 0 && ['farming', 'soldier', 'captain', 'king'].includes(g.type)) allTargets.push({obj: g, isGuest: true}); });
-            
-            for (let tInfo of allTargets) {
-                let pt = tInfo.obj;
-                let curName = tInfo.isGuest ? (pt.type === 'farming' ? '身代わりカボチャ' : (pt.type === 'soldier' ? '兵士' : (pt.type === 'captain' ? '隊長' : '王様'))) : pt.name;
-                // ★修正：全体魔法の際も、NPCは味方の平均防御力を参照する
-                let pDef = tInfo.isGuest ? Math.floor(avgDef * 0.5) : pt.def;
-                
-                let pDmg = Math.max(1, dmg - Math.floor(pDef * 0.5));
-                if (!tInfo.isGuest) {
-                    if (pt.shield) { pDmg = Math.floor(pDmg / 2); pt.shield = false; }
-                    if (pt.hutHp > 0) { pDmg = Math.floor(pDmg / 2); pt.hutHp--; }
+                dmg = 0;
+                if (actionType === "heavy" || actionType === "heavy_magic" || actionType === "attack") {
+                    // ★回避判定
+                    let dodgeChance = Math.min(0.8, Math.max(0, ((targetObj.speed||10) - (e.speed||10)) * 0.05));
+                    if (Math.random() < dodgeChance) {
+                        logMsg = `<span style="color:#aaa;">${e.name} の攻撃！ しかし ${tName} は素早く避けた！(MISS)</span>`;
+                    } else {
+                        if (e.row === 'back' && actionType === "attack") dmgMultiplier *= 0.7; 
+                        baseAtk *= dmgMultiplier;
+                        
+                        if (actionType === "heavy" || actionType === "heavy_magic") { dmg = Math.max(1, Math.floor(baseAtk * 1.5) - Math.floor(defValue * 0.5)); } 
+                        else { dmg = Math.max(1, Math.floor(baseAtk) - Math.floor(defValue * 0.5)); }
+                        
+                        if (!finalTargetData.isGuest) {
+                            if (targetObj.shield) { dmg = Math.floor(dmg / 2); targetObj.shield = false; }
+                            if (targetObj.hutHp > 0) { dmg = Math.floor(dmg / 2); targetObj.hutHp--; }
+                        }
+                        targetObj.hp -= dmg;
+                        if (actionType === "attack") logMsg = `<span style="color:#ff5252;">${e.name} の攻撃！ ${tName} は ${dmg} のダメージを受けた！</span>`;
+                        else logMsg = `<span style="color:#ff5252;">${e.name} の【${skillName}】！ 強烈な一撃が ${tName} に ${dmg} ダメージ！</span>`;
+                    }
                 }
-                pt.hp -= pDmg;
+
+                if (logMsg) state.log.push(logMsg);
                 
-                state.log.push(`<span style="color:#ff5252;">${curName} は ${pDmg} のダメージを受けた！</span>`);
-                if (!state.skipMode) {
+                if (!state.skipMode && dmg > 0) {
                     let ui = document.getElementById('arena-battle-ui');
-                    if (ui) { ui.classList.add('arena-shake', 'arena-damage-red'); setTimeout(() => ui.classList.remove('arena-shake', 'arena-damage-red'), 200); }
+                    if (ui) { ui.classList.add('arena-shake', 'arena-damage-red'); setTimeout(() => ui.classList.remove('arena-shake', 'arena-damage-red'), 500); }
                 }
-                render(); await wait(300); 
-            }
-            continue; 
-        }
-
-        let captain = state.guests.find(g => g.type === 'captain' && g.hp > 0);
-        if (captain && !finalTargetData.isGuest && Math.random() < 0.5) {
-            targetObj = captain;
-            finalTargetData = { obj: captain, isGuest: true };
-            defValue = Math.floor(avgDef * 0.5); // かばった際も平均防御力
-            state.log.push(`<span style="color:#FFD700;">城の隊長が身を挺して ${targetObj.name || "味方"} をかばった！！🛡️</span>`);
-            render(); await wait(500);
-        }
-
-        let tName = finalTargetData.isGuest ? (targetObj.type === 'farming' ? '身代わりカボチャ' : (targetObj.type === 'soldier' ? '兵士' : (targetObj.type === 'captain' ? '隊長' : '王様'))) : targetObj.name;
-        
-        dmg = 0;
-        if (actionType === "heavy" || actionType === "heavy_magic" || actionType === "attack") {
-            if (e.row === 'back' && actionType === "attack") dmgMultiplier *= 0.7; 
-            baseAtk *= dmgMultiplier;
-            
-            if (actionType === "heavy" || actionType === "heavy_magic") {
-                dmg = Math.max(1, Math.floor(baseAtk * 1.5) - Math.floor(defValue * 0.5));
-            } else {
-                dmg = Math.max(1, Math.floor(baseAtk) - Math.floor(defValue * 0.5));
-            }
-            
-            if (!finalTargetData.isGuest) {
-                if (targetObj.shield) { dmg = Math.floor(dmg / 2); targetObj.shield = false; }
-                if (targetObj.hutHp > 0) { dmg = Math.floor(dmg / 2); targetObj.hutHp--; }
-            }
-            targetObj.hp -= dmg;
-            if (actionType === "attack") {
-                logMsg = `<span style="color:#ff5252;">${e.name} の攻撃！ ${tName} は ${dmg} のダメージを受けた！</span>`;
-            } else {
-                logMsg = `<span style="color:#ff5252;">${e.name} の【${skillName}】！ 強烈な一撃が ${tName} に ${dmg} ダメージ！</span>`;
+                render(); await wait(800);
             }
         }
-
-        if (logMsg) state.log.push(logMsg);
-        
-        if (!state.skipMode && dmg > 0) {
-            let ui = document.getElementById('arena-battle-ui');
-            if (ui) { ui.classList.add('arena-shake', 'arena-damage-red'); setTimeout(() => ui.classList.remove('arena-shake', 'arena-damage-red'), 500); }
-        }
-        render(); await wait(800);
     }
 
     state.isProcessing = false;
@@ -1486,10 +1473,9 @@ window.processArenaTurn = async function() {
             let maxWaves = state.mode === 'boss' ? state.bossQueue.length : state.bossQueue.length * 50;
             
             if (state.wave >= maxWaves) {
-                // ★追加：クリア時にもランキングをしっかり保存する！
                 let partyToSave = state.party.map(p => {
                     let origP = window.ARENA_RECEPTION_STATE.party.find(rp => rp.id === p.id) || p;
-                    return { ...p, atk: origP.atk || p.atk, def: origP.def || p.def, intel: origP.intel || p.intel };
+                    return { ...p, atk: origP.atk || p.atk, def: origP.def || p.def, intel: origP.intel || p.intel, speed: origP.speed || p.speed };
                 });
                 if (typeof window.updateArenaRanking === 'function') window.updateArenaRanking(state.wave, partyToSave);
 
@@ -1500,7 +1486,6 @@ window.processArenaTurn = async function() {
                 let ui = document.getElementById('arena-battle-ui'); if (ui) ui.style.display = 'none';
                 state.active = false; state.autoMode = false;
 
-                // ★追加：豪華なクリア用リザルト画面
                 let resUi = document.createElement('div');
                 resUi.style.cssText = `position: fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.95); z-index: 60000; display:flex; flex-direction:column; justify-content:center; align-items:center; color:white;`;
                 resUi.innerHTML = `

@@ -497,8 +497,8 @@ const charaTraits = {
 };
 
 const translations = { 
-    ja: { gen: "世代", age: "年齢", energy: "体力", hunger: "満腹", intel: "賢さ", power: "活力", mood: "機嫌", beauty: "美しさ", type: "性格", gold: "所持金", trait: "特性", weather: "天気", time: "日時" }, 
-    en: { gen: "GEN", age: "AGE", energy: "ENERGY", hunger: "HUNGER", intel: "INTEL", power: "POWER", mood: "MOOD", beauty: "BEAUTY", type: "TYPE", gold: "GOLD", trait: "TRAIT", weather: "WEATHER", time: "TIME" } 
+    ja: { gen: "世代", age: "年齢", energy: "体力", hunger: "満腹", intel: "賢さ", power: "活力", mood: "機嫌", beauty: "美しさ", speed: "素早さ", type: "性格", gold: "所持金", trait: "特性", weather: "天気", time: "日時" }, 
+    en: { gen: "GEN", age: "AGE", energy: "ENERGY", hunger: "HUNGER", intel: "INTEL", power: "POWER", mood: "MOOD", beauty: "BEAUTY", speed: "SPEED", type: "TYPE", gold: "GOLD", trait: "TRAIT", weather: "WEATHER", time: "TIME" } 
 };
 
 const personalityQuestions = [
