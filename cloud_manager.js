@@ -1,7 +1,7 @@
 // Firebaseの最新モジュールをインターネット(CDN)から直接読み込む
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 // ★修正：getDoc（データを読み込む部品）を追加しました
-import { getFirestore, doc, setDoc, getDocs, getDoc, collection, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getFirestore, doc, setDoc, getDocs, getDoc, collection, query, where, orderBy, limit, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
 const firebaseConfig = {
@@ -940,7 +940,12 @@ window.processTradeMailbox = async function() {
                         window.aiPet.gold += t.price; 
                         totalProfit += t.price;
                         reportHtml += `<div style="background:#222; border-left:4px solid #4CAF50; padding:10px; margin-bottom:8px; border-radius:4px; display:flex; justify-content:space-between; align-items:center;"><div><div style="font-size:11px; color:#aaa;">${timeStr}</div><div style="font-size:14px; font-weight:bold; color:#FFF;">📤 売却 (${t.visitorName}さん): <span style="color:#FFC107;">${itemName}</span></div></div><div style="font-size:18px; font-weight:bold; color:#4CAF50;">+${t.price} G</div></div>`;
-                    }
+                    } else if (t.tradeType === 'tcg_sold') {
+                        // TCGの売上通知
+                        window.aiPet.gold += t.price; 
+                        totalProfit += t.price;
+                        reportHtml += `<div style="background:#222; border-left:4px solid #E040FB; padding:10px; margin-bottom:8px; border-radius:4px; display:flex; justify-content:space-between; align-items:center;"><div><div style="font-size:11px; color:#aaa;">${timeStr}</div><div style="font-size:14px; font-weight:bold; color:#FFF;">🃏 カード売上 (${t.visitorName}さん買上): <span style="color:#E040FB;">${t.itemId}</span></div></div><div style="font-size:18px; font-weight:bold; color:#E040FB;">+${t.price} G</div></div>`;
+                    } 
                 });
             }
 
@@ -1006,3 +1011,59 @@ if (typeof window.originalSendChat === 'undefined') {
         if (typeof window.originalSendChat === 'function') window.originalSendChat();
     };
 }
+
+// ==========================================
+// 🃏 TCG オンラインマーケット機能
+// ==========================================
+window.uploadTCGMarketItem = async function(cardData, price) {
+    const user = auth.currentUser;
+    if (!user) return false;
+    const playerName = localStorage.getItem('my_player_name') || "名無し";
+    const docId = 'market_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+    try {
+        await setDoc(doc(db, "tcg_market", docId), {
+            sellerId: user.uid,
+            sellerName: playerName,
+            price: price,
+            cardData: cardData,
+            createdAt: Date.now()
+        });
+        return true;
+    } catch(e) { console.error(e); return false; }
+};
+
+window.fetchTCGMarketItems = async function() {
+    try {
+        const q = query(collection(db, "tcg_market"), orderBy("createdAt", "desc"), limit(50));
+        const snap = await getDocs(q);
+        let items = [];
+        snap.forEach(d => {
+            let data = d.data();
+            data.docId = d.id;
+            items.push(data);
+        });
+        return items;
+    } catch(e) { console.error(e); return []; }
+};
+
+window.buyTCGMarketItem = async function(docId, cardData, price, sellerId) {
+    const user = auth.currentUser;
+    if (!user) return false;
+    try {
+        // 先に市場から削除（購入成立）
+        await deleteDoc(doc(db, "tcg_market", docId));
+        // メールボックスに売上を送信
+        const myName = localStorage.getItem('my_player_name') || "名無し";
+        const mailRef = doc(db, "trade_mailbox", sellerId);
+        const mailSnap = await getDoc(mailRef);
+        let trades = mailSnap.exists() ? (mailSnap.data().trades || []) : [];
+        trades.push({ visitorName: myName, tradeType: 'tcg_sold', itemId: cardData.name, price: price, timestamp: Date.now() });
+        await setDoc(mailRef, { trades: trades });
+        return true;
+    } catch(e) { console.error(e); return false; }
+};
+
+window.cancelTCGMarketItem = async function(docId) {
+    try { await deleteDoc(doc(db, "tcg_market", docId)); return true; } 
+    catch(e) { console.error(e); return false; }
+};

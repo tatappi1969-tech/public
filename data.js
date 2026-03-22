@@ -23,7 +23,44 @@ try {
     if (savedCustomImages) { for (let key in savedCustomImages) { imageSources[key] = savedCustomImages[key]; } }
 } catch(e) {}
 
-const defaultCatalog = {"skull":{"sx":42,"sy":127,"sw":216,"sh":216,"img":"field","type":"building","name":"洞窟"},"castle":{"sx":278,"sy":85,"sw":226,"sh":257,"img":"field","type":"building","name":"城"},"casino":{"sx":556,"sy":132,"sw":184,"sh":196,"img":"field","type":"building","name":"カジノ"},"crystal":{"sx":780,"sy":116,"sw":194,"sh":212,"img":"field","type":"building","name":"クリスタル"},"mountain":{"sx":65,"sy":446,"sw":155,"sh":140,"img":"field","type":"nature","name":"山"},"house":{"sx":299,"sy":391,"sw":196,"sh":221,"img":"field","type":"building","name":"家"},"palms":{"sx":551,"sy":440,"sw":166,"sh":153,"img":"field","type":"nature","name":"森"},"grass1":{"img":"terrain","sx":77,"sy":88,"sw":585,"sh":585,"type":"ground","name":"grass1","scale":0.10000000000000007},"grass2":{"img":"terrain","sx":736,"sy":88,"sw":585,"sh":585,"type":"ground","name":"grass2","scale":0.10000000000000007},"grass3":{"img":"terrain","sx":1379,"sy":88,"sw":585,"sh":585,"type":"ground","name":"grass3","scale":0.10000000000000007},"road_h":{"img":"terrain","sx":77,"sy":703,"sw":585,"sh":585,"type":"road","name":"road_h","scale":0.10000000000000007},"road_v":{"img":"terrain","sx":736,"sy":703,"sw":585,"sh":585,"type":"road","name":"road_v","scale":0.10000000000000007},"road_x":{"img":"terrain","sx":1379,"sy":703,"sw":585,"sh":585,"type":"road","name":"road_x","scale":0.10000000000000007},"water1":{"img":"terrain","sx":77,"sy":1342,"sw":585,"sh":585,"type":"water","name":"water1","scale":0.10000000000000007},"water2":{"img":"terrain","sx":736,"sy":1342,"sw":585,"sh":585,"type":"water","name":"water2","scale":0.10000000000000007},"water3":{"img":"terrain","sx":1379,"sy":1342,"sw":585,"sh":585,"type":"water","name":"water3","scale":0.10000000000000007},"bridge":{"img":"field_6","sx":183,"sy":1126,"sw":769,"sh":691,"type":"object","name":"橋","scale":0.10000000000000007},"hut":{"img":"field","sx":302,"sy":685,"sw":151,"sh":154,"type":"building","name":"小屋","scale":0.5},"castle_build":{"img":"castle_build","sx":139,"sy":118,"sw":1796,"sh":1648,"type":"building","name":"建築中の城","scale":0.10000000000000007},"restaurant":{"img":"field_4","sx":278,"sy":115,"sw":222,"sh":220,"type":"building","name":"レストラン"},"shop":{"img":"field_3","sx":749,"sy":86,"sw":231,"sh":237,"type":"building","name":"ショップ","scale":0.5},"blacksmith":{"img":"field_4","sx":271,"sy":365,"sw":241,"sh":248,"type":"building","name":"鍛冶屋","scale":0.5},"farm":{"img":"field_3","sx":23,"sy":413,"sw":255,"sh":220,"type":"farm","name":"畑(空き地)"},"hut_room":{"img":"room_bg","sx":35,"sy":391,"sw":1307,"sh":654,"type":"room","name":"小屋の背景","scale":0.15},"castle_room":{"img":"room_bg","sx":1307,"sy":391,"sw":1307,"sh":654,"type":"room","name":"城の背景","scale":0.15},"farm_growing":{"img":"field_3","sx":26,"sy":671,"sw":255,"sh":220,"type":"farm","name":"畑(成長中)","scale":0.5},"farm_mature":{"img":"field_3","sx":746,"sy":667,"sw":255,"sh":220,"type":"farm","name":"畑(収穫可)","scale":0.5},"camping_bg":{"img":"field_bg","sx":34,"sy":26,"sw":1408,"sh":650,"type":"room","name":"野宿背景","scale":0.1499999999999997},"farm_bg":{"img":"field_bg","sx":1535,"sy":26,"sw":1408,"sh":650,"type":"room","name":"農業背景","scale":0.1499999999999997},"mountain_bg":{"img":"field_bg","sx":34,"sy":762,"sw":1408,"sh":650,"type":"room","name":"山背景","scale":0.1499999999999997},"forest_bg":{"img":"field_bg","sx":1535,"sy":762,"sw":1408,"sh":650,"type":"room","name":"森背景","scale":0.1499999999999997},"eating_bg":{"img":"field_bg","sx":0,"sy":0,"sw":300,"sh":200,"type":"room","name":"食事背景","scale":1},"river_bg":{"img":"fishing_bg","sx":148,"sy":25,"sw":2803,"sh":654,"type":"room","name":"川釣り背景","scale":0.1},"sea_bg":{"img":"fishing_bg","sx":146,"sy":763,"sw":2803,"sh":654,"type":"room","name":"海釣り背景","scale":0.1}}
+const defaultCatalog = {
+  "skull":{"sx":42,"sy":127,"sw":216,"sh":216,"img":"field","type":"building","name":"洞窟"},
+  "castle":{"sx":278,"sy":85,"sw":226,"sh":257,"img":"field","type":"building","name":"城"},
+  "casino":{"sx":556,"sy":132,"sw":184,"sh":196,"img":"field","type":"building","name":"カジノ"},
+  "crystal":{"sx":780,"sy":116,"sw":194,"sh":212,"img":"field","type":"building","name":"クリスタル"},
+  "mountain":{"sx":65,"sy":446,"sw":155,"sh":140,"img":"field","type":"nature","name":"山"},
+  "house":{"sx":299,"sy":391,"sw":196,"sh":221,"img":"field","type":"building","name":"家"},
+  "palms":{"sx":551,"sy":440,"sw":166,"sh":153,"img":"field","type":"nature","name":"森"},
+  "grass1":{"img":"terrain","sx":77,"sy":88,"sw":585,"sh":585,"type":"ground","name":"grass1","scale":0.10000000000000007},
+  "grass2":{"img":"terrain","sx":736,"sy":88,"sw":585,"sh":585,"type":"ground","name":"grass2","scale":0.10000000000000007},
+  "grass3":{"img":"terrain","sx":1379,"sy":88,"sw":585,"sh":585,"type":"ground","name":"grass3","scale":0.10000000000000007},
+  "road_h":{"img":"terrain","sx":77,"sy":703,"sw":585,"sh":585,"type":"road","name":"road_h","scale":0.10000000000000007},
+  "road_v":{"img":"terrain","sx":736,"sy":703,"sw":585,"sh":585,"type":"road","name":"road_v","scale":0.10000000000000007},
+  "road_x":{"img":"terrain","sx":1379,"sy":703,"sw":585,"sh":585,"type":"road","name":"road_x","scale":0.10000000000000007},
+  "water1":{"img":"terrain","sx":77,"sy":1342,"sw":585,"sh":585,"type":"water","name":"water1","scale":0.10000000000000007},
+  "water2":{"img":"terrain","sx":736,"sy":1342,"sw":585,"sh":585,"type":"water","name":"water2","scale":0.10000000000000007},
+  "water3":{"img":"terrain","sx":1379,"sy":1342,"sw":585,"sh":585,"type":"water","name":"water3","scale":0.10000000000000007},
+  "bridge":{"img":"field_6","sx":183,"sy":1126,"sw":769,"sh":691,"type":"object","name":"橋","scale":0.10000000000000007},
+  "hut":{"img":"field","sx":302,"sy":685,"sw":151,"sh":154,"type":"building","name":"小屋","scale":0.5},
+  "castle_build":{"img":"castle_build","sx":139,"sy":118,"sw":1796,"sh":1648,"type":"building","name":"建築中の城","scale":0.10000000000000007},
+  "restaurant":{"img":"field_4","sx":278,"sy":115,"sw":222,"sh":220,"type":"building","name":"レストラン"},
+  "shop":{"img":"field_3","sx":749,"sy":86,"sw":231,"sh":237,"type":"building","name":"ショップ","scale":0.5},
+  // ★追加：カード屋（今回はshopの画像「field_3」の右側あたりを流用して表示）
+  "card_shop":{"img":"field_3","sx":749,"sy":86,"sw":231,"sh":237,"type":"building","name":"カード屋","scale":0.45},
+  "blacksmith":{"img":"field_4","sx":271,"sy":365,"sw":241,"sh":248,"type":"building","name":"鍛冶屋","scale":0.5},
+  "farm":{"img":"field_3","sx":23,"sy":413,"sw":255,"sh":220,"type":"farm","name":"畑(空き地)"},
+  "hut_room":{"img":"room_bg","sx":35,"sy":391,"sw":1307,"sh":654,"type":"room","name":"小屋の背景","scale":0.15},
+  "castle_room":{"img":"room_bg","sx":1307,"sy":391,"sw":1307,"sh":654,"type":"room","name":"城の背景","scale":0.15},
+  "farm_growing":{"img":"field_3","sx":26,"sy":671,"sw":255,"sh":220,"type":"farm","name":"畑(成長中)","scale":0.5},
+  "farm_mature":{"img":"field_3","sx":746,"sy":667,"sw":255,"sh":220,"type":"farm","name":"畑(収穫可)","scale":0.5},
+  "camping_bg":{"img":"field_bg","sx":34,"sy":26,"sw":1408,"sh":650,"type":"room","name":"野宿背景","scale":0.1499999999999997},
+  "farm_bg":{"img":"field_bg","sx":1535,"sy":26,"sw":1408,"sh":650,"type":"room","name":"農業背景","scale":0.1499999999999997},
+  "mountain_bg":{"img":"field_bg","sx":34,"sy":762,"sw":1408,"sh":650,"type":"room","name":"山背景","scale":0.1499999999999997},
+  "forest_bg":{"img":"field_bg","sx":1535,"sy":762,"sw":1408,"sh":650,"type":"room","name":"森背景","scale":0.1499999999999997},
+  "eating_bg":{"img":"field_bg","sx":0,"sy":0,"sw":300,"sh":200,"type":"room","name":"食事背景","scale":1},
+  "river_bg":{"img":"fishing_bg","sx":148,"sy":25,"sw":2803,"sh":654,"type":"room","name":"川釣り背景","scale":0.1},
+  "sea_bg":{"img":"fishing_bg","sx":146,"sy":763,"sw":2803,"sh":654,"type":"room","name":"海釣り背景","scale":0.1}
+};
 const characterDialogues = {
     robot: { 
         average: ["システム正常。", "異常なし。", "待機中...", "タスクを要求します。"], 
@@ -550,7 +587,17 @@ const personalityQuestions = [
 ];
 
 const initialBaseStats = { robot: { intel: 15, power: 20, mood: 100 }, spirit: { intel: 10, power: 10, mood: 100 }, magician: { intel: 25, power: 5, mood: 100 }, beetle: { intel: 5, power: 30, mood: 100 }, seed: { intel: 10, power: 10, mood: 100 }, dragon: { intel: 20, power: 25, mood: 100 }, bird: { intel: 15, power: 15, mood: 100 }, machine: { intel: 10, power: 15, mood: 100 }, stone: { intel: 5, power: 35, mood: 100 }, balloon: { intel: 15, power: 5, mood: 100 }, ghost: { intel: 30, power: 5, mood: 100 } };
-const buildingCatalog = { farm: { name: "畑", reqIntel: 0, reqBuildLevel: 1, cost: { energy: 30 }, materials: {} }, hut: { name: "小屋", reqIntel: 15, reqBuildLevel: 1, cost: { energy: 40 }, materials: { wood: 5, stone: 2 }, maxDurability: 10 }, bridge: { name: "橋", reqIntel: 20, reqBuildLevel: 2, cost: { energy: 20 }, materials: { wood: 3 }, onWater: true }, restaurant: { name: "レストラン", reqIntel: 40, reqBuildLevel: 3, cost: { energy: 50 }, materials: { stone: 5, wood: 5 }, breakChance: 0.001 }, shop: { name: "ショップ", reqIntel: 45, reqBuildLevel: 4, cost: { energy: 40 }, materials: { stone: 5, wood: 3 }, breakChance: 0.001 }, blacksmith: { name: "鍛冶屋", reqIntel: 50, reqBuildLevel: 5, cost: { energy: 60 }, materials: { stone: 10, iron: 5 }, breakChance: 0.001 }, casino: { name: "カジノ", reqIntel: 80, reqBuildLevel: 6, cost: { energy: 80 }, materials: { stone: 10, wood: 10, coin: 5 }, breakChance: 0.0005 }, castle: { name: "お城", reqIntel: 100, reqBuildLevel: 8, cost: { energy: 90 }, materials: { stone: 20, wood: 10, iron: 5 }, breakChance: 0.0005 } };
+const buildingCatalog = { 
+  farm: { name: "畑", reqIntel: 0, reqBuildLevel: 1, cost: { energy: 30 }, materials: {} },
+  hut: { name: "小屋", reqIntel: 15, reqBuildLevel: 1, cost: { energy: 40 }, materials: { wood: 5, stone: 2 }, maxDurability: 10 },
+  bridge: { name: "橋", reqIntel: 20, reqBuildLevel: 2, cost: { energy: 20 }, materials: { wood: 3 }, onWater: true },
+  restaurant: { name: "レストラン", reqIntel: 40, reqBuildLevel: 3, cost: { energy: 50 }, materials: { stone: 5, wood: 5 }, breakChance: 0.001 },
+  shop: { name: "ショップ", reqIntel: 45, reqBuildLevel: 4, cost: { energy: 40 }, materials: { stone: 5, wood: 3 }, breakChance: 0.001 },
+  blacksmith: { name: "鍛冶屋", reqIntel: 50, reqBuildLevel: 5, cost: { energy: 60 }, materials: { stone: 10, iron: 5 }, breakChance: 0.001 },
+  casino: { name: "カジノ", reqIntel: 80, reqBuildLevel: 6, cost: { energy: 80 }, materials: { stone: 10, wood: 10, coin: 5 }, breakChance: 0.0005 },
+  castle: { name: "お城", reqIntel: 100, reqBuildLevel: 8, cost: { energy: 90 }, materials: { stone: 20, wood: 10, iron: 5 }, breakChance: 0.0005 },
+  // ★追加：カードショップ（カジノ来店フラグが必要。クリスタル迷宮25Fの素材を要求）
+  card_shop: { name: "カード屋", reqIntel: 120, reqBuildLevel: 9, cost: { energy: 90 }, materials: { stone: 20, wood: 20, mat_card_1: 1 }, breakChance: 0.0005, reqFlag: 'visitedCasino' } };
 const recipeCatalog = [ { id: 'dish_salad', name: "フレッシュサラダ", ingredients: { carrot: 1, tomato: 1 } }, { id: 'dish_stirfry', name: "野菜炒め", ingredients: { carrot: 1, pepper: 1 } }, { id: 'dish_soup', name: "ミネストローネ", ingredients: { tomato: 1, pepper: 1 } }, { id: 'baked_carrot', name: "焼きニンジン", ingredients: { carrot: 1 }, type: 'simple' }, { id: 'baked_pepper', name: "焼きピーマン", ingredients: { pepper: 1 }, type: 'simple' }, { id: 'baked_tomato', name: "焼きトマト", ingredients: { tomato: 1 }, type: 'simple' }, { id: 'baked_fish', name: "焼き魚", ingredients: { fish: 1 }, type: 'simple' } ];
 const craftCatalog = [ { id: 'eq_sword', name: "鉄の剣", materials: { iron: 5, wood: 2 } }, { id: 'eq_shield', name: "鉄の盾", materials: { iron: 4, stone: 4 } }, { id: 'eq_staff', name: "魔法の杖", materials: { wood: 5, crystal: 1 } }, { id: 'eq_crown', name: "王冠", materials: { coin: 5, crystal: 2 } }, { id: 'tool_pan', name: "フライパン", materials: { iron: 2, wood: 1 } } ];
 const actionTypes = ['idle', 'move', 'study', 'train', 'sleep', 'eat_dish', 'eat_raw', 'fish', 'cook', 'smith', 'farm_plow', 'farm_seed', 'farm_water', 'farm_pest', 'farm_harvest'];
@@ -10770,15 +10817,22 @@ setTimeout(() => {
         itemCatalog['mat_casino_1'] = { name: '幻惑のグラス', type: 'material', value: 1000, desc: 'クリスタル迷宮5F到達報酬。カジノの建築に必要。' };
         itemCatalog['mat_casino_2'] = { name: '輝くカジノチップ', type: 'material', value: 2000, desc: 'クリスタル迷宮10F到達報酬。カジノの建築に必要。' };
         itemCatalog['mat_casino_3'] = { name: '真理のダイス', type: 'material', value: 5000, desc: 'クリスタル迷宮20F到達報酬。カジノの建築に必要。' };
+        
+        // ★追加：カードショップ用素材
+        itemCatalog['mat_card_1'] = { name: '幻影のカードパック', type: 'material', value: 10000, desc: 'クリスタル迷宮25F到達報酬。カード屋の建築に必要。' };
     }
 
-    // 2. お城とカジノのレシピを「専用素材必須」に書き換え！
+    // 2. お城とカジノ、カード屋のレシピを「専用素材必須」に書き換え！
     if (typeof buildingCatalog !== 'undefined') {
         if (buildingCatalog['castle']) {
             buildingCatalog['castle'].materials = { 'mat_castle_1': 1, 'mat_castle_2': 1, 'mat_castle_3': 1 };
         }
         if (buildingCatalog['casino']) {
             buildingCatalog['casino'].materials = { 'mat_casino_1': 1, 'mat_casino_2': 1, 'mat_casino_3': 1 };
+        }
+        // ★追加：カード屋の専用素材設定
+        if (buildingCatalog['card_shop']) {
+            buildingCatalog['card_shop'].materials = { 'mat_card_1': 1, 'stone': 20, 'wood': 20 };
         }
     }
 }, 1000); // カタログが読み込まれた後に安全に上書き

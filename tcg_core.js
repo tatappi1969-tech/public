@@ -3196,9 +3196,44 @@ window.refreshDeckBuilderView = function() {
     const isUnlocked = window.TCG && window.TCG.myCollection && window.TCG.myCollection.length >= 60;
     const emptyDeckText = isUnlocked ? "デッキは空です" : "アルバムのページは空です";
 
+    // 🗃️ 編成画面でのカードクリック時メニュー（重なりバグ修正版）
+window.showDeckCardActionMenu = function(uid, isDeckArea) {
+    let card = window.TCG.myCollection.find(c => c.uid === uid);
+    if (!card) return;
+
+    let menu = document.getElementById('tcg-card-action-menu');
+    if (menu) menu.remove();
+    
+    menu = document.createElement('div');
+    menu.id = 'tcg-card-action-menu';
+    menu.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(0,0,0,0.85); z-index: 60000;
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+    `;
+    
+    let actionBtn = isDeckArea 
+        ? `<button onclick="window.toggleCardInDeck('${uid}'); document.getElementById('tcg-card-action-menu').remove();" style="padding:15px 30px; font-size:18px; font-weight:bold; background:#ff5252; color:white; border:2px solid #FFF; border-radius:8px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.3);">➖ デッキから外す</button>`
+        : `<button onclick="window.toggleCardInDeck('${uid}'); document.getElementById('tcg-card-action-menu').remove();" style="padding:15px 30px; font-size:18px; font-weight:bold; background:#4CAF50; color:white; border:2px solid #FFF; border-radius:8px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.3);">➕ デッキに入れる</button>`;
+
+    menu.innerHTML = `
+        <div style="width: 270px; height: 390px; margin-bottom: 30px; display: flex; justify-content: center; align-items: flex-start;">
+            <div style="transform: scale(1.5); transform-origin: top center; pointer-events:none; box-shadow:0 0 30px rgba(0,188,212,0.4); border-radius:12px;">
+                ${window.renderCardHTML(card)}
+            </div>
+        </div>
+        <div style="display:flex; gap:20px; margin-bottom: 20px;">
+            <button onclick="document.getElementById('tcg-card-action-menu').remove(); window.showCardDetailModal(window.TCG.myCollection.find(c => c.uid === '${uid}'), false);" style="padding:15px 30px; font-size:18px; font-weight:bold; background:#00BCD4; color:white; border:2px solid #FFF; border-radius:8px; cursor:pointer; box-shadow:0 4px 6px rgba(0,0,0,0.3);">🔍 詳細を見る</button>
+            ${actionBtn}
+        </div>
+        <button onclick="document.getElementById('tcg-card-action-menu').remove();" style="padding:12px 40px; font-size:16px; background:#555; color:white; border:2px solid #777; border-radius:8px; font-weight:bold; cursor:pointer;">キャンセル</button>
+    `;
+    document.body.appendChild(menu);
+};
+
     window.TCG.editingDeck.forEach(uid => {
         const card = window.TCG.myCollection.find(c => c.uid === uid);
-        if (card) deckHtml += `<div onclick="window.toggleCardInDeck('${card.uid}')" style="transform: scale(0.65); transform-origin: top left; width: 117px; height: 169px; cursor: pointer; transition: transform 0.1s;" onmouseover="this.style.transform='scale(0.7) translateY(-5px)'" onmouseout="this.style.transform='scale(0.65) translateY(0)'">${window.renderCardHTML(card)}</div>`;
+        if (card) deckHtml += `<div onclick="window.showDeckCardActionMenu('${card.uid}', true)" style="transform: scale(0.65); transform-origin: top left; width: 117px; height: 169px; cursor: pointer; transition: transform 0.1s;" onmouseover="this.style.transform='scale(0.7) translateY(-5px)'" onmouseout="this.style.transform='scale(0.65) translateY(0)'"><div style="pointer-events:none;">${window.renderCardHTML(card)}</div></div>`;
     });
 
     window.TCG.myCollection.forEach(card => {
@@ -3216,7 +3251,7 @@ window.refreshDeckBuilderView = function() {
                     if (!card.type.startsWith(filterType)) match = false;
                 }
             }
-            if (match) collectionHtml += `<div onclick="window.toggleCardInDeck('${card.uid}')" style="transform: scale(0.65); transform-origin: top left; width: 117px; height: 169px; cursor: pointer; transition: transform 0.1s;" onmouseover="this.style.transform='scale(0.7) translateY(-5px)'" onmouseout="this.style.transform='scale(0.65) translateY(0)'">${window.renderCardHTML(card)}</div>`;
+            if (match) collectionHtml += `<div onclick="window.showDeckCardActionMenu('${card.uid}', false)" style="transform: scale(0.65); transform-origin: top left; width: 117px; height: 169px; cursor: pointer; transition: transform 0.1s;" onmouseover="this.style.transform='scale(0.7) translateY(-5px)'" onmouseout="this.style.transform='scale(0.65) translateY(0)'"><div style="pointer-events:none;">${window.renderCardHTML(card)}</div></div>`;
         }
     });
 
@@ -11237,5 +11272,660 @@ window.updateTcgButtonAppearance = function() {
         // TCG未解放時（アルバムに偽装）
         btn.innerHTML = '📖 アルバム';
         btn.style.background = '#795548'; // アルバム風のブラウンカラー
+    }
+};
+
+// ==========================================
+// ★ カードショップ ＆ レトロ・カードパック演出システム
+// ==========================================
+
+window.openCardShopUI = function() {
+    let ui = document.getElementById('tcg-shop-ui');
+    if (!ui) {
+        ui = document.createElement('div');
+        ui.id = 'tcg-shop-ui';
+        ui.style.cssText = `position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:50000; display:flex; justify-content:center; align-items:center; font-family:sans-serif;`;
+        document.body.appendChild(ui);
+    }
+    
+    const gold = window.aiPet ? (window.aiPet.gold || 0) : 0;
+    const canDraw = gold >= 100;
+    
+    ui.innerHTML = `
+        <div style="background:#222; border:4px solid #00BCD4; border-radius:12px; padding:30px; width:450px; text-align:center; color:white; box-shadow:0 10px 30px rgba(0,0,0,0.8);">
+            <h2 style="color:#00BCD4; margin-top:0; border-bottom:2px solid #444; padding-bottom:10px;">💳 カードショップ</h2>
+            <div style="font-size:18px; margin-bottom:20px; color:#FFD700; font-weight:bold;">所持金: ${gold} G</div>
+            <div style="font-size:13px; color:#aaa; margin-bottom:20px; line-height:1.5;">図鑑に登録された仲間と、<br>獲得したことのある魔法・罠カードが排出されます。<br>※育成ボーナス無しの初期ステータスです。</div>
+            
+            <div style="display:flex; flex-direction:column; gap:15px; margin-bottom:20px;">
+                <button onclick="if(${canDraw}){ document.getElementById('tcg-shop-ui').style.display='none'; window.drawCardPack(); } else { alert('お金が足りません！'); }" 
+                        style="padding:15px; font-size:18px; font-weight:bold; background:${canDraw ? '#E91E63' : '#555'}; color:white; border:2px solid ${canDraw ? '#FF80AB' : '#777'}; border-radius:8px; cursor:${canDraw ? 'pointer' : 'not-allowed'}; transition:0.2s;"
+                        onmouseover="if(${canDraw}) this.style.transform='scale(1.05)'" onmouseout="if(${canDraw}) this.style.transform='scale(1)'">
+                    カードパックを引く (100 G)
+                </button>
+                <button onclick="document.getElementById('tcg-shop-ui').style.display='none'; window.openCardMarketUI();" 
+                        style="padding:15px; font-size:18px; font-weight:bold; background:#4CAF50; color:white; border:2px solid #81C784; border-radius:8px; cursor:pointer; transition:0.2s;"
+                        onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    オンライン・カード市場
+                </button>
+            </div>
+            <button onclick="document.getElementById('tcg-shop-ui').style.display='none'; window.exitCardShop();" style="padding:10px 30px; font-size:16px; font-weight:bold; background:#555; color:white; border:none; border-radius:8px; cursor:pointer;">店を出る</button>
+        </div>
+    `;
+    ui.style.display = 'flex';
+};
+
+window.drawCardPack = function() {
+    if (!window.aiPet || (window.aiPet.gold || 0) < 100) return;
+    
+    let pool = [];
+    
+    // モンスター
+    let discovered = window.aiPet.discoveredMonsters || ['robot'];
+    discovered.forEach(skin => {
+        Object.keys(window.TCG_MASTER).forEach(key => {
+            if (window.TCG_MASTER[key].type === skin) pool.push(key);
+        });
+    });
+    
+    // サポート
+    let unlockedSupport = [];
+    if (window.TCG && window.TCG.myCollection) {
+        window.TCG.myCollection.forEach(c => {
+            if (['item', 'action', 'field'].includes(c.type)) {
+                if (!unlockedSupport.includes(c.masterId)) unlockedSupport.push(c.masterId);
+            }
+        });
+    }
+    unlockedSupport.forEach(id => pool.push(id));
+    if (pool.length === 0) pool = ['robot_0'];
+    
+    let resultId = pool[Math.floor(Math.random() * pool.length)];
+    let m = window.TCG_MASTER[resultId];
+    
+    window.aiPet.gold -= 100;
+    if (typeof updateStatUI === 'function') updateStatUI();
+    
+    let newCard = {
+        uid: 'card_' + Date.now() + '_' + Math.floor(Math.random() * 1000), 
+        masterId: resultId, name: m.name, type: m.type,
+        cost: m.baseCost, 
+        hp: m.baseHp, maxHp: m.baseHp,
+        skillName: m.skillName, skillCost: m.skillCost,
+        damage: m.baseDmg || 0,
+        ability: m.ability, image: m.image, imageIndex: m.imageIndex,
+        sx: m.sx, sy: m.sy, sw: m.sw, sh: m.sh,
+        scaleX: m.scaleX, scaleY: m.scaleY, evolvesFrom: m.evolvesFrom
+    };
+    
+    window.TCG.myCollection.push(newCard);
+    window.saveTCGData();
+    
+    window.showCardPackAnimation(newCard);
+};
+
+// 🎬 カードパック排出アニメーション（排出口からスライド排出 ＋ 飛んでいく完全版）
+window.showCardPackAnimation = function(card) {
+    let ui = document.createElement('div');
+    ui.id = 'cardpack-anim-ui';
+    ui.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(10, 20, 30, 0.95);
+        z-index: 60000; display: flex; align-items: center; justify-content: center;
+        font-family: sans-serif; perspective: 1000px;
+    `;
+    
+    let container = document.createElement('div');
+    container.style.cssText = `position: relative; width: 800px; height: 400px; display: flex; align-items: center; perspective: 1000px;`;
+    
+    let machineSlot = document.createElement('div');
+    machineSlot.style.cssText = `
+        position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+        width: 80px; height: 320px; background: linear-gradient(to right, #ccc, #eee);
+        border: 4px solid #888; border-left:none; border-radius: 0 15px 15px 0;
+        box-shadow: 10px 0 20px rgba(0,0,0,0.5); z-index: 10;
+        display:flex; justify-content:flex-end; align-items:center;
+    `;
+    let hole = document.createElement('div');
+    hole.style.cssText = `
+        width: 10px; height: 280px; background: #111;
+        border-radius: 4px; margin-right: 5px; box-shadow: inset 4px 4px 8px #000;
+    `;
+    machineSlot.appendChild(hole);
+    container.appendChild(machineSlot);
+    
+    // ▼ スリットから出る様子を表現するための「覗き窓（マスク）」
+    let cardWrapper = document.createElement('div');
+    cardWrapper.style.cssText = `
+        position: absolute; left: 80px; top: 50%; transform: translateY(-50%);
+        width: 300px; height: 400px; overflow: hidden; z-index: 5;
+    `;
+
+    // ▼ 移動・拡大縮小を行うコンテナ（最初は左にずらして、排出口の奥に隠しておく）
+    let slideContainer = document.createElement('div');
+    slideContainer.style.cssText = `
+        position: absolute; left: 0px; top: 70px; width: 180px; height: 260px;
+        transform: translateX(-200px); /* 完全に排出口の奥（左枠外）に隠す */
+    `;
+
+    let flipContainer = document.createElement('div');
+    flipContainer.style.cssText = `
+        width: 100%; height: 100%; position: relative;
+        transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transform: rotateY(0deg); 
+    `;
+
+    let cardFront = document.createElement('div');
+    cardFront.style.cssText = `
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        backface-visibility: hidden; transform: rotateY(180deg);
+        box-shadow: 5px 5px 15px rgba(0,0,0,0.6); pointer-events: none; border-radius: 12px;
+    `;
+    cardFront.innerHTML = window.renderCardHTML(card);
+
+    let cardBack = document.createElement('div');
+    cardBack.style.cssText = `
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        backface-visibility: hidden; transform: rotateY(0deg);
+        background: #2A00D5; border: 8px solid #E0E0E0; border-radius: 12px;
+        box-shadow: 5px 5px 15px rgba(0,0,0,0.6); box-sizing: border-box;
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 15px, transparent 15px, transparent 30px);
+    `;
+    cardBack.innerHTML = `
+        <div style="width: 80px; height: 80px; background: rgba(0,0,0,0.5); border-radius: 50%; border: 4px solid #FFD700; display: flex; justify-content: center; align-items: center; color: #FFD700; font-weight: bold; font-size: 24px; font-family: monospace; transform: rotate(-15deg); box-shadow: inset 0 0 10px rgba(0,0,0,0.8);">TCG</div>
+        <div style="color: white; font-weight: bold; letter-spacing: 2px; margin-top: 20px; font-size: 16px; font-family: sans-serif; text-shadow: 2px 2px 0 #000;">MEMORY PACK</div>
+    `;
+
+    flipContainer.appendChild(cardFront);
+    flipContainer.appendChild(cardBack);
+    slideContainer.appendChild(flipContainer);
+    cardWrapper.appendChild(slideContainer);
+    container.appendChild(cardWrapper);
+    
+    ui.appendChild(container);
+    document.body.appendChild(ui);
+    
+    let shakeCount = 0;
+    let shakeTimer = setInterval(() => {
+        let x = (Math.random() - 0.5) * 6; let y = (Math.random() - 0.5) * 6;
+        machineSlot.style.transform = `translate(${x}px, calc(-50% + ${y}px))`;
+        shakeCount++;
+        if (shakeCount > 15) { clearInterval(shakeTimer); machineSlot.style.transform = `translateY(-50%)`; }
+    }, 50);
+
+    setTimeout(() => {
+        // 1. 排出口の奥（枠外）から、スムーズに右へスライドして出てくる！
+        slideContainer.style.transition = "transform 0.8s ease-out";
+        slideContainer.style.transform = "translateX(20px)";
+        
+        setTimeout(() => {
+            // 2. クルッとめくれて表になる！
+            flipContainer.style.transform = "rotateY(180deg)";
+            
+            setTimeout(() => {
+                // 3. 飛んでいく前に、はみ出しを隠す制限（overflow: hidden）を解除する！
+                cardWrapper.style.overflow = "visible";
+                
+                // 右にスライドして詳細画面へ飛んでいく
+                slideContainer.style.transition = "transform 0.6s ease-in, opacity 0.6s ease-in";
+                slideContainer.style.transform = "translateX(500px) scale(1.5)";
+                slideContainer.style.opacity = "0";
+                
+                setTimeout(() => {
+                    ui.remove();
+                    window.showCardDetailModal(card, true);
+                }, 600);
+            }, 1200); 
+        }, 1000); 
+    }, 100);
+};
+
+// ★詳細画面の「もう1回引く」ボタンも変更
+const _origShowCardDetailModal = window.showCardDetailModal;
+window.showCardDetailModal = function(card, fromGacha = false) {
+    _origShowCardDetailModal(card, fromGacha);
+    let modal = document.getElementById('tcg-card-detail-modal');
+    if (modal && fromGacha) {
+        // ボタンの onclick を古い drawCarddass から新しい drawCardPack に置き換えるハック
+        modal.innerHTML = modal.innerHTML.replace(/window\.drawCarddass\(\)/g, "window.drawCardPack()");
+    }
+};
+
+// 🔍 リッチなカード詳細画面（ガチャ後 ＆ 編成画面の両方で使う共通UI）
+window.showCardDetailModal = function(card, fromGacha = false) {
+    let modal = document.getElementById('tcg-card-detail-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'tcg-card-detail-modal';
+        modal.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(10,15,20,0.95); z-index: 65000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s;
+        `;
+        document.body.appendChild(modal);
+    }
+    
+    // ナイトガンダム風に、左側にカード、右側にステータスを配置
+    let isSupport = ['item','action','field'].includes(card.type);
+    let s_hp = isSupport ? "---" : card.hp;
+    let s_cost = card.cost;
+    let s_dmg = isSupport ? "---" : (card.damage || 0);
+    
+    let btnHtml = '';
+    if (fromGacha) {
+        btnHtml = `
+            <div style="display:flex; gap:20px; margin-top:30px; justify-content:center;">
+                <button onclick="document.getElementById('tcg-card-detail-modal').style.display='none'; window.drawCardPack();" style="padding:12px 30px; font-size:18px; font-weight:bold; background:#00BCD4; color:white; border:2px solid #FFF; border-radius:8px; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.5);">もう1回引く</button>
+                <button onclick="document.getElementById('tcg-card-detail-modal').style.display='none'; window.openCardShopUI();" style="padding:12px 30px; font-size:18px; font-weight:bold; background:#555; color:white; border:2px solid #888; border-radius:8px; cursor:pointer;">店に戻る</button>
+            </div>
+        `;
+    } else {
+        btnHtml = `
+            <div style="margin-top:30px; text-align:center;">
+                <button onclick="document.getElementById('tcg-card-detail-modal').style.display='none';" style="padding:12px 40px; font-size:18px; font-weight:bold; background:#555; color:white; border:2px solid #888; border-radius:8px; cursor:pointer;">閉じる</button>
+            </div>
+        `;
+    }
+
+    modal.innerHTML = `
+        <div style="display:flex; align-items:center; gap:50px; transform:scale(0.9); transition:transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);" id="card-detail-inner">
+            <div style="transform: scale(1.5); box-shadow: 0 0 30px rgba(0,188,212,0.4); border-radius: 12px; pointer-events:none;">
+                ${window.renderCardHTML(card)}
+            </div>
+            
+            <div style="width: 350px; background: #222; border: 4px solid #00BCD4; border-radius: 12px; padding: 25px; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                <div style="font-size:26px; font-weight:bold; color:#00BCD4; border-bottom:2px solid #444; padding-bottom:10px; margin-bottom:20px;">
+                    ${card.name}
+                </div>
+                <div style="display:flex; flex-direction:column; gap:12px; font-size:18px; margin-bottom:20px;">
+                    <div style="display:flex; justify-content:space-between; background:#111; padding:10px; border-radius:6px;">
+                        <span style="color:#aaa;">必要マナ</span><span style="color:#FFD700; font-weight:bold;">${s_cost}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; background:#111; padding:10px; border-radius:6px;">
+                        <span style="color:#aaa;">HP</span><span style="color:#4CAF50; font-weight:bold;">${s_hp}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; background:#111; padding:10px; border-radius:6px;">
+                        <span style="color:#aaa;">攻撃力 (威力)</span><span style="color:#ff5252; font-weight:bold;">${s_dmg}</span>
+                    </div>
+                </div>
+                ${btnHtml}
+            </div>
+        </div>
+    `;
+    
+    modal.style.display = 'flex';
+    setTimeout(() => {
+        modal.style.opacity = '1';
+        document.getElementById('card-detail-inner').style.transform = 'scale(1)';
+    }, 50);
+};
+
+// ==========================================
+// 🌐 オンラインカードマーケットUI（完全リッチ化＆バグ修正版）
+// ==========================================
+
+// ★共通リッチメッセージ表示関数
+window.showMarketMessage = function(msg, isError = false) {
+    let popup = document.createElement('div');
+    popup.innerHTML = msg;
+    popup.style.cssText = `position:fixed; top:40%; left:50%; transform:translate(-50%,-50%); background:${isError ? 'rgba(244,67,54,0.95)' : 'rgba(0,188,212,0.95)'}; color:#fff; padding:20px 40px; border-radius:12px; font-weight:bold; font-size:20px; z-index:99999; box-shadow:0 10px 30px rgba(0,0,0,0.5); text-align:center; pointer-events:none; animation: slideUpFade 3s forwards;`;
+    let container = document.getElementById('tcg-market-ui') || document.body;
+    container.appendChild(popup);
+    setTimeout(() => popup.remove(), 3000);
+};
+
+window.openCardMarketUI = async function() {
+    let modal = document.getElementById('tcg-market-ui');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'tcg-market-ui';
+        modal.style.cssText = `position:fixed; top:2%; left:2%; width:96%; height:96%; background:#1a1a1a; border:4px solid #00BCD4; border-radius:12px; z-index:55000; display:flex; flex-direction:column; overflow:hidden; font-family:sans-serif; box-shadow: 0 10px 40px rgba(0,0,0,0.8);`;
+        document.body.appendChild(modal);
+    }
+    
+    const myId = localStorage.getItem('my_player_id');
+    if (!myId) {
+        window.showMarketMessage("⚠️ オンライン機能を利用するにはログインが必要です。", true);
+        return;
+    }
+
+    window.refreshMarketUI = async function(mode = 'buy') {
+        let titleAreaHtml = `
+            <div style="background:#006064; padding:15px 20px; display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #004D40;">
+                <div style="display:flex; align-items:center; gap:20px;">
+                    <h2 style="margin:0; color:#FFF; font-size:22px;">🌐 オンライン市場</h2>
+                    <div style="display:flex; gap:5px;">
+                        <button onclick="window.refreshMarketUI('buy')" style="padding:8px 20px; background:${mode === 'buy' ? '#FFF' : '#333'}; color:${mode === 'buy' ? '#006064' : '#FFF'}; font-weight:bold; border:none; border-radius:6px; cursor:pointer;">購入する</button>
+                        <button onclick="window.refreshMarketUI('sell')" style="padding:8px 20px; background:${mode === 'sell' ? '#FFF' : '#333'}; color:${mode === 'sell' ? '#006064' : '#FFF'}; font-weight:bold; border:none; border-radius:6px; cursor:pointer;">出品する</button>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <span style="font-size:16px; background:#004D40; padding:5px 10px; border-radius:20px;">所持金: <span style="color:#FFD700; font-weight:bold; font-size:20px;">${window.aiPet ? window.aiPet.gold : 0}</span> G</span>
+                    <button onclick="document.getElementById('tcg-market-ui').style.display='none'; window.openCardShopUI();" style="background:#666; color:white; font-weight:bold; border:2px solid #888; padding:10px 20px; border-radius:8px; cursor:pointer;">お店に戻る ✖</button>
+                </div>
+            </div>
+        `;
+
+        let contentHtml = `<div style="color:#aaa; width:100%; text-align:center; margin-top:50px; font-size:20px;">読込中...</div>`;
+        modal.innerHTML = titleAreaHtml + `<div id="market-content-area" style="flex:1; overflow-y:auto; padding:20px; display:flex; flex-wrap:wrap; align-content:flex-start; background:#222;">${contentHtml}</div>`;
+        modal.style.display = 'flex';
+
+        if (mode === 'buy') {
+            let items = await window.fetchTCGMarketItems();
+            let cHtml = '';
+            items.forEach(item => {
+                let isMine = item.sellerId === myId;
+                let btnHtml = isMine
+                    ? `<button onclick="window.cancelMarketItem('${item.docId}')" style="width:100%; padding:8px; background:#f44336; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer; margin-top:10px;">出品を取り消す</button>`
+                    : `<button onclick="window.buyMarketItem('${item.docId}', ${item.price}, '${item.sellerId}')" style="width:100%; padding:8px; background:#4CAF50; color:#fff; border:none; border-radius:6px; font-weight:bold; cursor:pointer; margin-top:10px;">${item.price} G で購入</button>`;
+                
+                // ★修正：transform-origin: top left; に変更して右ズレを解消！
+                cHtml += `
+                    <div style="margin:10px; background:#111; padding:10px; border-radius:12px; border:2px solid #444; width: 140px; display:flex; flex-direction:column; align-items:center;">
+                        <div style="font-size:11px; color:#00BCD4; margin-bottom:5px; text-align:center; width:100%; overflow:hidden; white-space:nowrap; text-overflow:ellipsis;">出品: ${item.sellerName}</div>
+                        <div style="transform: scale(0.65); transform-origin: top left; width: 117px; height: 169px; pointer-events:none;">
+                            ${window.renderCardHTML(item.cardData)}
+                        </div>
+                        ${btnHtml}
+                    </div>
+                `;
+            });
+            document.getElementById('market-content-area').innerHTML = cHtml || '<div style="color:#888; text-align:center; width:100%; margin-top:50px; font-size:20px;">現在、市場にカードはありません。</div>';
+        } 
+        else if (mode === 'sell') {
+            let cHtml = '';
+            let deckUids = [];
+            if (window.TCG && window.TCG.decks) { window.TCG.decks.forEach(d => { deckUids.push(...d); }); }
+            
+            window.TCG.myCollection.forEach((card, idx) => {
+                const inDeck = deckUids.includes(card.uid);
+                const opacity = inDeck ? 0.5 : 1;
+                const cursor = inDeck ? 'not-allowed' : 'pointer';
+                
+                // ★修正：transform-origin: top left; に変更して右ズレを解消！
+                cHtml += `
+                    <div style="position:relative; margin:10px; opacity:${opacity}; cursor:${cursor}; transition:transform 0.1s;"
+                         onmouseover="if(!${inDeck}) this.style.transform='scale(1.05) translateY(-5px)'"
+                         onmouseout="if(!${inDeck}) this.style.transform='scale(1) translateY(0)'"
+                         onclick="if(!${inDeck}) window.showCardSellPricePrompt(${idx})">
+                        <div style="transform: scale(0.65); transform-origin: top left; width: 117px; height: 169px; pointer-events:none;">
+                            ${window.renderCardHTML(card)}
+                        </div>
+                        ${inDeck ? '<div style="position:absolute; top:40%; left:10%; background:rgba(0,0,0,0.8); color:white; padding:5px 10px; border-radius:4px; font-weight:bold; font-size:16px; transform:rotate(-15deg); pointer-events:none;">デッキ編成中</div>' : '<div style="position:absolute; bottom:-15px; left:0; width:100%; background:#FF9800; color:white; padding:5px 0; border-radius:6px; font-size:14px; font-weight:bold; text-align:center; pointer-events:none;">タップして出品</div>'}
+                    </div>
+                `;
+            });
+            document.getElementById('market-content-area').innerHTML = cHtml || '<div style="color:#888; text-align:center; width:100%; margin-top:50px; font-size:20px;">出品できるカードがありません。</div>';
+        }
+    };
+    window.refreshMarketUI('buy');
+};
+
+// 🏷️ 出品価格を入力するリッチポップアップ
+window.showCardSellPricePrompt = function(idx) {
+    let card = window.TCG.myCollection[idx];
+    if (!card) return;
+
+    let modal = document.createElement('div');
+    modal.id = 'tcg-sell-price-popup';
+    modal.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(0,0,0,0.85); z-index: 60000;
+        display: flex; justify-content: center; align-items: center;
+        opacity: 0; transition: opacity 0.3s ease;
+    `;
+    
+    modal.innerHTML = `
+        <div style="background: #2a2a2a; border: 4px solid #FF9800; border-radius: 12px; padding: 30px; width: 450px; text-align: center; color: white; font-family: sans-serif; box-shadow: 0 10px 40px rgba(0,0,0,0.8); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+            <div style="font-size: 50px; margin-bottom: 15px;">🏷️</div>
+            <h2 style="color: #FF9800; margin-top: 0; margin-bottom: 20px;">カードを出品</h2>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 30px; margin-bottom: 30px; background: #111; padding: 15px; border-radius: 8px;">
+                <div style="transform: scale(0.65); transform-origin: top left; width: 117px; height: 169px; pointer-events:none;">
+                    ${window.renderCardHTML(card)}
+                </div>
+                <div style="flex: 1; text-align: left;">
+                    <div style="font-size: 20px; font-weight: bold; color: #FFF; margin-bottom: 10px;">${card.name}</div>
+                    <div style="font-size: 14px; color: #aaa;">アルバムNo: ${card.id || idx + 1}</div>
+                </div>
+            </div>
+            
+            <div style="font-size: 16px; color: #ddd; line-height: 1.6; margin-bottom: 20px;">
+                出品価格を入力してください：
+            </div>
+            <input type="number" id="tcg-sell-price-input" value="1000" min="100" step="10" style="padding: 15px; font-size: 24px; font-weight: bold; width: 200px; text-align: center; background: #111; border: 2px solid #FF9800; border-radius: 8px; color: #FFF; margin-bottom: 30px;">
+            <div style="font-size: 14px; color: #ff5252; margin-bottom: 25px;">（※出品時に手数料として <span style="font-weight:bold;">100 G</span> が引かれます）</div>
+
+            <div style="display: flex; gap: 20px; justify-content: center;">
+                <button onclick="window.confirmSellMarket(${idx}, document.getElementById('tcg-sell-price-input').value)" 
+                        style="padding: 12px 30px; font-size: 18px; font-weight: bold; background: #4CAF50; color: white; border: 2px solid #FFF; border-radius: 8px; cursor: pointer; transition: 0.2s;"
+                        onmouseover="this.style.background='#43A047'; this.style.transform='scale(1.05)';" onmouseout="this.style.background='#4CAF50'; this.style.transform='scale(1)';">
+                    決定
+                </button>
+                <button onclick="document.getElementById('tcg-sell-price-popup').style.opacity='0'; setTimeout(()=>document.getElementById('tcg-sell-price-popup').remove(), 300);" 
+                        style="padding: 12px 30px; font-size: 18px; font-weight: bold; background: #555; color: white; border: 2px solid #777; border-radius: 8px; cursor: pointer;">
+                    キャンセル
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    setTimeout(() => {
+        modal.style.opacity = '1';
+        modal.firstElementChild.style.transform = 'scale(1)';
+    }, 50);
+};
+
+// 決定ボタンを押した後の最終確認画面
+window.confirmSellMarket = function(idx, price) {
+    document.getElementById('tcg-sell-price-popup').remove(); 
+
+    let priceVal = parseInt(price, 10);
+    if (isNaN(priceVal) || priceVal < 100) return window.showMarketMessage("⚠️ 100 G 以上の正しい金額を入力してください", true);
+    if ((window.aiPet.gold || 0) < 100) return window.showMarketMessage("⚠️ 出品手数料（100 G）が足りません！", true);
+
+    let card = window.TCG.myCollection[idx];
+    if (!card) return;
+
+    let modal = document.createElement('div');
+    modal.id = 'tcg-sell-confirm-popup';
+    modal.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(0,0,0,0.85); z-index: 60000;
+        display: flex; justify-content: center; align-items: center;
+        opacity: 0; transition: opacity 0.3s ease;
+    `;
+    
+    // ★修正：「undefinedの思い出」になるのを防ぐ安全な名前取得
+    let pName = localStorage.getItem('my_player_name');
+    if (!pName) pName = window.aiPet ? window.aiPet.name : "あなた";
+
+    modal.innerHTML = `
+        <div style="background: #2a2a2a; border: 4px solid #00BCD4; border-radius: 12px; padding: 30px; width: 450px; text-align: center; color: white; font-family: sans-serif; box-shadow: 0 10px 40px rgba(0,0,0,0.8); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+            <div style="font-size: 50px; margin-bottom: 15px;">📜</div>
+            <h2 style="color: #00BCD4; margin-top: 0; margin-bottom: 20px;">出品最終確認</h2>
+            <div style="font-size: 16px; color: #ddd; line-height: 1.6; margin-bottom: 25px;">
+                以下の内容でコレクション「<span style="color:#00BCD4; font-weight:bold;">${pName}のカード</span>」から出品します。
+            </div>
+            
+            <div style="display: flex; justify-content: center; align-items: center; gap: 30px; margin-bottom: 30px; background: #111; padding: 15px; border-radius: 8px;">
+                <div style="transform: scale(0.65); transform-origin: top left; width: 117px; height: 169px; pointer-events:none;">
+                    ${window.renderCardHTML(card)}
+                </div>
+                <div style="flex: 1; text-align: left;">
+                    <div style="font-size: 20px; font-weight: bold; color: #FFF; margin-bottom: 10px;">${card.name}</div>
+                    <div style="font-size: 14px; color: #aaa;">アルバムNo: ${card.id || idx + 1}</div>
+                </div>
+            </div>
+            
+            <div style="background:#111; border:2px solid #444; border-radius:8px; padding:15px; margin-bottom:30px; font-size: 20px; font-weight: bold;">
+                出品価格： <span style="color:#FFD700;">${priceVal} G</span>
+            </div>
+
+            <div style="font-size: 14px; color: #aaa; margin-bottom: 15px;">
+                出品完了時、手数料として<br>
+                所持金から <span style="color:#F44336; font-weight:bold;">100 G</span> が引かれます。
+            </div>
+            <div style="font-size: 14px; color: #ccc; margin-bottom: 30px;">（※取り消せません）</div>
+
+            <div style="display: flex; gap: 20px; justify-content: center;">
+                <button onclick="window.promptSellMarket(${idx}, ${priceVal})" 
+                        style="padding: 12px 30px; font-size: 18px; font-weight: bold; background: #E91E63; color: white; border: 2px solid #FFF; border-radius: 8px; cursor: pointer; transition: 0.2s;"
+                        onmouseover="this.style.background='#C2185B'; this.style.transform='scale(1.05)';" onmouseout="this.style.background='#E91E63'; this.style.transform='scale(1)';">
+                    出品する！
+                </button>
+                <button onclick="document.getElementById('tcg-sell-confirm-popup').style.opacity='0'; setTimeout(()=>document.getElementById('tcg-sell-confirm-popup').remove(), 300);" 
+                        style="padding: 12px 30px; font-size: 18px; font-weight: bold; background: #555; color: white; border: 2px solid #777; border-radius: 8px; cursor: pointer;">
+                    キャンセル
+                </button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    setTimeout(() => {
+        modal.style.opacity = '1';
+        modal.firstElementChild.style.transform = 'scale(1)';
+    }, 50);
+};
+
+// 出品処理本体
+window.promptSellMarket = function(idx, price) {
+    if (document.getElementById('tcg-sell-confirm-popup')) document.getElementById('tcg-sell-confirm-popup').remove(); 
+
+    let card = window.TCG.myCollection[idx];
+    let priceVal = parseInt(price, 10);
+    // 万が一の再チェック
+    if (isNaN(priceVal) || priceVal < 100) return window.showMarketMessage("⚠️ 100 G 以上の金額を入力してください", true);
+    if ((window.aiPet.gold || 0) < 100) return window.showMarketMessage("⚠️ 出品手数料（100 G）が足りません！", true);
+
+    document.getElementById('market-content-area').style.pointerEvents = 'none';
+
+    window.aiPet.gold -= 100;
+    window.TCG.myCollection.splice(idx, 1);
+    window.saveTCGData();
+    if (typeof updateStatUI === 'function') updateStatUI();
+
+    window.uploadTCGMarketItem(card, priceVal).then(success => {
+        if (success) {
+            window.showMarketMessage(`✨ 「${card.name}」を ${priceVal} G で出品しました！`);
+            document.getElementById('market-content-area').style.pointerEvents = 'auto';
+            window.refreshMarketUI('sell');
+        } else {
+            window.showMarketMessage("❌ 出品に失敗しました。通信環境を確認してください。", true);
+            window.aiPet.gold += 100;
+            window.TCG.myCollection.push(card);
+            window.saveTCGData();
+            document.getElementById('market-content-area').style.pointerEvents = 'auto';
+        }
+    });
+};
+
+// 購入処理（リッチUI対応版）
+window.buyMarketItem = async function(docId, price, sellerId) {
+    if ((window.aiPet.gold || 0) < price) return window.showMarketMessage("⚠️ 所持金が足りません！", true);
+    
+    // 購入確認のリッチポップアップ
+    let confirmPopup = document.createElement('div');
+    confirmPopup.style.cssText = `position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:60000; display:flex; justify-content:center; align-items:center;`;
+    confirmPopup.innerHTML = `
+        <div style="background: #2a2a2a; border: 4px solid #4CAF50; border-radius: 12px; padding: 30px; width: 400px; text-align: center; color: white; font-family: sans-serif; box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
+            <div style="font-size: 50px; margin-bottom: 15px;">🛒</div>
+            <h2 style="color: #4CAF50; margin-top: 0; margin-bottom: 20px;">購入確認</h2>
+            <p style="font-size: 18px; margin-bottom: 30px;">このカードを <span style="color:#FFD700; font-weight:bold; font-size:24px;">${price} G</span> で購入しますか？</p>
+            <div style="display: flex; gap: 20px; justify-content: center;">
+                <button id="btn-buy-yes" style="padding: 12px 30px; font-size: 18px; font-weight: bold; background: #4CAF50; color: white; border: 2px solid #FFF; border-radius: 8px; cursor: pointer;">購入する</button>
+                <button id="btn-buy-no" style="padding: 12px 30px; font-size: 18px; font-weight: bold; background: #555; color: white; border: 2px solid #777; border-radius: 8px; cursor: pointer;">やめる</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(confirmPopup);
+    
+    document.getElementById('btn-buy-no').onclick = () => confirmPopup.remove();
+    document.getElementById('btn-buy-yes').onclick = async () => {
+        confirmPopup.remove();
+        document.getElementById('market-content-area').style.pointerEvents = 'none';
+
+        let items = await window.fetchTCGMarketItems();
+        let targetItem = items.find(i => i.docId === docId);
+        
+        if (!targetItem) {
+            window.showMarketMessage("❌ 売り切れているか、取り消されました。", true);
+            document.getElementById('market-content-area').style.pointerEvents = 'auto';
+            window.refreshMarketUI('buy');
+            return;
+        }
+
+        let success = await window.buyTCGMarketItem(docId, targetItem.cardData, price, sellerId);
+        if (success) {
+            window.aiPet.gold -= price;
+            window.TCG.myCollection.push(targetItem.cardData);
+            window.saveTCGData();
+            if (typeof updateStatUI === 'function') updateStatUI();
+            
+            window.showMarketMessage(`🎉 「${targetItem.cardData.name}」を購入しました！`);
+            document.getElementById('market-content-area').style.pointerEvents = 'auto';
+            window.refreshMarketUI('buy');
+        } else {
+            window.showMarketMessage("❌ 購入に失敗しました。", true);
+            document.getElementById('market-content-area').style.pointerEvents = 'auto';
+        }
+    };
+};
+
+// キャンセル処理（リッチUI対応版）
+window.cancelMarketItem = async function(docId) {
+    let confirmPopup = document.createElement('div');
+    confirmPopup.style.cssText = `position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:60000; display:flex; justify-content:center; align-items:center;`;
+    confirmPopup.innerHTML = `
+        <div style="background: #2a2a2a; border: 4px solid #f44336; border-radius: 12px; padding: 30px; width: 400px; text-align: center; color: white; font-family: sans-serif; box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
+            <div style="font-size: 50px; margin-bottom: 15px;">🔙</div>
+            <h2 style="color: #f44336; margin-top: 0; margin-bottom: 20px;">出品の取り消し</h2>
+            <p style="font-size: 16px; margin-bottom: 10px;">出品を取り消してカードを手元に戻しますか？</p>
+            <p style="font-size: 14px; color: #ff5252; margin-bottom: 30px;">（※出品手数料の 100 G は返還されません）</p>
+            <div style="display: flex; gap: 20px; justify-content: center;">
+                <button id="btn-cancel-yes" style="padding: 12px 30px; font-size: 18px; font-weight: bold; background: #f44336; color: white; border: 2px solid #FFF; border-radius: 8px; cursor: pointer;">取り消す</button>
+                <button id="btn-cancel-no" style="padding: 12px 30px; font-size: 18px; font-weight: bold; background: #555; color: white; border: 2px solid #777; border-radius: 8px; cursor: pointer;">やめる</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(confirmPopup);
+    
+    document.getElementById('btn-cancel-no').onclick = () => confirmPopup.remove();
+    document.getElementById('btn-cancel-yes').onclick = async () => {
+        confirmPopup.remove();
+        let items = await window.fetchTCGMarketItems();
+        let targetItem = items.find(i => i.docId === docId);
+        if (!targetItem) return window.refreshMarketUI('buy');
+
+        let success = await window.cancelTCGMarketItem(docId);
+        if (success) {
+            window.TCG.myCollection.push(targetItem.cardData);
+            window.saveTCGData();
+            window.showMarketMessage("📦 出品を取り消し、カードを回収しました。");
+            window.refreshMarketUI('buy');
+        } else {
+            window.showMarketMessage("❌ 取り消しに失敗しました。", true);
+        }
+    };
+};
+
+// ==========================================
+// 🚪 カードショップから退出し、自由行動に戻す処理
+// ==========================================
+window.exitCardShop = function() {
+    let ui = document.getElementById('tcg-shop-ui');
+    if (ui) ui.style.display = 'none';
+    
+    if (window.aiPet) {
+        window.aiPet.actionState = 'exiting';
+        window.aiPet.isIndoors = false;
+        window.aiPet.interactionTarget = null;
+        window.aiPet.indoorTarget = null;
+        window.aiPet.visualAction = null;
+        window.aiPet.message = "カードショップから出たよ！";
+        window.aiPet.messageTimer = 120;
     }
 };

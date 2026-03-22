@@ -786,6 +786,7 @@ window.sendChat = function() {
         "城": ["城", "お城", "キャッスル", "闘技場", "アリーナ"],
         "カジノ": ["カジノ", "スロット", "ギャンブル", "遊んで", "あそんで"],
         "ショップ": ["ショップ", "買い物", "かいもの", "お店", "店", "買いたい"],
+        "カード": ["カード", "カードダス", "カードショップ", "トレカ", "パック"], // ★追加
         "レストラン": ["レストラン", "食堂", "ご飯屋"],
         "農業": ["畑", "耕", "たがや", "農業", "水やり", "種"],
         "退治": ["虫", "駆除", "倒し", "退治"],
@@ -851,8 +852,11 @@ window.sendChat = function() {
         "カジノ": { type: 'casino', bId: 'casino', name: 'カジノ', onEnter: () => { if(typeof window.openCasino === 'function') window.openCasino(); } },
         
         // ★修正：チャットで指示されたら「行ってくる！」と喋って歩き出すだけにします
-        "ショップ": { type: 'shop', bId: 'shop', name: 'ショップ', onEnter: null }
+        "ショップ": { type: 'shop', bId: 'shop', name: 'ショップ', onEnter: null },
         
+        // ★追加：カードショップの判定と、入店時のUI呼び出し
+        "カード": { type: 'card_shop', bId: 'card_shop', name: 'カードショップ', onEnter: () => { if(typeof window.openCardShopUI === 'function') window.openCardShopUI(); } }
+
         // "レストラン": { type: 'restaurant', bId: 'restaurant', name: 'レストラン', onEnter: null },
         // "鍛冶屋": { type: 'smith', bId: 'smith', name: '鍛冶屋', onEnter: null }
     };
@@ -915,8 +919,19 @@ window.sendChat = function() {
                 if (!isMaster) {
                     aiPet.message = `まだ修行中の身だから、${facInfo.name}は作れないよ...\n(まずは建築士の免許皆伝を目指そう！)`; aiPet.messageTimer = 180;
                 } else {
-                    aiPet.schedule.push({type: 'build', targetBuilding: facInfo.bId, duration: 60});
-                    aiPet.message = `${facInfo.name}の建築を予定に追加したよ！`; aiPet.messageTimer = 150;
+                    // ★追加：施設のフラグ条件（カジノ来店など）を満たしているかチェック
+                    let bData = typeof buildingCatalog !== 'undefined' ? buildingCatalog[facInfo.bId] : null;
+                    if (bData && bData.reqFlag && !aiPet[bData.reqFlag]) {
+                        if (facInfo.bId === 'card_shop') {
+                            aiPet.message = `カード屋かぁ...。\nまずは「カジノ」で遊んで、新しい娯楽のインスピレーションを得たいな！`; 
+                        } else {
+                            aiPet.message = `まだ${facInfo.name}を建てるアイデアが浮かばないみたい...`; 
+                        }
+                        aiPet.messageTimer = 180;
+                    } else {
+                        aiPet.schedule.push({type: 'build', targetBuilding: facInfo.bId, duration: 60});
+                        aiPet.message = `${facInfo.name}の建築を予定に追加したよ！`; aiPet.messageTimer = 150;
+                    }
                 }
             } else {
                 aiPet.message = `${facInfo.name}が建ってないみたい...（「建築」を教えれば作れるかも？）`; aiPet.messageTimer = 120;
@@ -1323,17 +1338,23 @@ window.sendChat = function() {
 };
 
 // ==========================================
-// ★究極改修：カジノ入室時の専用ロビーとAI連動処理
+// ★究極改修：カジノ入室時の専用ロビーとAI連動処理（リッチUI版）
 // ==========================================
 window.openCasino = function() {
     // ▼▼▼ 追加：カジノに足を踏み入れた時のカードアンロック ▼▼▼
     if (window.aiPet && typeof window.triggerTCGUnlock === 'function') {
         window.triggerTCGUnlock('visit_casino', window.aiPet.generation);
     }
-    // 1. TCGデータがまだ無い、または60枚未満の場合は「入場拒否」の演出
+    
+    // カジノ来店フラグ（念のための直接付与）
+    if (window.aiPet) {
+        window.aiPet.visitedCasino = true;
+        if (typeof saveGameData === 'function') saveGameData();
+    }
+
+    // 1. TCGデータがまだ無い、または60枚未満の場合は「入場拒否」の演出（alert廃止）
     if (!window.TCG || !window.TCG.myCollection || window.TCG.myCollection.length < 60) {
         let count = window.TCG ? (window.TCG.myCollection ? window.TCG.myCollection.length : 0) : 0;
-        let msg = `「ここは特別な『カードゲーム』の闘技場だ。\n参加するには、カード化された『思い出』が最低でも60個必要だぞ」\n\n（現在: ${count} / 60個）`;
         
         // メッセージを出して、AIを外に追い出す
         if (window.aiPet) {
@@ -1342,7 +1363,44 @@ window.openCasino = function() {
             window.aiPet.actionState = 'exiting'; 
             window.aiPet.isIndoors = false;
         }
-        alert(msg);
+        
+        // ★修正：alertの代わりに、画面中央にリッチなポップアップを出す
+        let popup = document.createElement('div');
+        popup.id = 'casino-reject-popup';
+        popup.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.85); z-index: 60000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s ease;
+        `;
+        
+        popup.innerHTML = `
+            <div style="background: #2a2a2a; border: 4px solid #FFC107; border-radius: 12px; padding: 30px; width: 450px; text-align: center; color: white; font-family: sans-serif; box-shadow: 0 10px 40px rgba(0,0,0,0.8); transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+                <div style="font-size: 50px; margin-bottom: 15px;">🛑</div>
+                <h2 style="color: #FFC107; margin-top: 0; margin-bottom: 20px;">カジノの闘技場</h2>
+                <div style="font-size: 16px; color: #ddd; line-height: 1.6; margin-bottom: 20px; background: #111; padding: 15px; border-radius: 8px;">
+                    「ここは特別な『カードゲーム』の闘技場だ。<br>
+                    参加するには、カード化された『思い出』が<br>
+                    <span style="color:#ff5252; font-weight:bold;">最低でも60個</span> 必要だぞ」
+                </div>
+                <div style="font-size: 18px; font-weight: bold; margin-bottom: 25px;">
+                    現在: <span style="color: ${count >= 60 ? '#4CAF50' : '#ff5252'};">${count} / 60個</span>
+                </div>
+                <button onclick="document.getElementById('casino-reject-popup').style.opacity='0'; setTimeout(()=>document.getElementById('casino-reject-popup').remove(), 300);" 
+                        style="padding: 12px 30px; font-size: 18px; font-weight: bold; background: #FF9800; color: white; border: 2px solid #FFF; border-radius: 8px; cursor: pointer; transition: 0.2s;"
+                        onmouseover="this.style.background='#F57C00'; this.style.transform='scale(1.05)';" onmouseout="this.style.background='#FF9800'; this.style.transform='scale(1)';">
+                    わかった
+                </button>
+            </div>
+        `;
+        document.body.appendChild(popup);
+        
+        // アニメーション発動
+        setTimeout(() => {
+            popup.style.opacity = '1';
+            popup.firstElementChild.style.transform = 'scale(1)';
+        }, 50);
+        
         return;
     }
 
@@ -3063,6 +3121,9 @@ window.openBuildRecipe = function() {
     if (overlay) overlay.classList.add('active');
 };
 
+// ==========================================
+// ★ 建築設計図（レシピ）UIの描画処理（条件フラグ対応版）
+// ==========================================
 window.renderBuildRecipe = function() {
     const listEl = document.getElementById('buildRecipeList');
     if (!listEl) return;
@@ -3070,14 +3131,12 @@ window.renderBuildRecipe = function() {
 
     let ai = window.aiPet;
     
-    // 免許皆伝しているかどうかの判定
     let isMaster = ai.apprentice && (
         (ai.apprentice.retired && ai.apprentice.retired['building']) ||
         (ai.apprentice.currentMaster === 'building' && ai.apprentice.isGraduated) ||
         (ai.apprentice.rank && ai.apprentice.rank['building'] >= 10)
     );
 
-    // ★修正：皆伝していない場合はロック画面を表示して終了する
     if (!isMaster) {
         listEl.innerHTML = `
             <div style="text-align:center; padding:40px 20px; color:#aaa;">
@@ -3098,6 +3157,9 @@ window.renderBuildRecipe = function() {
 
     for (let bId in buildingCatalog) {
         const bData = buildingCatalog[bId];
+
+        // ★追加：特別な解放フラグがある施設は、フラグを満たしていなければ表示すらしない
+        if (bData.reqFlag && !ai[bData.reqFlag]) continue;
 
         let hasMaterials = true;
         let matHtml = "";
@@ -3142,6 +3204,19 @@ window.renderBuildRecipe = function() {
     }
     listEl.innerHTML = html;
 };
+
+// ★追加：カジノに入ったときにフラグを立てるパッチ
+if (typeof window.openCasino === 'function' && !window._casinoHookedForCardShop) {
+    const _baseOpenCasino = window.openCasino;
+    window.openCasino = function() {
+        if (window.aiPet) {
+            window.aiPet.visitedCasino = true; // 来店フラグ付与
+            if (typeof saveGameData === 'function') saveGameData();
+        }
+        _baseOpenCasino();
+    };
+    window._casinoHookedForCardShop = true;
+}
 
 // ==========================================
 // 📄 ui_controller.js

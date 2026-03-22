@@ -13,6 +13,7 @@ window.DEFENSE_CONFIG = {
         'smith': { name: '鍛冶屋', maxHp: 800, rebuildCost: 8000, effect: 'atk_up', desc: '攻撃力アップ' },
         'casino': { name: 'カジノ', maxHp: 1000, rebuildCost: 30000, effect: 'money_up', desc: '戦闘報酬アップ' },
         'shop': { name: 'ショップ', maxHp: 600, rebuildCost: 4000 },
+        'card_shop': { name: 'カード屋', maxHp: 800, rebuildCost: 10000 }, // ★追加：カードショップ
         'farm': { name: '畑', maxHp: 300, rebuildCost: 1000 },
         'bridge': { name: '橋', maxHp: 400, rebuildCost: 1500 }
     }

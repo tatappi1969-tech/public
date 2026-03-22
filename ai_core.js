@@ -4043,6 +4043,8 @@ window.closeDungeonUI = function(isGameOver = false, isRescued = false) {
             if (reachedFloor >= 5) itemsReward.push('mat_casino_1');
             if (reachedFloor >= 10) itemsReward.push('mat_casino_2');
             if (reachedFloor >= 20) itemsReward.push('mat_casino_3');
+            // ★追加：25階の踏破報酬（カードショップの素材）
+            if (reachedFloor >= 25) itemsReward.push('mat_card_1');
         }
     }
     
@@ -5137,14 +5139,13 @@ window.findFacilityForTask = function(taskType, masterType = null) {
 };
 
 // ==========================================
-// 🔨 建築システムの完全復旧（近い川を探す ＋ 確実な完成）
+// 🔨 建築システムの完全復旧（マップ全方位スキャン＆橋架け対応版）
 // ==========================================
 
-// ★重要：設計図ではなく、主人公(aiPet)に直接教え込む！
 aiPet.processBuildingStart = function(task) {
     let bId = task.targetBuilding;
     
-    // ★修正: blacksmith と smith の名前の揺れを強制的に吸収してエラーを防ぐ！
+    // blacksmith と smith の名前の揺れを強制的に吸収してエラーを防ぐ！
     if (bId === 'blacksmith' && typeof buildingCatalog !== 'undefined' && !buildingCatalog['blacksmith']) {
         bId = 'smith';
     } else if (bId === 'smith' && typeof buildingCatalog !== 'undefined' && !buildingCatalog['smith']) {
@@ -5155,21 +5156,21 @@ aiPet.processBuildingStart = function(task) {
         let buildKeys = ['hut', 'farm'];
         if (typeof buildingCatalog !== 'undefined') {
             const level = this.skills && this.skills.building ? this.skills.building : 1;
-            buildKeys = Object.keys(buildingCatalog).filter(k => buildingCatalog[k].reqBuildLevel <= level && k !== 'castle' && k !== 'casino');
+            // ★勝手に重要施設を建てないように除外
+            buildKeys = Object.keys(buildingCatalog).filter(k => buildingCatalog[k].reqBuildLevel <= level && k !== 'castle' && k !== 'casino' && k !== 'card_shop');
         }
         bId = buildKeys[Math.floor(Math.random() * buildKeys.length)];
     }
 
     let bData = (typeof buildingCatalog !== 'undefined' && buildingCatalog[bId]) ? buildingCatalog[bId] : null;
     
-    // 万が一データが見つからなくても、手動でsmithデータをでっち上げて無理やり通す（フェイルセーフ）
     if (!bData && (bId === 'smith' || bId === 'blacksmith')) {
         bData = { name: "鍛冶屋", materials: { stone: 2, wood: 1 } };
         bId = 'smith';
     }
-
     if (!bData) { this.message = "建て方がわからない..."; this.messageTimer = 120; return false; }
 
+    // 素材チェックと消費
     if (this.apprentice && this.apprentice.currentMaster === 'building') {
         if (!this.inventory) this.inventory = [];
         if (bData.materials) {
@@ -5196,30 +5197,76 @@ aiPet.processBuildingStart = function(task) {
     let walkX = this.x; let walkY = this.y; 
     let foundSpot = false;
 
+    // ==========================================
+    // ★大改修：全方位スキャン型の超賢い「橋架け」アルゴリズム
+    // 既存の橋の上に立って2つ目の橋を架ける処理もこれで完璧に動きます！
+    // ==========================================
     if (bId === 'bridge') {
-        let existingBridges = [];
-        for (let k in assets) { if (assets[k].type === 'bridge') existingBridges.push(assets[k]); }
-        
-        if (existingBridges.length > 0) {
-            let base = existingBridges[existingBridges.length - 1]; 
-            tx = base.dx + (base.sw * (base.scale || 0.5)); ty = base.dy; walkX = base.dx; walkY = base.dy; foundSpot = true;
-        } else {
-            for (let i = 0; i < 100; i++) {
-                let checkX = 100 + Math.random() * 600; let checkY = 100 + Math.random() * 300;
-                if (typeof this.isPointOnWater === 'function' && this.isPointOnWater(checkX, checkY)) {
-                    tx = checkX; ty = checkY; walkX = checkX - 40; walkY = checkY; foundSpot = true; break;
+        let bestSpot = null;
+        let minDist = Infinity;
+
+        // 指定座標に「既存の橋」があるか判定する関数
+        let isOnBridge = (cx, cy) => {
+            if (typeof assets !== 'undefined') {
+                for (let k in assets) {
+                    let a = assets[k];
+                    if (a.type === 'bridge') {
+                        let scale = a.scale || 0.5;
+                        let w = (a.sw || 50) * scale; let h = (a.sh || 50) * scale;
+                        // 判定を少し甘めにして橋の上を足場と認識しやすくする
+                        if (cx >= a.dx - 10 && cx <= a.dx + w + 10 && cy >= a.dy - 10 && cy <= a.dy + h + 10) return true;
+                    }
+                }
+            }
+            return false;
+        };
+
+        // 指定座標が「足場（陸地か、または既存の橋の上）」であるかを判定
+        let isWalkable = (cx, cy) => {
+            if (typeof this.isPointOnWater === 'function' && !this.isPointOnWater(cx, cy)) return true;
+            return isOnBridge(cx, cy);
+        };
+
+        // 画面全体（40px刻みのグリッド）をスキャンして、橋を架けるべき「水」の座標を探す
+        for (let cx = 40; cx <= 760; cx += 20) {
+            for (let cy = 40; cy <= 440; cy += 20) {
+                // 建設予定地は「水の上」であり、かつ「まだ橋がない場所」でなければならない
+                if (typeof this.isPointOnWater === 'function' && this.isPointOnWater(cx, cy) && !isOnBridge(cx, cy)) {
+                    
+                    // その水の周囲4方向（上下左右）に「立てる場所（足場）」があるか？
+                    let offsets = [ {dx:-40, dy:0}, {dx:40, dy:0}, {dx:0, dy:-40}, {dx:0, dy:40} ];
+                    for (let off of offsets) {
+                        let sx = cx + off.dx;
+                        let sy = cy + off.dy;
+                        
+                        // 足場が「陸地」または「既存の橋」であれば建設可能！
+                        if (isWalkable(sx, sy)) {
+                            // 今のAIの場所から一番近い候補地を選ぶ
+                            let dist = Math.hypot(this.x - sx, this.y - sy);
+                            if (dist < minDist) {
+                                minDist = dist;
+                                bestSpot = { tx: cx, ty: cy, walkX: sx, walkY: sy };
+                            }
+                        }
+                    }
                 }
             }
         }
-        if (!foundSpot) { this.message = "川が見つからないよ..."; this.messageTimer = 120; return false; }
+
+        if (bestSpot) {
+            tx = bestSpot.tx; ty = bestSpot.ty; walkX = bestSpot.walkX; walkY = bestSpot.walkY; foundSpot = true;
+        }
+        if (!foundSpot) { this.message = "橋を架ける適当な水辺が見つからないよ..."; this.messageTimer = 120; return false; }
+        
     } else {
-        for (let i = 0; i < 30; i++) {
-            let checkX = this.x + (Math.random() - 0.5) * 200; let checkY = this.y + (Math.random() - 0.5) * 200;
-            checkX = Math.max(50, Math.min(750, checkX)); checkY = Math.max(50, Math.min(430, checkY));
+        // 橋以外の建物（カード屋など）は、陸地にランダムに建てる
+        for (let i = 0; i < 50; i++) {
+            let checkX = 50 + Math.random() * 700; let checkY = 50 + Math.random() * 380;
             if (typeof this.isPointOnWater === 'function' && !this.isPointOnWater(checkX, checkY)) {
                 tx = checkX; ty = checkY; walkX = checkX; walkY = checkY; foundSpot = true; break;
             }
         }
+        if (!foundSpot) { this.message = "安全に建てられる空き地が見つからないよ..."; this.messageTimer = 120; return false; }
     }
 
     this.message = `${bData.name}を建てる場所へ行くよ！`; this.messageTimer = 120;
@@ -5607,11 +5654,10 @@ if (typeof window.AICharacter !== 'undefined') {
     window.aiPet.executeEnterAction = _safeEnter;
     if (window.AICharacter) window.AICharacter.prototype.executeEnterAction = _safeEnter;
 
-    // 3. 【全部入り】天才AI ＋ 素早さ連続行動（ログ詳細出力版）
+    // 3. 【究極版】カーナビ搭載・天才AI ＋ 素早さ連続行動
     window.processDungeonTurn = async function() { 
         const s = window.DUNGEON_STATE; 
         
-        console.log("【DungeonTurn】ターン処理開始。現在のロック状態:", s.isProcessingTurn);
         // ★AUTO等での二重実行を防ぐロック
         if (s.isProcessingTurn) return;
         s.isProcessingTurn = true;
@@ -5636,19 +5682,12 @@ if (typeof window.AICharacter !== 'undefined') {
 
             let realSpd = Math.floor(ai.stats.speed || 10);
             let actionCount = 1 + Math.floor(realSpd / 50); 
-            console.log(`【DungeonTurn】素早さ判定 -> 素早さ:${realSpd} / 予定行動回数:${actionCount}回`);
-
             if (actionCount > 1) {
                 window.addDungeonLog(`💨 素早さを活かして ${actionCount}回 連続行動する！`, '#00e676');
             }
 
             for (let actStep = 0; actStep < actionCount; actStep++) {
-                console.log(`【DungeonTurn】--- ループ開始: ${actStep + 1}回目 / 全${actionCount}回 ---`);
-                
-                if (s.player.hp <= 0) {
-                    console.log("【DungeonTurn】プレイヤー死亡のためループ中断");
-                    break; 
-                }
+                if (s.player.hp <= 0) break; 
 
                 let enemyAdjacent = null; let enemyInSight = null; 
                 s.enemies.forEach(e => { 
@@ -5713,67 +5752,97 @@ if (typeof window.AICharacter !== 'undefined') {
                             else if (!s.player.equipShield && s.player.tempInventory.some(i => window.getDungeonItemEffect(i).isShield) && validCmdIds.includes('equip')) chosenCommand = 'equip';
                             else if (enemyAdjacent && validCmdIds.includes('attack')) chosenCommand = 'attack'; 
                             else {
-                                let validMoves = [];
-                                let possibleDirs = [
-                                    { cmd: 'move_up', dx: 0, dy: -1 }, { cmd: 'move_down', dx: 0, dy: 1 },
-                                    { cmd: 'move_left', dx: -1, dy: 0 }, { cmd: 'move_right', dx: 1, dy: 0 }
-                                ];
-                                
-                                let targetPos = null;
-                                for(let y=0; y<s.mapHeight; y++) {
-                                    for(let x=0; x<s.mapWidth; x++) {
-                                        if (s.visited[y][x] && s.grid[y][x] === 2) { targetPos = { x: x, y: y }; break; }
-                                    }
-                                    if (targetPos) break;
-                                }
-                                
-                                if (!targetPos) {
-                                    let nearestUnvisited = null; let minDist = Infinity;
-                                    for(let y=0; y<s.mapHeight; y++) {
-                                        for(let x=0; x<s.mapWidth; x++) {
-                                            if (!s.visited[y][x] && s.grid[y][x] !== 1) {
-                                                let dist = Math.abs(s.player.x - x) + Math.abs(s.player.y - y);
-                                                if (dist < minDist) { minDist = dist; nearestUnvisited = { x: x, y: y }; }
+                                // ==================================================
+                                // ★ 超・天才AIの経路探索エンジン（幅優先探索アルゴリズム）
+                                // 障害物を完璧に回避し、絶対に壁に引っかからずに目的地へ向かう！
+                                // ==================================================
+                                let getBfsNextStep = function(startX, startY, isTargetFunc) {
+                                    let queue = [{x: startX, y: startY}];
+                                    let visitedMap = Array.from({length: s.mapHeight}, () => new Array(s.mapWidth).fill(false));
+                                    visitedMap[startY][startX] = true;
+                                    let parent = {};
+                                    let foundTarget = null;
+
+                                    while(queue.length > 0) {
+                                        let cur = queue.shift();
+                                        if (isTargetFunc(cur.x, cur.y)) {
+                                            foundTarget = cur;
+                                            break;
+                                        }
+                                        let dirs = [{dx:0,dy:-1,cmd:'move_up'}, {dx:0,dy:1,cmd:'move_down'}, {dx:-1,dy:0,cmd:'move_left'}, {dx:1,dy:0,cmd:'move_right'}];
+                                        // ランダム性を入れて複数ルートがある時に散らばるようにする
+                                        dirs.sort(() => Math.random() - 0.5);
+                                        
+                                        for(let d of dirs) {
+                                            // AIがその方向の「言葉（コマンド）」を知らない場合は進めない
+                                            if (!validCmdIds.includes(d.cmd)) continue;
+                                            
+                                            let nx = cur.x + d.dx; let ny = cur.y + d.dy;
+                                            if (nx >= 0 && nx < s.mapWidth && ny >= 0 && ny < s.mapHeight && s.grid[ny][nx] !== 1 && !visitedMap[ny][nx]) {
+                                                visitedMap[ny][nx] = true;
+                                                parent[`${nx},${ny}`] = {x: cur.x, y: cur.y};
+                                                queue.push({x: nx, y: ny});
                                             }
                                         }
                                     }
-                                    if (nearestUnvisited) targetPos = nearestUnvisited;
+                                    
+                                    if (!foundTarget) return null;
+                                    
+                                    // 目的地から逆算して「最初の一歩」を導き出す
+                                    let curr = foundTarget;
+                                    while(curr.x !== startX || curr.y !== startY) {
+                                        let p = parent[`${curr.x},${curr.y}`];
+                                        if (p.x === startX && p.y === startY) return curr;
+                                        curr = p;
+                                    }
+                                    return null;
+                                };
+
+                                let nextStep = null;
+
+                                // 1. 階段を見つけていれば最優先で目指す
+                                nextStep = getBfsNextStep(s.player.x, s.player.y, (x, y) => s.visited[y][x] && s.grid[y][x] === 2);
+
+                                // 2. 階段がなく、HPに余裕があれば視界内の敵を狩りに向かう
+                                if (!nextStep && s.player.hp > s.player.maxHp * 0.4 && enemyInSight) {
+                                    nextStep = getBfsNextStep(s.player.x, s.player.y, (x, y) => x === enemyInSight.x && y === enemyInSight.y);
                                 }
 
-                                if (!targetPos && s.player.hp > s.player.maxHp * 0.4 && enemyInSight) {
-                                    targetPos = { x: enemyInSight.x, y: enemyInSight.y };
+                                // 3. 階段も敵もない場合は、一番近い「まだ行ったことがない黒いマス」を目指す！
+                                if (!nextStep) {
+                                    nextStep = getBfsNextStep(s.player.x, s.player.y, (x, y) => !s.visited[y][x] && s.grid[y][x] !== 1);
                                 }
-                                
-                                possibleDirs.forEach(dir => {
-                                    if (validCmdIds.includes(dir.cmd)) {
-                                        let nx = s.player.x + dir.dx; let ny = s.player.y + dir.dy;
-                                        if (nx >= 0 && nx < s.mapWidth && ny >= 0 && ny < s.mapHeight && s.grid[ny][nx] !== 1) {
-                                            let score = 10;
-                                            if (s.player.lastX === nx && s.player.lastY === ny) score -= 8; 
-                                            if (targetPos) {
-                                                let currentDist = Math.abs(s.player.x - targetPos.x) + Math.abs(s.player.y - targetPos.y);
-                                                let nextDist = Math.abs(nx - targetPos.x) + Math.abs(ny - targetPos.y);
-                                                if (nextDist < currentDist) score += 15; else score -= 5;
-                                            } else {
-                                                let unvisitedCount = 0;
-                                                for(let oy=-2; oy<=2; oy++) {
-                                                    for(let ox=-2; ox<=2; ox++) {
-                                                        let cx = nx+ox; let cy = ny+oy;
-                                                        if(cx>=0 && cx<s.mapWidth && cy>=0 && cy<s.mapHeight && !s.visited[cy][cx]) unvisitedCount++;
-                                                    }
-                                                }
-                                                score += unvisitedCount;
+
+                                // BFSで見つかった方向に行動を決定
+                                if (nextStep) {
+                                    if (nextStep.x < s.player.x) chosenCommand = 'move_left';
+                                    else if (nextStep.x > s.player.x) chosenCommand = 'move_right';
+                                    else if (nextStep.y < s.player.y) chosenCommand = 'move_up';
+                                    else if (nextStep.y > s.player.y) chosenCommand = 'move_down';
+                                } 
+                                // BFSでルートが見つからない（言葉を知らない等で孤立した）場合はランダムに動いてみる
+                                else {
+                                    let possibleDirs = [
+                                        { cmd: 'move_up', dx: 0, dy: -1 }, { cmd: 'move_down', dx: 0, dy: 1 },
+                                        { cmd: 'move_left', dx: -1, dy: 0 }, { cmd: 'move_right', dx: 1, dy: 0 }
+                                    ];
+                                    let validMoves = [];
+                                    possibleDirs.forEach(dir => {
+                                        if (validCmdIds.includes(dir.cmd)) {
+                                            let nx = s.player.x + dir.dx; let ny = s.player.y + dir.dy;
+                                            if (nx >= 0 && nx < s.mapWidth && ny >= 0 && ny < s.mapHeight && s.grid[ny][nx] !== 1) {
+                                                let score = 10;
+                                                if (s.player.lastX === nx && s.player.lastY === ny) score -= 8; 
+                                                validMoves.push({ cmd: dir.cmd, score: score, nx: nx, ny: ny });
                                             }
-                                            validMoves.push({ cmd: dir.cmd, score: score, nx: nx, ny: ny });
                                         }
+                                    });
+                                    if (validMoves.length > 0) {
+                                        validMoves.sort((a, b) => b.score - a.score);
+                                        let topScore = validMoves[0].score;
+                                        let bestMoves = validMoves.filter(m => m.score === topScore);
+                                        chosenCommand = bestMoves[Math.floor(Math.random() * bestMoves.length)].cmd;
                                     }
-                                });
-                                
-                                if (validMoves.length > 0) {
-                                    validMoves.sort((a, b) => b.score - a.score);
-                                    let topScore = validMoves[0].score;
-                                    let bestMoves = validMoves.filter(m => m.score === topScore);
-                                    chosenCommand = bestMoves[Math.floor(Math.random() * bestMoves.length)].cmd;
                                 }
                             }
                         }
@@ -5792,6 +5861,7 @@ if (typeof window.AICharacter !== 'undefined') {
                                 }
                                 return true;
                             });
+                            
                             if (smartValidCmds.length > 0) {
                                 chosenCommand = smartValidCmds[Math.floor(Math.random() * smartValidCmds.length)];
                             } else {
@@ -5801,8 +5871,6 @@ if (typeof window.AICharacter !== 'undefined') {
                     }
 
                     if (typeof chosenCommand === 'object' && chosenCommand !== null) chosenCommand = chosenCommand.id;
-
-                    console.log(`【DungeonTurn】決定したコマンド: ${chosenCommand}`);
 
                     if (chosenCommand !== 'skip') {
                         const cmdInfo = window.DUNGEON_AVAILABLE_COMMANDS.find(c => c.id === chosenCommand); 
@@ -5912,10 +5980,7 @@ if (typeof window.AICharacter !== 'undefined') {
                     }
                 }
 
-                console.log(`【DungeonTurn】行動反映完了。現在位置: [${s.player.x}, ${s.player.y}]`);
-
                 if (s.grid[s.player.y][s.player.x] === 2) {
-                    console.log("【DungeonTurn】階段到達！ループを強制終了し次のフロアへ");
                     window.addDungeonLog(`階段を見つけた！ 次のフロアへ進む！`, '#00BCD4');
                     if (s.isAuto) window.toggleDungeonAuto(); 
                     s.floor++; 
@@ -5925,13 +5990,9 @@ if (typeof window.AICharacter !== 'undefined') {
 
                 window.updateDungeonUI();
                 if (actionCount > 1 && actStep < actionCount - 1) {
-                    console.log("【DungeonTurn】連続行動中のウェイト...");
                     await sleep(200); 
                 }
-                console.log(`【DungeonTurn】--- ${actStep + 1}回目のループ終了 ---`);
             } // ★ 行動ループはここで終了！
-
-            console.log("【DungeonTurn】プレイヤー行動完了。敵のターンを開始します");
 
             // ==========================================
             // ★ 敵のターン
@@ -6006,22 +6067,20 @@ if (typeof window.AICharacter !== 'undefined') {
             window.updateDungeonUI();
 
             if (s.player.hp <= 0) {
-                console.log("【DungeonTurn】プレイヤーHP0のためゲームオーバー");
                 window.addDungeonLog(`${aiName} は倒れてしまった...`, '#ff5252');
                 if (s.isAuto) window.toggleDungeonAuto(); 
                 setTimeout(() => { 
-                    if (typeof window.updateDungeonRanking === 'function') window.updateDungeonRanking(s.mapType, s.floor, s.player.level);
+                    if (typeof window.updateDungeonRanking === 'function') {
+                        window.updateDungeonRanking(s.mapType, s.floor, s.player.level);
+                    }
                     window.closeDungeonUI(true); 
                 }, 1500);
             }
-            
-            console.log("【DungeonTurn】敵ターンを含む全ての処理が完了");
             
         } catch (e) {
             console.error("【DungeonTurnエラー】処理中にエラーが発生しました:", e);
         } finally {
             s.isProcessingTurn = false; // ★ロック解除
-            console.log("【DungeonTurn】ロックを解除しました。");
         }
     };
 })();
@@ -6065,3 +6124,56 @@ aiPet.checkAndTriggerAdulthood = function() {
         }
     }
 };
+
+// ==========================================
+// ★ 修正版：別コンテンツプレイ中の襲撃発生＆放置ダメージストップ
+// ==========================================
+(function() {
+    // 1. 襲撃の発生をブロック（島画面にいる時だけ発生させる）
+    window._originalTriggerEmergency_TimerFix = window._originalTriggerEmergency_TimerFix || window.triggerEmergency;
+    window.triggerEmergency = function() {
+        if (window.currentMode !== 'play' && window.currentMode !== 'grazing') return;
+        
+        window._originalTriggerEmergency_TimerFix();
+
+        // 2. 襲撃発生後にセットされる「30秒ごとの施設破壊タイマー」をハイジャックし、
+        // 別画面を開いている間はダメージ処理をスキップ（時間停止）させる
+        if (window.DEFENSE_STATE && window.DEFENSE_STATE.emergencyTimer) {
+            clearInterval(window.DEFENSE_STATE.emergencyTimer);
+            
+            window.DEFENSE_STATE.emergencyTimer = setInterval(() => {
+                // ★ここが重要：ダンジョンや闘技場を開いている間はダメージを与えない
+                if (window.currentMode !== 'play' && window.currentMode !== 'grazing') return;
+
+                if (window.DEFENSE_STATE.isEmergency && !window.DEFENSE_STATE.isActive) {
+                    let targetFac = window.DEFENSE_STATE.facilities.find(f => f.hp > 0 && f.type !== 'castle'); 
+                    if (!targetFac) targetFac = window.DEFENSE_STATE.facilities.find(f => f.hp > 0);
+                    
+                    if (targetFac) {
+                        targetFac.hp -= 50; 
+                        let currentAssets = (typeof assets !== 'undefined') ? assets : (window.assets || {});
+                        if (currentAssets[targetFac.id]) currentAssets[targetFac.id].hp = targetFac.hp;
+
+                        if (typeof floatingTexts !== 'undefined') {
+                            let pos = window.getGridPixelPos(targetFac.gridX, targetFac.gridY);
+                            floatingTexts.push({ text: `-50`, x: pos.x, y: pos.y - 50, color: "#ff5252", life: 60, dy: -1 });
+                        }
+                        
+                        if (targetFac.hp <= 0) {
+                            if (targetFac.type === 'castle') {
+                                clearInterval(window.DEFENSE_STATE.emergencyTimer);
+                                let marquee = document.getElementById('emergency-marquee');
+                                if(marquee) marquee.style.display = 'none'; 
+                                window.DEFENSE_STATE.isEmergency = false;
+                                alert("防衛を放置したため、王城が陥落してしまいました..."); window.executeAbandon(); 
+                            } else {
+                                let delAssets = (typeof assets !== 'undefined') ? assets : (window.assets || {});
+                                if (delAssets[targetFac.id]) delete delAssets[targetFac.id];
+                            }
+                        }
+                    }
+                }
+            }, 30000); 
+        }
+    };
+})();
