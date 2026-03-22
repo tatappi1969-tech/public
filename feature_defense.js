@@ -297,28 +297,211 @@ window.assignSkillsToUnit = function(unit, pwr, int) {
     let statTotal = pwr + int; 
     let exactSkin = unit.skin || 'robot';
     let skinBase = exactSkin.split('_')[0];
-    let evoLevel = exactSkin.includes('_') ? parseInt(exactSkin.split('_')[1]) || 1 : 0;
     
-    // ベースとなる種族の技を取得
+    // '_'の数や 'type' という文字列から正確な進化レベルを算出
+    let evoLevel = 0;
+    if (exactSkin.includes('_type')) {
+        let parts = exactSkin.split('_');
+        evoLevel = parts.length > 2 ? 2 : 1; // _typeX_Y なら2進化、 _typeX なら1進化
+    } else if (exactSkin !== skinBase) {
+        evoLevel = 1; // ゲストキャラなどのイレギュラー対応
+    }
+    
+    // ベースとなる種族の基本技を取得（これは全進化系が共通で引き継ぐ）
     let skillList = window.DEFENSE_SKILL_DB[exactSkin] ? [...window.DEFENSE_SKILL_DB[exactSkin]] : [...(window.DEFENSE_SKILL_DB[skinBase] || window.DEFENSE_SKILL_DB['default'])];
     
-    // ★ 1進化以上なら、強力な技を追加
-    if (evoLevel >= 1) {
+    // ==========================================
+    // 🔥 スパロボ風！全100種族の固有必殺技ディクショナリ
+    // 1進化は威力2.0〜2.5（中堅技）、2進化は威力3.5〜4.5（究極技）
+    // ==========================================
+    const EVO_SKILLS_MAP = {
+        // --- 🤖 Robot Tree ---
+        "robot_type3": [ { req: 60, name: 'アナライズ・スマッシュ', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'オプティカル・スキャン', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "robot_type3_2": [ { req: 120, name: 'ロジック・デストラクト', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'マトリックス・レイ', type: 'shoot', power: 4.5, range: 5, effect: 'beam' } ],
+        "robot_type3_3": [ { req: 120, name: '確率改竄ストライク', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'ディバイン・オラクル', type: 'shoot', power: 4.5, range: 5, effect: 'beam' } ],
+        "robot_type3_4": [ { req: 120, name: 'アシッド・インジェクション', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'ケミカル・ハザード', type: 'shoot', power: 4.5, range: 4, effect: 'explosion' } ],
+        "robot_type3_5": [ { req: 120, name: 'データ・デリート', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'ワールド・エンド・コード', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "robot_type2": [ { req: 60, name: 'ライブ・ビート', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'ソニック・ボイス', type: 'shoot', power: 2.5, range: 3, effect: 'slash' } ],
+        "robot_type2_2": [ { req: 120, name: 'グラン・ジュテ・スラッシュ', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'ピルエット・ストライク', type: 'shoot', power: 4.5, range: 4, effect: 'impact' } ],
+        "robot_type2_3": [ { req: 120, name: 'ヴァーチャル・エコー', type: 'shoot', power: 3.5, range: 4, effect: 'beam' }, { req: 150, name: 'シンフォニック・レイ', type: 'shoot', power: 4.5, range: 5, effect: 'beam' } ],
+        "robot_type2_4": [ { req: 120, name: 'ゴールデン・スマッシュ', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'ミリオン・ダラー・キャノン', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "robot_type4": [ { req: 60, name: 'ヘビー・パイルバンカー', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: '装甲粉砕砲', type: 'shoot', power: 2.5, range: 3, effect: 'explosion' } ],
+        "robot_type4_2": [ { req: 120, name: 'アサルト・クロー', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'フルバースト・ガトリング', type: 'shoot', power: 4.5, range: 4, effect: 'impact' } ],
+        "robot_type4_3": [ { req: 120, name: 'ジェノサイド・ナックル', type: 'melee', power: 3.5, range: 1, effect: 'explosion' }, { req: 150, name: 'アルティメット・デストロイヤー', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "robot_type4_4": [ { req: 120, name: 'ギガント・プレッシャー', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'ダイナモ・オーバーロード', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "robot_type1": [ { req: 60, name: 'ブラッド・スクレイパー', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'キリング・レイ', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "robot_type1_2": [ { req: 120, name: 'ナイトメア・サイズ', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'サイバー・カタストロフ', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "robot_type1_3": [ { req: 120, name: 'ドゥームズデイ・スマッシュ', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'アポカリプス・フレア', type: 'shoot', power: 4.5, range: 5, effect: 'beam' } ],
+        "robot_type5": [ { req: 60, name: 'スクラップ・ナックル', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'ジャンク・バズーカ', type: 'shoot', power: 2.5, range: 3, effect: 'explosion' } ],
+        "robot_type5_2": [ { req: 120, name: 'イージス・バッシュ', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'エンシェント・レーザー', type: 'shoot', power: 4.5, range: 5, effect: 'beam' } ],
+        "robot_type5_3": [ { req: 120, name: 'クロック・スラッシュ', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'エターナル・ギア・ストライク', type: 'shoot', power: 4.5, range: 4, effect: 'impact' } ],
+        "robot_type5_4": [ { req: 120, name: 'ネイチャー・スマッシュ', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'アース・プロミネンス', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+
+        // --- 🧚 Spirit Tree ---
+        "spirit_type2": [ { req: 60, name: 'スプリング・ブリーズ', type: 'shoot', power: 2.0, range: 3, effect: 'slash' }, { req: 80, name: 'フラワリング・アロー', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "spirit_type2_2": [ { req: 120, name: 'ネイチャー・ヒーリング', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'ペタル・ストーム', type: 'shoot', power: 4.5, range: 4, effect: 'slash' } ],
+        "spirit_type2_3": [ { req: 120, name: 'クリスタル・シュート', type: 'shoot', power: 3.5, range: 4, effect: 'beam' }, { req: 150, name: 'プリズム・ロータス・バースト', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "spirit_type4": [ { req: 60, name: 'ウッド・スマッシュ', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'ガイア・インパクト', type: 'shoot', power: 2.5, range: 3, effect: 'explosion' } ],
+        "spirit_type4_2": [ { req: 120, name: 'エルダー・ウィップ', type: 'melee', power: 3.5, range: 2, effect: 'slash' }, { req: 150, name: '大地の怒り', type: 'shoot', power: 4.5, range: 4, effect: 'explosion' } ],
+        "spirit_type4_3": [ { req: 120, name: 'ガーディアン・ファング', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'ワイルド・ロア', type: 'shoot', power: 4.5, range: 3, effect: 'impact' } ],
+        "spirit_type5": [ { req: 60, name: 'カサカサ・カッター', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'ドライ・リーフ・ストーム', type: 'shoot', power: 2.5, range: 3, effect: 'slash' } ],
+        "spirit_type5_2": [ { req: 120, name: 'オータム・ブレード', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: '紅葉乱舞', type: 'shoot', power: 4.5, range: 4, effect: 'slash' } ],
+        "spirit_type5_3": [ { req: 120, name: '氷結の風', type: 'shoot', power: 3.5, range: 3, effect: 'slash' }, { req: 150, name: 'アブソリュート・ゼロ', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "spirit_type1": [ { req: 60, name: 'ポイズン・タッチ', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'ベノム・スポア', type: 'shoot', power: 2.5, range: 3, effect: 'beam' } ],
+        "spirit_type1_2": [ { req: 120, name: 'マンドラゴラ・スクリーム', type: 'shoot', power: 3.5, range: 3, effect: 'impact' }, { req: 150, name: 'カース・オブ    ・マザー', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "spirit_type3": [ { req: 60, name: '知識のページ', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'ルーン・ストライク', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "spirit_type3_2": [ { req: 120, name: 'オラクル・ヴィジョン', type: 'shoot', power: 3.5, range: 4, effect: 'beam' }, { req: 150, name: '星の神託', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+
+        // --- 🧙‍♀️ Magician Tree ---
+        "magician_type4": [ { req: 60, name: 'マジック・ナックル', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'バトル・スマッシュ', type: 'shoot', power: 2.5, range: 3, effect: 'impact' } ],
+        "magician_type4_2": [ { req: 120, name: 'フレイム・ナックル', type: 'melee', power: 3.5, range: 1, effect: 'explosion' }, { req: 150, name: 'バーン・アウト', type: 'shoot', power: 4.5, range: 4, effect: 'explosion' } ],
+        "magician_type4_3": [ { req: 120, name: '闘神の魔拳', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'ウォー・バスター', type: 'shoot', power: 4.5, range: 4, effect: 'slash' } ],
+        "magician_type4_4": [ { req: 120, name: 'ドラゴン・ファング', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'ドラゴニック・ブレス', type: 'shoot', power: 4.5, range: 5, effect: 'beam' } ],
+        "magician_type1": [ { req: 60, name: 'ヴェノム・カッター', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'ダーク・ボルト', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "magician_type1_2": [ { req: 120, name: 'ドレイン・タッチ', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'ブラック・ホール', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "magician_type1_3": [ { req: 120, name: 'ネクロ・コマンド', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'アビス・ゲート', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "magician_type1_4": [ { req: 120, name: 'デーモン・クロー', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'サモン・メテオ', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "magician_type5": [ { req: 60, name: 'グランド・マジック', type: 'shoot', power: 2.0, range: 4, effect: 'beam' }, { req: 80, name: 'エンシェント・フレア', type: 'shoot', power: 2.5, range: 4, effect: 'explosion' } ],
+        "magician_type5_2": [ { req: 120, name: 'タイム・ストップ', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'クロノ・ブレイク', type: 'shoot', power: 4.5, range: 5, effect: 'slash' } ],
+        "magician_type5_3": [ { req: 120, name: 'アストラル・レイ', type: 'shoot', power: 3.5, range: 5, effect: 'beam' }, { req: 150, name: 'コズミック・バースト', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "magician_type2": [ { req: 60, name: 'イリュージョン・エッジ', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'スター・シュート', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "magician_type2_2": [ { req: 120, name: 'アイス・コフィン', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'ダイヤモンド・ダスト', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "magician_type2_3": [ { req: 120, name: 'プリズム・カッター', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'レインボー・スプラッシュ', type: 'shoot', power: 4.5, range: 5, effect: 'beam' } ],
+        "magician_type2_4": [ { req: 120, name: 'セレスティアル・ライト', type: 'shoot', power: 3.5, range: 4, effect: 'beam' }, { req: 150, name: 'ホーリー・ジャッジメント', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "magician_type3": [ { req: 60, name: 'ステラ・ストライク', type: 'shoot', power: 2.0, range: 4, effect: 'beam' }, { req: 80, name: 'アストロ・シュート', type: 'shoot', power: 2.5, range: 4, effect: 'impact' } ],
+        "magician_type3_2": [ { req: 120, name: 'コスモ・プレッシャー', type: 'shoot', power: 3.5, range: 4, effect: 'impact' }, { req: 150, name: 'ユニバース・メテオ', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "magician_type3_3": [ { req: 120, name: 'アカシック・ブレイド', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'エターナル・ノヴァ', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+
+        // --- 🦅 Bird Tree ---
+        "bird_type2": [ { req: 60, name: 'フェアリー・ウィング', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'イリュージョン・ダスト', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "bird_type2_2": [ { req: 120, name: 'ギャラクシー・フェザー', type: 'shoot', power: 3.5, range: 4, effect: 'slash' }, { req: 150, name: 'スターダスト・レイ', type: 'shoot', power: 4.5, range: 5, effect: 'beam' } ],
+        "bird_type4": [ { req: 60, name: 'ハンター・ダイブ', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'ソニック・クロー', type: 'melee', power: 2.5, range: 1, effect: 'slash' } ],
+        "bird_type4_2": [ { req: 120, name: 'ストーム・ウィング', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'ガルーダ・テンペスト', type: 'shoot', power: 4.5, range: 4, effect: 'explosion' } ],
+        "bird_type5": [ { req: 60, name: 'サイレント・グライド', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'シャドウ・ストライク', type: 'melee', power: 2.5, range: 1, effect: 'slash' } ],
+        "bird_type5_2": [ { req: 120, name: 'アーケオ・ファング', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'アンシエント・ロア', type: 'shoot', power: 4.5, range: 3, effect: 'impact' } ],
+        "bird_type1": [ { req: 60, name: 'ダーク・ダイブ', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'ナイトメア・フェザー', type: 'shoot', power: 2.5, range: 3, effect: 'slash' } ],
+        "bird_type1_2": [ { req: 120, name: 'カオス・スクリーム', type: 'shoot', power: 3.5, range: 3, effect: 'impact' }, { req: 150, name: 'デッド・ウィンド', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "bird_type3": [ { req: 60, name: 'ルーン・カッター', type: 'shoot', power: 2.0, range: 3, effect: 'slash' }, { req: 80, name: 'マジック・フェザー', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "bird_type3_2": [ { req: 120, name: 'メカニック・シュート', type: 'shoot', power: 3.5, range: 4, effect: 'impact' }, { req: 150, name: 'データ・ストライク', type: 'shoot', power: 4.5, range: 5, effect: 'beam' } ],
+        "bird_type3_3": [ { req: 120, name: 'アカシック・アイ', type: 'shoot', power: 3.5, range: 5, effect: 'beam' }, { req: 150, name: 'コズミック・ロア', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+
+        // --- ⚙️ Machine Tree ---
+        "machine_type2": [ { req: 60, name: 'オルゴール・スマッシュ', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'メロディ・ウェーブ', type: 'shoot', power: 2.5, range: 3, effect: 'beam' } ],
+        "machine_type2_2": [ { req: 120, name: 'クロノス・ブレイド', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'グランド・オーケストラ', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "machine_type4": [ { req: 60, name: 'ピストン・パンチ', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'スチーム・バースト', type: 'shoot', power: 2.5, range: 3, effect: 'explosion' } ],
+        "machine_type4_2": [ { req: 120, name: 'ドレッド・インパクト', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'ギガ・スチーム・カノン', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "machine_type5": [ { req: 60, name: 'アンティーク・スマッシュ', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'ラスティ・ギア', type: 'shoot', power: 2.5, range: 3, effect: 'slash' } ],
+        "machine_type5_2": [ { req: 120, name: 'モス・ホイップ', type: 'melee', power: 3.5, range: 2, effect: 'slash' }, { req: 150, name: 'ネイチャー・カノン', type: 'shoot', power: 4.5, range: 5, effect: 'beam' } ],
+        "machine_type5_3": [ { req: 120, name: 'ロスト・インパクト', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'エターナル・サイレンス', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "machine_type1": [ { req: 60, name: 'カース・クロー', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'マイト・オブ・ホラー', type: 'melee', power: 2.5, range: 1, effect: 'impact' } ],
+        "machine_type1_2": [ { req: 120, name: 'スクラップ・クラッシュ', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'カオス・ミキサー', type: 'melee', power: 4.5, range: 1, effect: 'slash' } ],
+        "machine_type3": [ { req: 60, name: 'ギア・カッター', type: 'shoot', power: 2.0, range: 3, effect: 'slash' }, { req: 80, name: '計算式・零', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "machine_type3_2": [ { req: 120, name: 'クォンタム・エッジ', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'ディメンション・ブレイク', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+
+        // --- 🪨 Stone Tree ---
+        "stone_type2": [ { req: 60, name: 'クリスタル・ナックル', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'シャイン・レーザー', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "stone_type2_2": [ { req: 120, name: 'ブリリアント・ブレード', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'ジェム・カタストロフ', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "stone_type4": [ { req: 60, name: 'マグマ・スマッシュ', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'ヴォルカニック・バースト', type: 'shoot', power: 2.5, range: 3, effect: 'explosion' } ],
+        "stone_type4_2": [ { req: 120, name: 'アイアン・バッシュ', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'フォートレス・カノン', type: 'shoot', power: 4.5, range: 5, effect: 'beam' } ],
+        "stone_type4_3": [ { req: 120, name: 'メテオ・ナックル', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'ギガ・タイタン・プレス', type: 'shoot', power: 4.5, range: 4, effect: 'explosion' } ],
+        "stone_type5": [ { req: 60, name: 'モノリス・スタンプ', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'ルイン・ブラスト', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "stone_type5_2": [ { req: 120, name: 'アストラル・プレッシャー', type: 'shoot', power: 3.5, range: 3, effect: 'impact' }, { req: 150, name: 'ガイア・ブレイク', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "stone_type5_3": [ { req: 120, name: 'ツイン・エレメント', type: 'shoot', power: 3.5, range: 4, effect: 'slash' }, { req: 150, name: 'アブソリュート・メルトダウン', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "stone_type1": [ { req: 60, name: 'カース・バイト', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'ダーク・ペトリファイ', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "stone_type1_2": [ { req: 120, name: 'ヴォイド・クラッシュ', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'ブラック・エンド', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "stone_type3": [ { req: 60, name: 'ルーン・ストライク', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: '古代語魔法・破', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "stone_type3_2": [ { req: 120, name: 'オラクル・バッシュ', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'サテライト・ジャッジメント', type: 'shoot', power: 4.5, range: 5, effect: 'beam' } ],
+
+        // --- 🎈 Balloon Tree ---
+        "balloon_type2": [ { req: 60, name: 'シャボン・スプラッシュ', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'レインボー・バブル', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "balloon_type2_2": [ { req: 120, name: 'プリズム・バウンス', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'クリスタル・ドロップ', type: 'shoot', power: 4.5, range: 4, effect: 'explosion' } ],
+        "balloon_type2_3": [ { req: 120, name: 'パレード・タックル', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'ドリーム・カーニバル', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "balloon_type4": [ { req: 60, name: 'マッスル・バウンス', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'マッスル・プレッシャー', type: 'melee', power: 2.5, range: 1, effect: 'impact' } ],
+        "balloon_type4_2": [ { req: 120, name: 'バーナー・ストライク', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'エアリアル・ファイア', type: 'shoot', power: 4.5, range: 4, effect: 'explosion' } ],
+        "balloon_type4_3": [ { req: 120, name: 'ゼペリン・プレス', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'ヘビー・ボム', type: 'shoot', power: 4.5, range: 4, effect: 'explosion' } ],
+        "balloon_type1": [ { req: 60, name: 'スモッグ・アタック', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'トキシック・ブレス', type: 'shoot', power: 2.5, range: 3, effect: 'beam' } ],
+        "balloon_type1_2": [ { req: 120, name: 'マイン・タックル', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'デッドリー・ブラスト', type: 'shoot', power: 4.5, range: 4, effect: 'explosion' } ],
+        "balloon_type1_3": [ { req: 120, name: 'ナイトメア・バンプ', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'カオス・ブラスト', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "balloon_type5": [ { req: 60, name: 'デフレート・プレス', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'しわしわタックル', type: 'melee', power: 2.5, range: 1, effect: 'impact' } ],
+        "balloon_type5_2": [ { req: 120, name: 'フォッシル・スマッシュ', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'エンシェント・フレア', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "balloon_type3": [ { req: 60, name: 'ウェザー・ストライク', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'ライトニング・ボルト', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "balloon_type3_2": [ { req: 120, name: 'スコープ・バッシュ', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'データ・ストーム', type: 'shoot', power: 4.5, range: 4, effect: 'slash' } ],
+        "balloon_type3_3": [ { req: 120, name: 'サテライト・フォール', type: 'shoot', power: 3.5, range: 4, effect: 'impact' }, { req: 150, name: 'オービタル・レーザー', type: 'shoot', power: 4.5, range: 5, effect: 'beam' } ],
+
+        // --- 👻 Ghost Tree ---
+        "ghost_type2": [ { req: 60, name: 'ルミナス・タッチ', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'ホーリー・ライト', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "ghost_type2_2": [ { req: 120, name: 'セラフィック・レイ', type: 'shoot', power: 3.5, range: 5, effect: 'beam' }, { req: 150, name: 'ヘヴンズ・ゲート', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "ghost_type4": [ { req: 60, name: 'ポルター・スマッシュ', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'テレキネシス・スロー', type: 'shoot', power: 2.5, range: 3, effect: 'impact' } ],
+        "ghost_type4_2": [ { req: 120, name: 'ジャガーノート・パンチ', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'ファントム・デストロイ', type: 'shoot', power: 4.5, range: 4, effect: 'explosion' } ],
+        "ghost_type5": [ { req: 60, name: 'エイシェント・タッチ', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: '忘却の風', type: 'shoot', power: 2.5, range: 3, effect: 'beam' } ],
+        "ghost_type5_2": [ { req: 120, name: 'ファラオ・カース', type: 'shoot', power: 3.5, range: 3, effect: 'slash' }, { req: 150, name: '王の裁き', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "ghost_type1": [ { req: 60, name: 'シャドウ・サイズ', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'デッドリー・シェイド', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "ghost_type1_2": [ { req: 120, name: 'デス・ブリンガー', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'ファントム・オブ・カオス', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "ghost_type3": [ { req: 60, name: 'アカデミー・ストライク', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: '知識の奔流', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "ghost_type3_2": [ { req: 120, name: 'テレパス・ブレイク', type: 'shoot', power: 3.5, range: 4, effect: 'impact' }, { req: 150, name: 'マインド・クラッシュ', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+
+        // --- 🪲 Beetle Tree ---
+        "beetle_type4": [ { req: 60, name: 'タイタン・シザース', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'ギガ・ホーン・ブレイク', type: 'melee', power: 2.5, range: 1, effect: 'impact' } ],
+        "beetle_type5": [ { req: 60, name: 'アンバー・クラッシュ', type: 'melee', power: 2.0, range: 1, effect: 'impact' }, { req: 80, name: 'スカラベ・ストライク', type: 'melee', power: 2.5, range: 1, effect: 'impact' } ],
+        "beetle_type5_2": [ { req: 120, name: 'エターナル・シェル', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'アンモナイト・フォール', type: 'shoot', power: 4.5, range: 4, effect: 'explosion' } ],
+        "beetle_type2": [ { req: 60, name: 'ジュエル・ホーン', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'プリズム・フラッシュ', type: 'shoot', power: 2.5, range: 3, effect: 'beam' } ],
+        "beetle_type2_2": [ { req: 120, name: 'ルーセント・ブレイド', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'ムーンライト・レイ', type: 'shoot', power: 4.5, range: 4, effect: 'beam' } ],
+        "beetle_type2_3": [ { req: 120, name: 'フェアリー・ダスト', type: 'shoot', power: 3.5, range: 3, effect: 'slash' }, { req: 150, name: 'モルフォ・イリュージョン', type: 'shoot', power: 4.5, range: 5, effect: 'beam' } ],
+        "beetle_type2_4": [ { req: 120, name: 'セイクリッド・ホーン', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'ホーリー・バースト', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "beetle_type3": [ { req: 60, name: 'ブレイン・コマンド', type: 'shoot', power: 2.0, range: 3, effect: 'impact' }, { req: 80, name: 'フェロモン・ストライク', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "beetle_type1": [ { req: 60, name: 'ブラッド・シザース', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'マッド・デストロイ', type: 'melee', power: 2.5, range: 1, effect: 'impact' } ],
+
+        // --- 🌱 Seed Tree ---
+        "seed_type4": [ { req: 60, name: 'ワイルド・バイン', type: 'melee', power: 2.0, range: 2, effect: 'slash' }, { req: 80, name: 'アース・ブレイク', type: 'shoot', power: 2.5, range: 3, effect: 'impact' } ],
+        "seed_type4_2": [ { req: 120, name: 'ガイア・バイト', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'オメガ・プレッシャー', type: 'shoot', power: 4.5, range: 4, effect: 'explosion' } ],
+        "seed_type1": [ { req: 60, name: 'ペイン・ソーン', type: 'melee', power: 2.0, range: 2, effect: 'slash' }, { req: 80, name: 'ヴェノム・スプラッシュ', type: 'shoot', power: 2.5, range: 3, effect: 'beam' } ],
+        "seed_type1_2": [ { req: 120, name: 'パラサイト・ドレイン', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'カオス・イグドラシル', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "seed_type5": [ { req: 60, name: 'ミスティック・ブランチ', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: '侘び寂びの風', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "seed_type5_2": [ { req: 120, name: 'ペトリファイド・スマッシュ', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'エターナル・ロック', type: 'shoot', power: 4.5, range: 4, effect: 'explosion' } ],
+        "seed_type3": [ { req: 60, name: 'アーカイブ・リーフ', type: 'shoot', power: 2.0, range: 3, effect: 'slash' }, { req: 80, name: 'レコード・ストライク', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "seed_type3_2": [ { req: 120, name: 'ニューロ・ウィップ', type: 'melee', power: 3.5, range: 2, effect: 'slash' }, { req: 150, name: 'インテリジェント・レイ', type: 'shoot', power: 4.5, range: 5, effect: 'beam' } ],
+        "seed_type3_3": [ { req: 120, name: 'アカシック・ルート', type: 'melee', power: 3.5, range: 2, effect: 'slash' }, { req: 150, name: '真理の光', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "seed_type2": [ { req: 60, name: 'アロマ・ブリーズ', type: 'shoot', power: 2.0, range: 3, effect: 'beam' }, { req: 80, name: 'ブルーム・バースト', type: 'shoot', power: 2.5, range: 4, effect: 'explosion' } ],
+        "seed_type2_2": [ { req: 120, name: 'エデン・ウィップ', type: 'melee', power: 3.5, range: 2, effect: 'slash' }, { req: 150, name: 'パラダイス・ロスト', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+
+        // --- 🐉 Dragon Tree ---
+        "dragon_type4": [ { req: 60, name: 'グランド・クロー', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'ワイバーン・ロア', type: 'shoot', power: 2.5, range: 3, effect: 'impact' } ],
+        "dragon_type4_2": [ { req: 120, name: 'ドレッド・ファング', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'バハムート・フレア', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "dragon_type1": [ { req: 60, name: 'カースド・ファング', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'デッドリー・ブレス', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "dragon_type1_2": [ { req: 120, name: 'アビス・クロー', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'ウロボロス・カタストロフ', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "dragon_type5": [ { req: 60, name: 'エンシェント・バイト', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'ガイア・ブレス', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "dragon_type5_2": [ { req: 120, name: 'ジオ・ストライク', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: 'ククルカン・テンペスト', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "dragon_type3": [ { req: 60, name: 'アーク・ウォーター', type: 'shoot', power: 2.0, range: 4, effect: 'beam' }, { req: 80, name: 'リヴァイアサン・ウェーブ', type: 'shoot', power: 2.5, range: 5, effect: 'explosion' } ],
+        "dragon_type3_2": [ { req: 120, name: 'ギャラクシー・クロー', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'スーパー・ノヴァ', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "dragon_type2": [ { req: 60, name: 'クリスタル・ファング', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'オーレリア・レイ', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
+        "dragon_type2_2": [ { req: 120, name: 'セラフィック・クロー', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'ホーリー・ブレス', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
+        "dragon_type2_3": [ { req: 120, name: 'プリズマティカ・ウィング', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'オーロラ・バースト', type: 'shoot', power: 4.5, range: 5, effect: 'beam' } ]
+    };
+
+    // ★ 現在のスキン名（exactSkin）に完全一致する固有技を取得
+    let myEvoSkills = EVO_SKILLS_MAP[exactSkin] || [];
+
+    // ★ 技リストにマージする
+    if (myEvoSkills.length > 0) {
+        skillList.push(...myEvoSkills);
+    } 
+    // イレギュラーや未定義の進化レベル用フォールバック
+    else if (evoLevel >= 1) {
         skillList.push(
             { req: 60, name: '覚醒の一撃', type: 'melee', power: 2.0, range: 1, effect: 'slash' },
             { req: 80, name: 'エヴォルブラスター', type: 'shoot', power: 2.5, range: 3, effect: 'beam' }
         );
-    }
-    // ★ 2進化以上なら、さらに究極技を追加
-    if (evoLevel >= 2) {
-        skillList.push(
-            { req: 120, name: '真・覚醒乱舞', type: 'melee', power: 3.5, range: 1, effect: 'explosion' },
-            { req: 150, name: 'メテオデストロイ', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' }
-        );
+        if (evoLevel >= 2) {
+            skillList.push(
+                { req: 120, name: '真・覚醒乱舞', type: 'melee', power: 3.5, range: 1, effect: 'explosion' },
+                { req: 150, name: 'メテオデストロイ', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' }
+            );
+        }
     }
 
+    // 技の習得条件（ステータス）を満たしているかチェックし、進化レベルに応じて威力を底上げ
     unit.skills = skillList.filter(s => statTotal >= s.req).map(s => {
-        return { ...s, power: s.power + (evoLevel * 0.2) }; // 進化していると既存技の威力も底上げ
+        return { ...s, power: s.power + (evoLevel * 0.2) }; 
     });
     
     if (unit.skills.length === 0) unit.skills = [window.DEFENSE_SKILL_DB['default'][0]]; 
@@ -783,8 +966,6 @@ window.processPhaseAI = async function() {
         // ★ 自分のターンが来たアピール
         unit.visualAction = 'move'; await window.wait(200); unit.visualAction = 'idle';
         
-        // ★追加: 素早さに応じた「連続行動（攻撃）」の計算！
-        // ※移動力（speed）のパラメータに応じて行動回数が増えます
         let actionCount = 1 + Math.floor(unit.speed / 10);
         if (actionCount > 1) {
             window.addDefenseLog(`<span style="color:#00e676; font-weight:bold;">💨 ${unit.name} は素早さを活かして ${actionCount}回 連続行動する！</span>`);
@@ -793,11 +974,52 @@ window.processPhaseAI = async function() {
         // 行動回数ぶんループして動かす
         for (let act = 0; act < actionCount; act++) {
             if (!window.DEFENSE_STATE.isActive || unit.hp <= 0) break;
+
+            // ==========================================
+            // ★追加修正：連続行動中に敵が全滅した場合、行動を即キャンセルして増援（WAVE進行）を呼ぶ！
+            // ==========================================
+            if (phase === 'player') {
+                let aliveEnemiesCheck = window.DEFENSE_STATE.enemies.filter(e => e.hp > 0);
+                if (aliveEnemiesCheck.length === 0) {
+                    let cfg = window.DEFENSE_STATE.waveConfig;
+                    if (window.DEFENSE_STATE.mode === 'mock') {
+                        // 模擬戦なら勝利終了
+                        window.DEFENSE_STATE.isActive = false; setTimeout(() => { window.endDefenseBattle(true); }, 1000);
+                        break;
+                    } else if (window.DEFENSE_STATE.mode === 'endless') {
+                        // エンドレスならWAVE進行
+                        window.aiPet.currentEndlessWave++;
+                        cfg.spawnedSoFar = 0; 
+                        await window.showDefenseMessage(`WAVE ${window.aiPet.currentEndlessWave} 到達！`, "#E040FB");
+                        window.addDefenseLog(`【WAVE CLEAR】 さらに強力な敵が接近中...！`);
+                        await window.wait(1000);
+                        await window.spawnReinforcements(3 + Math.floor(window.aiPet.currentEndlessWave / 2));
+                        break; // 敵が湧いたので、今の連続行動はいったん終了（次のキャラへ）
+                    } else {
+                        // 通常防衛戦
+                        if (cfg.spawnedSoFar >= cfg.totalToSpawn) { 
+                            window.DEFENSE_STATE.isActive = false; setTimeout(() => { window.endDefenseBattle(true); }, 1000); 
+                            break;
+                        } else {
+                            // まだ湧く敵が残っていれば即座に湧かせる
+                            await window.spawnReinforcements(Math.min(3, cfg.totalToSpawn - cfg.spawnedSoFar));
+                            break;
+                        }
+                    }
+                }
+            } else if (phase === 'enemy') {
+                let alivePlayersCheck = window.DEFENSE_STATE.deployedParty.filter(p => p.hp > 0);
+                if (alivePlayersCheck.length === 0) {
+                    window.DEFENSE_STATE.isActive = false; setTimeout(() => { window.endDefenseBattle(false); }, 1000);
+                    break;
+                }
+            }
+            // ==========================================
             
             await window.thinkDefenseAI(unit);
             
             // 連続行動の間に少しウェイトを入れる
-            if (act < actionCount - 1) {
+            if (act < actionCount - 1 && window.DEFENSE_STATE.isActive) {
                 await window.wait(300);
             }
         }

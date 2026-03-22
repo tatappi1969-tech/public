@@ -935,9 +935,13 @@ window.processArenaTurn = async function() {
         // ==========================================
         for (let act = 0; act < actionCount; act++) {
             if (actor.hp <= 0) break;
+
             alivePartyCheck = state.party.filter(p => p.hp > 0);
             aliveEnemiesCheck = state.enemies.filter(e => e.hp > 0);
-            if (alivePartyCheck.length === 0 || aliveEnemiesCheck.length === 0) break;
+            if (alivePartyCheck.length === 0 || aliveEnemiesCheck.length === 0) {
+                actionCount = 0; // 残りの行動回数を破棄
+                break;
+            }
 
             if (!fighter.isEnemy) {
                 // ---------- 味方のアクション ----------
@@ -1032,8 +1036,8 @@ window.processArenaTurn = async function() {
                     if (r < 0.33) {
                         let t = aliveEnemiesCheck[Math.floor(Math.random() * aliveEnemiesCheck.length)];
                         
-                        // ★回避判定
-                        let dodgeChance = Math.min(0.8, Math.max(0, (t.speed||10 - p.speed||10) * 0.05));
+                        // ★回避判定バグ修正：正しくカッコで括る！
+                        let dodgeChance = Math.min(0.8, Math.max(0, ((t.speed || 10) - (p.speed || 10)) * 0.05));
                         if (Math.random() < dodgeChance) {
                             state.log.push(`<span style="color:#aaa;">大物が釣れたが、${t.name} は素早く躱した！(MISS)</span>`);
                         } else {
@@ -1075,8 +1079,8 @@ window.processArenaTurn = async function() {
                     render();
                     
                     for(let t of targets) {
-                        // ★回避判定
-                        let dodgeChance = Math.min(0.8, Math.max(0, (t.speed||10 - p.speed||10) * 0.05));
+                        // ★回避判定バグ修正：正しくカッコで括る！
+                        let dodgeChance = Math.min(0.8, Math.max(0, ((t.speed || 10) - (p.speed || 10)) * 0.05));
                         if (Math.random() < dodgeChance) {
                             state.log.push(`<span style="color:#aaa;">${t.name} は攻撃をヒラリと避けた！(MISS)</span>`);
                             continue;
@@ -1252,7 +1256,7 @@ window.processArenaTurn = async function() {
                 } else if (actionType === "fishing") {
                     let r = Math.random();
                     if (r < 0.33) {
-                        // ★回避判定
+                        // ★敵の回避判定
                         let dodgeChance = Math.min(0.8, Math.max(0, ((targetObj.speed||10) - (e.speed||10)) * 0.05));
                         if (Math.random() < dodgeChance) {
                             state.log.push(`<span style="color:#aaa;">敵が釣り上げた大物を ${targetObj.name||"味方"} はヒラリと避けた！(MISS)</span>`);
@@ -1332,7 +1336,7 @@ window.processArenaTurn = async function() {
                     
                     for (let tInfo of allTargets) {
                         let pt = tInfo.obj;
-                        // ★回避判定
+                        // ★敵の回避判定
                         let dodgeChance = Math.min(0.8, Math.max(0, ((pt.speed||10) - (e.speed||10)) * 0.05));
                         let curName = tInfo.isGuest ? (pt.type === 'farming' ? '身代わりカボチャ' : (pt.type === 'soldier' ? '兵士' : (pt.type === 'captain' ? '隊長' : '王様'))) : pt.name;
 
@@ -1367,7 +1371,7 @@ window.processArenaTurn = async function() {
                 
                 dmg = 0;
                 if (actionType === "heavy" || actionType === "heavy_magic" || actionType === "attack") {
-                    // ★回避判定
+                    // ★敵の回避判定
                     let dodgeChance = Math.min(0.8, Math.max(0, ((targetObj.speed||10) - (e.speed||10)) * 0.05));
                     if (Math.random() < dodgeChance) {
                         logMsg = `<span style="color:#aaa;">${e.name} の攻撃！ しかし ${tName} は素早く避けた！(MISS)</span>`;

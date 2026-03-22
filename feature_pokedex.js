@@ -1,8 +1,14 @@
 // feature_pokedex.js : モンスター図鑑機能 (Added Farming Translations)
 
+// ==========================================
+// 📖 進化ツリー型：図鑑リストの2段階レイアウト対応
+// ==========================================
+
+// ★追加：selectedBase (現在選択中の基本種) を状態として保持する
 var pokedexState = { 
     active: false, 
     selectedSkin: null, 
+    selectedBase: null, // ←追加
     action: 'idle', 
     frame: 0, 
     tick: 0,
@@ -28,15 +34,63 @@ function getLocalizedActionName(actionKey) {
     return map[actionKey] || actionKey;
 }
 
+// ==========================================
+// 📖 修正版：図鑑UIの展開（レイアウト崩れ完全解消パッチ）
+// ==========================================
 function openPokedex() {
     const el = document.getElementById('pokedexOverlay');
     if (!el) return;
     
+    // ヘッダー部分のレイアウト調整
+    const header = el.querySelector('.overlay-header');
+    if (header) {
+        header.style.display = "flex";
+        header.style.justifyContent = "space-between";
+        header.style.alignItems = "center";
+        header.style.padding = "10px 20px";
+        
+        const title = header.querySelector('h2');
+        if (title) {
+            title.style.margin = "0";
+            title.style.flex = "1";
+            title.style.textAlign = "left";
+        }
+        
+        const countEl = document.getElementById('pokedexCount');
+        if (countEl) {
+            countEl.style.fontSize = "16px";
+            countEl.style.fontWeight = "bold";
+            countEl.style.color = "#FFD700";
+            countEl.style.marginRight = "15px";
+            countEl.style.whiteSpace = "nowrap"; 
+        }
+    }
+
+    // ★究極修正1：モーダル（枠）自体の「高さ固定縛り」を解除して、中身に合わせて広がるようにする！
+    const content = el.querySelector('.overlay-content') || el.firstElementChild;
+    if (content) {
+        content.style.width = "90vw"; 
+        content.style.maxWidth = "900px";
+        content.style.height = "auto"; // ←コレが一番重要（固定高さをやめる）
+        content.style.maxHeight = "95vh"; 
+        content.style.display = "flex";
+        content.style.flexDirection = "column";
+        content.style.paddingBottom = "20px"; // 下の余白を確保
+    }
+
+    // ★究極修正2：上部（キャンバス＋説明文）のエリアが潰されないように保護する
+    const listEl = document.getElementById('dex-list');
+    if (listEl && listEl.previousElementSibling) {
+        const topSection = listEl.previousElementSibling;
+        topSection.style.flexShrink = "0"; // 縮小を禁止
+        topSection.style.minHeight = "350px"; // 最低限の高さを確保
+        topSection.style.marginBottom = "15px"; 
+    }
+
     el.classList.add('active');
     pokedexState.active = true;
     
     updateDiscoveryCount();
-    renderPokedexList();
 
     if (!pokedexState.selectedSkin && aiPet.discoveredMonsters && aiPet.discoveredMonsters.length > 0) {
         selectMonster(aiPet.discoveredMonsters[aiPet.discoveredMonsters.length - 1]);
@@ -47,6 +101,12 @@ function openPokedex() {
             selectMonster(aiPet.discoveredMonsters[0]);
         }
     }
+    
+    if (pokedexState.selectedSkin) {
+        pokedexState.selectedBase = pokedexState.selectedSkin.split('_')[0];
+    }
+
+    renderPokedexList();
 
     if (!pokedexState.animId) {
         pokedexLoop();
@@ -71,19 +131,54 @@ function updateDiscoveryCount() {
     if (countEl) countEl.innerText = `発見数: ${count}種`;
 }
 
+// ==========================================
+// 📖 修正版：下部リスト（2段階ツリー型表示）
+// ==========================================
 function renderPokedexList() {
     const listEl = document.getElementById('dex-list');
     if (!listEl) return;
     
-    listEl.innerHTML = "";
-    const iconSize = 50;
+    // ★究極修正3：リストが絶対配置（absolute）で浮いて重ならないように relative に固定する
+    listEl.style.position = "relative"; 
+    listEl.style.bottom = "auto";
+    listEl.style.display = "flex";
+    listEl.style.flexDirection = "column";
+    listEl.style.gap = "10px";
+    listEl.style.padding = "15px";
+    listEl.style.overflowY = "visible"; // 内部スクロールは不要（枠全体が広がるため）
+    listEl.style.flexShrink = "0"; 
+    listEl.style.height = "auto"; // 高さを中身に合わせる
+    listEl.style.background = "#1a1a1a"; 
+    listEl.style.borderRadius = "8px";
+    listEl.style.border = "1px solid #333";
 
-    for (let key in monsterBookData) {
-        if (!aiPet.discoveredMonsters.includes(key)) continue;
-        
+    listEl.innerHTML = "";
+
+    const allBases = ["robot", "spirit", "magician", "bird", "machine", "stone", "balloon", "ghost", "beetle", "seed", "dragon"];
+    if (!aiPet.discoveredMonsters || aiPet.discoveredMonsters.length === 0) aiPet.discoveredMonsters = ['robot'];
+    
+    let discoveredBases = [...new Set(aiPet.discoveredMonsters.map(k => k.split('_')[0]))];
+    discoveredBases.sort((a,b) => allBases.indexOf(a) - allBases.indexOf(b)); 
+
+    if (!pokedexState.selectedBase || !discoveredBases.includes(pokedexState.selectedBase)) {
+        pokedexState.selectedBase = pokedexState.selectedSkin ? pokedexState.selectedSkin.split('_')[0] : discoveredBases[0];
+    }
+
+    // 上段：基本種のタブ領域
+    const baseTabs = document.createElement('div');
+    baseTabs.style.display = "flex";
+    baseTabs.style.flexWrap = "wrap"; 
+    baseTabs.style.justifyContent = "center";
+    baseTabs.style.gap = "8px";
+    baseTabs.style.borderBottom = "2px dashed #444";
+    baseTabs.style.paddingBottom = "15px";
+
+    const baseIconSize = 46; 
+
+    discoveredBases.forEach(base => {
         const btn = document.createElement('div');
-        btn.style.width = iconSize + "px";
-        btn.style.height = iconSize + "px";
+        btn.style.width = baseIconSize + "px";
+        btn.style.height = baseIconSize + "px";
         btn.style.flexShrink = "0";
         btn.style.border = "2px solid #444";
         btn.style.borderRadius = "8px";
@@ -93,18 +188,79 @@ function renderPokedexList() {
         btn.style.display = "flex";
         btn.style.justifyContent = "center";
         btn.style.alignItems = "center";
+        btn.style.transition = "transform 0.1s, border-color 0.1s, background 0.1s";
         
-        if (pokedexState.selectedSkin === key) {
-            btn.style.borderColor = "#FFD700";
-            btn.style.background = "#333";
+        btn.onmouseover = () => { btn.style.transform = "scale(1.1)"; };
+        btn.onmouseout = () => { btn.style.transform = "scale(1)"; };
+
+        if (pokedexState.selectedBase === base) {
+            btn.style.borderColor = "#FF9800"; 
+            btn.style.background = "#4e342e";
+            btn.style.boxShadow = "0 0 10px rgba(255,152,0,0.6)";
         } else {
-            btn.style.borderColor = "#4CAF50";
+            btn.style.borderColor = "#555";
         }
 
         const iconCanvas = document.createElement('canvas');
-        iconCanvas.width = iconSize - 4;
-        iconCanvas.height = iconSize - 4;
+        iconCanvas.width = baseIconSize - 4;
+        iconCanvas.height = baseIconSize - 4;
+        drawIconOnCanvas(iconCanvas, base); 
         
+        btn.appendChild(iconCanvas);
+        btn.onclick = () => {
+            pokedexState.selectedBase = base;
+            let variants = aiPet.discoveredMonsters.filter(k => k.split('_')[0] === base);
+            if (variants.length > 0) {
+                selectMonster(variants[0]);
+            }
+            renderPokedexList(); 
+        };
+        baseTabs.appendChild(btn);
+    });
+
+    listEl.appendChild(baseTabs);
+
+    // 下段：派生種一覧領域
+    const variantList = document.createElement('div');
+    variantList.style.display = "flex";
+    variantList.style.flexWrap = "wrap"; 
+    variantList.style.justifyContent = "center";
+    variantList.style.gap = "12px";
+    variantList.style.paddingTop = "5px";
+    
+    const variantIconSize = 54;
+
+    let currentVariants = aiPet.discoveredMonsters.filter(k => k.split('_')[0] === pokedexState.selectedBase);
+    
+    currentVariants.forEach(key => {
+        const btn = document.createElement('div');
+        btn.style.width = variantIconSize + "px";
+        btn.style.height = variantIconSize + "px";
+        btn.style.flexShrink = "0";
+        btn.style.border = "2px solid #444";
+        btn.style.borderRadius = "8px";
+        btn.style.cursor = "pointer";
+        btn.style.position = "relative";
+        btn.style.background = "#222";
+        btn.style.display = "flex";
+        btn.style.justifyContent = "center";
+        btn.style.alignItems = "center";
+        btn.style.transition = "transform 0.1s, border-color 0.1s";
+        
+        btn.onmouseover = () => { btn.style.transform = "scale(1.1)"; };
+        btn.onmouseout = () => { btn.style.transform = "scale(1)"; };
+        
+        if (pokedexState.selectedSkin === key) {
+            btn.style.borderColor = "#FFD700"; 
+            btn.style.background = "#333";
+            btn.style.boxShadow = "0 0 10px rgba(255,215,0,0.5)";
+        } else {
+            btn.style.borderColor = "#4CAF50"; 
+        }
+
+        const iconCanvas = document.createElement('canvas');
+        iconCanvas.width = variantIconSize - 4;
+        iconCanvas.height = variantIconSize - 4;
         drawIconOnCanvas(iconCanvas, key);
         
         btn.appendChild(iconCanvas);
@@ -112,9 +268,10 @@ function renderPokedexList() {
             selectMonster(key);
             renderPokedexList(); 
         };
-        
-        listEl.appendChild(btn);
-    }
+        variantList.appendChild(btn);
+    });
+
+    listEl.appendChild(variantList);
 }
 
 // ★修正: アニメーション設定が欠損しないように大元のJSONへ動的リンクさせる
