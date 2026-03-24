@@ -450,6 +450,7 @@ window.assignSkillsToUnit = function(unit, pwr, int) {
         "beetle_type2_4": [ { req: 120, name: 'セイクリッド・ホーン', type: 'melee', power: 3.5, range: 1, effect: 'slash' }, { req: 150, name: 'ホーリー・バースト', type: 'shoot', power: 4.5, range: 5, effect: 'explosion' } ],
         "beetle_type3": [ { req: 60, name: 'ブレイン・コマンド', type: 'shoot', power: 2.0, range: 3, effect: 'impact' }, { req: 80, name: 'フェロモン・ストライク', type: 'shoot', power: 2.5, range: 4, effect: 'beam' } ],
         "beetle_type1": [ { req: 60, name: 'ブラッド・シザース', type: 'melee', power: 2.0, range: 1, effect: 'slash' }, { req: 80, name: 'マッド・デストロイ', type: 'melee', power: 2.5, range: 1, effect: 'impact' } ],
+        "beetle_type4_2": [ { req: 120, name: '皇帝の凱歌', type: 'melee', power: 3.5, range: 1, effect: 'impact' }, { req: 150, name: '巨神・突貫衝', type: 'melee', power: 4.5, range: 2, effect: 'explosion' } ],
 
         // --- 🌱 Seed Tree ---
         "seed_type4": [ { req: 60, name: 'ワイルド・バイン', type: 'melee', power: 2.0, range: 2, effect: 'slash' }, { req: 80, name: 'アース・ブレイク', type: 'shoot', power: 2.5, range: 3, effect: 'impact' } ],
